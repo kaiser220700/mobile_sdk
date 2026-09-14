@@ -1,0 +1,9 @@
+.dart_tool/
+.fvm/versions/
+.fvm/flutter_sdk
+build/
+coverage/
+.metadata
+.fvmrc
+.flutter-plugins-dependencies
+*.iml

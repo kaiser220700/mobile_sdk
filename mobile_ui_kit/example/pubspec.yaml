@@ -1,0 +1,22 @@
+name: mobile_ui_kit_example
+description: Interactive preview and HTML-to-Flutter component map for mobile_ui_kit.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  mobile_ui_kit:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

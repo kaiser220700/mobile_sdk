@@ -1,0 +1,28 @@
+name: mobile_sdk_example
+description: A single Flutter showcase for all packages in the mobile SDK.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  mobile_devtool:
+    path: ../mobile-devtool
+  mobile_ui_kit:
+    path: ../mobile_ui_kit
+  mobile_update:
+    path: ../mobile_update
+  mobile_app_base:
+    path: ../mobile_app_base
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
