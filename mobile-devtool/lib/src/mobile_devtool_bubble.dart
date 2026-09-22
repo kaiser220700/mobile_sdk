@@ -17,6 +17,9 @@ class MobileDevToolBubble extends StatelessWidget {
     required this.idle,
     required this.onTap,
     this.accentColor,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
     super.key,
   });
 
@@ -24,7 +27,13 @@ class MobileDevToolBubble extends StatelessWidget {
   final MobileDevToolBubblePosition position;
   final MobileDevToolBubbleIdle idle;
   final VoidCallback onTap;
+
+  /// Legacy accent for the launcher icon. Prefer [foregroundColor] when the
+  /// host also customizes the bubble surface.
   final Color? accentColor;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
 
   static const double _diameter = 48;
   static const double _edgeMargin = 12;
@@ -78,6 +87,9 @@ class MobileDevToolBubble extends StatelessWidget {
                       count: controller.networkEntries.length,
                       diameter: _diameter,
                       accentColor: accentColor,
+                      backgroundColor: backgroundColor,
+                      foregroundColor: foregroundColor,
+                      borderColor: borderColor,
                     ),
                   ),
                 ),
@@ -95,15 +107,24 @@ class _Bubble extends StatelessWidget {
     required this.count,
     required this.diameter,
     this.accentColor,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
   });
 
   final int count;
   final double diameter;
   final Color? accentColor;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
-    final color = accentColor ?? MobileDevToolTheme.primary;
+    final iconColor =
+        foregroundColor ?? accentColor ?? MobileDevToolTheme.primary;
+    final fillColor = backgroundColor ?? MobileDevToolTheme.surface;
+    final outlineColor = borderColor ?? MobileDevToolTheme.primary;
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -117,13 +138,14 @@ class _Bubble extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: DecoratedBox(
+              key: const ValueKey("mobile-devtool-bubble-surface"),
               decoration: BoxDecoration(
-                color: MobileDevToolTheme.surface,
+                color: fillColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: MobileDevToolTheme.primary),
+                border: Border.all(color: outlineColor),
               ),
               child: Center(
-                child: Icon(LucideIcons.scanSearch, color: color, size: 24),
+                child: Icon(LucideIcons.scanSearch, color: iconColor, size: 24),
               ),
             ),
           ),

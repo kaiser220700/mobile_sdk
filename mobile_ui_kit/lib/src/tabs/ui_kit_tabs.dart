@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitTabsVariant { underline, pill }
@@ -96,69 +97,64 @@ class UiKitTabs extends StatelessWidget {
                     ? theme.textInverse
                     : theme.primary)
               : theme.textMuted);
-    return Semantics(
+    return UiKitPressable(
+      onPress: item.disabled || active ? null : () => onChanged(item.id),
       selected: active,
-      enabled: !item.disabled,
-      button: true,
-      label: item.badge?.semanticsLabel == null
+      semanticsLabel: item.badge?.semanticsLabel == null
           ? item.label
           : "${item.label}, ${item.badge!.semanticsLabel}",
-      child: Opacity(
+      builder: (context, states, child) => Opacity(
         opacity: item.disabled ? .4 : 1,
-        child: GestureDetector(
-          onTap: item.disabled || active ? null : () => onChanged(item.id),
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: variant == UiKitTabsVariant.pill
-                  ? theme.spacingSm
-                  : theme.spacingMd,
-            ),
-            decoration: BoxDecoration(
-              color: variant == UiKitTabsVariant.pill && active
-                  ? theme.primary
-                  : Colors.transparent,
-              borderRadius: variant == UiKitTabsVariant.pill
-                  ? BorderRadius.circular(theme.radiusFull)
-                  : null,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (item.icon != null) ...[
-                  Icon(item.icon, size: 20, color: foreground),
-                  SizedBox(width: theme.spacingXs),
-                ],
-                Text(
-                  item.label,
-                  style: (active ? theme.button : theme.bodyMedium).copyWith(
-                    color: foreground,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: variant == UiKitTabsVariant.pill
+                ? theme.spacingSm
+                : theme.spacingMd,
+          ),
+          decoration: BoxDecoration(
+            color: variant == UiKitTabsVariant.pill && active
+                ? theme.primary
+                : Colors.transparent,
+            borderRadius: variant == UiKitTabsVariant.pill
+                ? BorderRadius.circular(theme.radiusFull)
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (item.icon != null) ...[
+                Icon(item.icon, size: 20, color: foreground),
+                SizedBox(width: theme.spacingXs),
+              ],
+              Text(
+                item.label,
+                style: (active ? theme.button : theme.bodyMedium).copyWith(
+                  color: foreground,
+                ),
+              ),
+              if (item.badge?.visible == true) ...[
+                SizedBox(width: theme.spacingXs),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  height: 18,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: variant == UiKitTabsVariant.pill && active
+                        ? theme.surface
+                        : theme.primaryBg,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    item.badge!.dot ? "" : "${item.badge!.count}",
+                    style: theme.caption.copyWith(
+                      color: theme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                if (item.badge?.visible == true) ...[
-                  SizedBox(width: theme.spacingXs),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    height: 18,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: variant == UiKitTabsVariant.pill && active
-                          ? theme.surface
-                          : theme.primaryBg,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      item.badge!.dot ? "" : "${item.badge!.count}",
-                      style: theme.caption.copyWith(
-                        color: theme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),

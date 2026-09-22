@@ -10,14 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  mobile_devtool:
-    path: ../mobile-devtool
-  mobile_ui_kit:
-    path: ../mobile_ui_kit
-  mobile_update:
-    path: ../mobile_update
-  mobile_app_base:
-    path: ../mobile_app_base
+  mobile_sdk:
+    path: ../mobile_sdk
 
 dev_dependencies:
   flutter_test:

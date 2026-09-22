@@ -1,9 +1,7 @@
 # mobile_devtool
 
-> Phạm vi publish của package chỉ gồm Network và Trace. Barrel export
-> `lib/mobile_devtool.dart` cùng `.pubignore` loại các tool khác khỏi archive;
-> các phần Chrome/Fuzz Tap/Screen Draw bên dưới chỉ dành cho source workspace
-> và preview nội bộ.
+> Phạm vi publish của package gồm developer tooling được export từ
+> `lib/mobile_devtool.dart`, bao gồm Network, Trace, launcher và Chrome.
 
 Flutter SDK dùng chung cho developer tooling trong các mobile experience —
 "Reusable Flutter SDK for non-production mobile developer tools" (xem
@@ -35,6 +33,7 @@ Dependency thật của package (`mobile-devtool/pubspec.yaml`):
 |---|---|
 | `flutter` (SDK) | Widget framework |
 | `lucide_icons_flutter: ^3.1.15` | Icon bubble launcher + shape picker |
+| `pull_to_refresh_flutter3: ^2.0.2` | Pull-to-refresh và load-more indicators |
 | `flutter_test`, `flutter_lints` (dev) | Test + lint nội bộ package |
 
 Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
@@ -53,7 +52,7 @@ Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
 | **Controller / model dữ liệu** | `MobileDevToolController` | `ChangeNotifier` giữ network + trace log (giới hạn `maxEntries`), có `.disabled()` cho prod; export kèm `MobileDevToolNetworkRequest/Entry`, `MobileDevToolNetworkKind/Status`, `MobileDevToolTraceEntry`, và `entry.toCurl(...)`. |
 | | `MobileDevToolUiState` | Các `ValueNotifier`/`ChangeNotifier` nhẹ dùng chung trong UI: `MobileDevToolNetworkSearch`, `MobileDevToolNetworkStatusFilter<T>`, `MobileDevToolRevealState`, `MobileDevToolScrollDelta`, `MobileDevToolBubblePosition`, `MobileDevToolBubbleIdle`. |
 | | `MobileDevToolProviderObserver` | Theo dõi vòng đời Riverpod provider (add/dispose/update) không subscribe state — host forward từ `ProviderObserver` của mình, đọc `liveProviders` (`ValueNotifier`). |
-| **Network / Trace panel** | `MobileDevToolNetworkLogPanel` | Danh sách network log, filter theo `kind`/status, copy cURL qua `curlBuilder`. |
+| **Network / Trace panel** | `MobileDevToolNetworkLogPanel` | Danh sách network log, filter theo `kind`/status, copy cURL qua `curlBuilder`; `statusFilterStyle` đổi màu nhóm All/OK/Err/Pend theo host. |
 | | `MobileDevToolTraceLogPanel` | Danh sách trace log dạng text, double-tap để copy. |
 | **Feature flag** | `MobileDevToolFeatureFlagPanel` | Danh sách toggle generic cho `MobileDevToolFeatureFlag` do host đăng ký — thay app tự viết enum/preview-hub riêng. |
 | **Fuzz Tap (crash hunter)** | `MobileDevToolFuzzTapOverlay` | Overlay toàn màn hình có nền mờ 25%, panel trạng thái + report luôn mở, không tự đóng khi phiên dừng. |
@@ -71,6 +70,8 @@ Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
 | | `MobileDevToolKvTable` / `MobileDevToolKvRow` | Bảng 2 cột key–value, tap để copy giá trị. |
 | | `MobileDevToolExpandablePanel` | Panel thu gọn/mở rộng đơn giản có tiêu đề. |
 | | `MobileDevToolExpandableSecretText` | Text ẩn/hiện dạng monospace cho giá trị nhạy cảm (token, key...), double-tap copy. |
+| **Refresh / load more** | `MobileDevToolRefreshConfiguration` | App-level wrapper cho cấu hình `pull_to_refresh_flutter3`, gồm `headerBuilder`, `footerBuilder`, spring và trigger distances. |
+| | `MobileDevToolRefreshLoadMore` | Wrapper độc lập cho scrollable: bật/tắt refresh và load more riêng, dùng indicator có sẵn hoặc custom builder/shimmer. |
 | **Cấu hình đăng ký từ host** | `MobileDevToolMenuItem`, `MobileDevToolPanel`, `MobileDevToolFeatureFlag`, `MobileDevToolHostAction` (trong `mobile_devtool_configuration.dart`) | Model host dùng để đăng ký tool/tab/toggle/action riêng của app vào `MobileDevToolConfiguration`. `MobileDevToolBuiltInIds` cho phép ẩn hoặc thay thế tool built-in. |
 | **Chi tiết vẽ (thường không cần import trực tiếp)** | `MobileDevToolDragTapDetector` | Gesture detector phân biệt tap/drag dùng cho bubble + toolbar kéo-thả. |
 
@@ -81,6 +82,30 @@ dependencies:
   mobile_devtool:
     path: ../mobile-devtool
 ```
+
+Ví dụ cấu hình ở app level và dùng widget tích hợp:
+
+```dart
+MobileDevToolRefreshConfiguration(
+  headerBuilder: () => const MaterialClassicHeader(),
+  footerBuilder: () => const ClassicFooter(),
+  child: MaterialApp(home: const HomePage()),
+)
+
+MobileDevToolRefreshLoadMore(
+  enableRefresh: true,
+  enableLoadMore: true,
+  onRefresh: () async => reloadFirstPage(),
+  onLoadMore: () async => fetchNextPage(), // true còn trang, false hết dữ liệu
+  loadMoreShimmerBuilder: (context) => const MyListShimmer(),
+  child: ListView.builder(itemBuilder: buildItem),
+)
+```
+
+`header`/`footer` của widget nhận trực tiếp các indicator của thư viện như
+`MaterialClassicHeader`, `ClassicFooter`, `CustomHeader`, `CustomFooter`.
+Nếu cần đọc trạng thái để tự vẽ, dùng `refreshBuilder` hoặc `loadMoreBuilder`;
+`loadMoreShimmerBuilder` chỉ thay nội dung khi footer ở trạng thái loading.
 
 Hai cách mount, cùng chrome bên dưới (`MobileDevToolChrome`):
 

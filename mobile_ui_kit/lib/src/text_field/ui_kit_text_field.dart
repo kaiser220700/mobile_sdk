@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitTextFieldType { text, password, phone, textarea, select }
@@ -149,9 +150,10 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
             tooltip: widget.label,
           );
     final prefix = widget.type == UiKitTextFieldType.phone
-        ? InkWell(
-            onTap: enabled ? widget.onDialCodePressed : null,
-            child: Padding(
+        ? UiKitPressable(
+            onPress: enabled ? widget.onDialCodePressed : null,
+            semanticsLabel: widget.dialCode,
+            builder: (context, states, child) => Padding(
               padding: EdgeInsets.only(
                 left: theme.spacingMd,
                 right: theme.spacingSm,

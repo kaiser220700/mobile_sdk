@@ -1,18 +1,7 @@
-// This showcase is part of the repository workspace and uses APIs excluded
-// from the published package surface.
-// ignore_for_file: implementation_imports
-
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:mobile_app_base/mobile_app_base.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
-import "package:mobile_devtool/src/mobile_devtool_chrome.dart";
-import "package:mobile_devtool/src/mobile_devtool_configuration.dart";
-import "package:mobile_devtool/src/mobile_devtool_json_formatter.dart";
-import "package:mobile_devtool/src/mobile_devtool_kv_table.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
-import "package:mobile_update/mobile_update.dart";
+import "package:mobile_sdk/mobile_sdk.dart";
 
 void main() => runApp(const MobileSdkExampleApp());
 
@@ -94,7 +83,7 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
         colorSchemeSeed: const Color(0xFF176B87),
         useMaterial3: true,
         extensions: const [
-          UiKitThemeData(
+          UiKitThemeData.fromDefaults(
             primary: Color(0xFF176B87),
             primaryBg: Color(0xFFE3F4F8),
             focusRing: Color(0xFF72C7D8),

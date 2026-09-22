@@ -7,10 +7,6 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:mobile_app_base/mobile_app_base.dart";
 import "package:mobile_devtool/mobile_devtool.dart";
-import "package:mobile_devtool/src/mobile_devtool_chrome.dart";
-import "package:mobile_devtool/src/mobile_devtool_configuration.dart";
-import "package:mobile_devtool/src/mobile_devtool_json_formatter.dart";
-import "package:mobile_devtool/src/mobile_devtool_kv_table.dart";
 
 /// Standalone preview app for the `mobile_devtool` package — mounts the SDK
 /// chrome (bubble + tool sheet) over a tiny demo screen so every built-in tool

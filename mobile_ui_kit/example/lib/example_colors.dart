@@ -35,7 +35,7 @@ class ExampleColors implements UiKitColorsContract {
     error: error ?? this.error,
   );
 
-  UiKitThemeData get theme => UiKitThemeData(
+  UiKitThemeData get theme => UiKitThemeData.fromDefaults(
     primary: primary,
     primaryBg: _tint(primary, .88),
     surface: surface,

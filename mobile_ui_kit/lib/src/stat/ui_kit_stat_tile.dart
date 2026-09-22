@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitStatTrend { up, down, neutral }
@@ -83,23 +84,21 @@ class UiKitStatTile extends StatelessWidget {
         ],
       ),
     );
-    return Semantics(
-      label: "$label: $value",
-      button: onTap != null,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surface,
-          border: Border.all(color: theme.border),
-          borderRadius: BorderRadius.circular(theme.radiusLg),
-        ),
-        child: onTap == null
-            ? content
-            : InkWell(
-                onTap: onTap,
-                borderRadius: BorderRadius.circular(theme.radiusLg),
-                child: content,
-              ),
+    final tile = Container(
+      decoration: BoxDecoration(
+        color: theme.surface,
+        border: Border.all(color: theme.border),
+        borderRadius: BorderRadius.circular(theme.radiusLg),
       ),
+      child: content,
+    );
+    if (onTap == null) {
+      return Semantics(label: "$label: $value", child: tile);
+    }
+    return UiKitPressable(
+      onPress: onTap,
+      semanticsLabel: "$label: $value",
+      builder: (context, states, child) => tile,
     );
   }
 }

@@ -17,12 +17,42 @@ typedef MobileDevToolCurlBuilder =
 typedef MobileDevToolNetworkDetailOpener =
     void Function(MobileDevToolNetworkEntry entry);
 
+/// Visual configuration for the All/OK/Err/Pend network-status filters.
+///
+/// The defaults preserve the SDK's existing amber selection. Hosts can supply
+/// their own style to align the developer tool with their product tokens.
+@immutable
+class MobileDevToolNetworkStatusFilterStyle {
+  const MobileDevToolNetworkStatusFilterStyle({
+    this.selectedGradient = defaultSelectedGradient,
+    this.selectedForegroundColor,
+    this.selectedBorderColor,
+    this.unselectedBackgroundColor,
+    this.unselectedForegroundColor,
+    this.unselectedBorderColor,
+  });
+
+  static const Gradient defaultSelectedGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [Color(0xFFFFE082), Color(0xFFFFB300)],
+  );
+
+  final Gradient selectedGradient;
+  final Color? selectedForegroundColor;
+  final Color? selectedBorderColor;
+  final Color? unselectedBackgroundColor;
+  final Color? unselectedForegroundColor;
+  final Color? unselectedBorderColor;
+}
+
 class MobileDevToolNetworkLogPanel extends StatefulWidget {
   const MobileDevToolNetworkLogPanel({
     required this.controller,
     this.kind,
     this.curlBuilder,
     this.onOpenDetail,
+    this.statusFilterStyle = const MobileDevToolNetworkStatusFilterStyle(),
     super.key,
   });
 
@@ -30,6 +60,7 @@ class MobileDevToolNetworkLogPanel extends StatefulWidget {
   final MobileDevToolNetworkKind? kind;
   final MobileDevToolCurlBuilder? curlBuilder;
   final MobileDevToolNetworkDetailOpener? onOpenDetail;
+  final MobileDevToolNetworkStatusFilterStyle statusFilterStyle;
 
   @override
   State<MobileDevToolNetworkLogPanel> createState() =>
@@ -65,7 +96,11 @@ class _MobileDevToolNetworkLogPanelState
 
         return Column(
           children: [
-            _StatusFilterTabs(logs: kindLogs, filter: _statusFilter),
+            _StatusFilterTabs(
+              logs: kindLogs,
+              filter: _statusFilter,
+              style: widget.statusFilterStyle,
+            ),
             Expanded(
               child: Stack(
                 children: [
@@ -119,10 +154,15 @@ class _MobileDevToolNetworkLogPanelState
 }
 
 class _StatusFilterTabs extends StatelessWidget {
-  const _StatusFilterTabs({required this.logs, required this.filter});
+  const _StatusFilterTabs({
+    required this.logs,
+    required this.filter,
+    required this.style,
+  });
 
   final List<MobileDevToolNetworkEntry> logs;
   final MobileDevToolNetworkStatusFilter<MobileDevToolNetworkStatus> filter;
+  final MobileDevToolNetworkStatusFilterStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -146,21 +186,25 @@ class _StatusFilterTabs extends StatelessWidget {
             label: Text("All (${logs.length})"),
             selected: filter.value == null,
             onTap: () => filter.value = null,
+            style: style,
           ),
           _StatusFilterChip(
             label: Text("OK ($successCount)"),
             selected: filter.value == MobileDevToolNetworkStatus.success,
             onTap: () => filter.value = MobileDevToolNetworkStatus.success,
+            style: style,
           ),
           _StatusFilterChip(
             label: Text("Err ($errorCount)"),
             selected: filter.value == MobileDevToolNetworkStatus.error,
             onTap: () => filter.value = MobileDevToolNetworkStatus.error,
+            style: style,
           ),
           _StatusFilterChip(
             label: Text("Pend ($pendingCount)"),
             selected: filter.value == MobileDevToolNetworkStatus.pending,
             onTap: () => filter.value = MobileDevToolNetworkStatus.pending,
+            style: style,
           ),
         ],
       ),
@@ -173,17 +217,22 @@ class _StatusFilterChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    required this.style,
   });
 
   final Widget label;
   final bool selected;
   final VoidCallback onTap;
+  final MobileDevToolNetworkStatusFilterStyle style;
 
   static final _pillBorderRadius = BorderRadius.circular(999);
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final foregroundColor = selected
+        ? style.selectedForegroundColor
+        : style.unselectedForegroundColor;
 
     return Semantics(
       button: true,
@@ -192,25 +241,30 @@ class _StatusFilterChip extends StatelessWidget {
         color: Colors.transparent,
         child: Ink(
           decoration: BoxDecoration(
-            border: selected ? null : Border.all(color: colorScheme.outline),
+            border: selected
+                ? style.selectedBorderColor == null
+                      ? null
+                      : Border.all(color: style.selectedBorderColor!)
+                : Border.all(
+                    color: style.unselectedBorderColor ?? colorScheme.outline,
+                  ),
             borderRadius: _pillBorderRadius,
-            color: selected ? null : colorScheme.surface,
-            gradient: selected
-                ? const LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [Color(0xFFFFE082), Color(0xFFFFB300)],
-                  )
-                : null,
+            color: selected
+                ? null
+                : style.unselectedBackgroundColor ?? colorScheme.surface,
+            gradient: selected ? style.selectedGradient : null,
           ),
           child: InkWell(
             borderRadius: _pillBorderRadius,
             onTap: onTap,
             splashFactory: NoSplash.splashFactory,
             overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              child: label,
+            child: DefaultTextStyle.merge(
+              style: TextStyle(color: foregroundColor),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                child: label,
+              ),
             ),
           ),
         ),

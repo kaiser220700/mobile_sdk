@@ -35,7 +35,7 @@ Override the runtime tokens from the host app:
 ```dart
 ThemeData(
   extensions: const [
-    UiKitThemeData(
+    UiKitThemeData.fromDefaults(
       primary: Color(0xFF176B87),
       primaryBg: Color(0xFFE3F4F8),
     ),
@@ -50,12 +50,32 @@ The fallback theme is intentionally neutral. Product-specific palettes, such
 as an ACN theme, belong in the host app or a separate theme package that
 depends on `mobile_ui_kit`.
 
+## Motion and compact layout primitives
+
+The kit also includes dependency-free motion and composition primitives:
+`UiKitFadeMotion`, `UiKitBouncingMotion`, `UiKitShimmer`, `UiKitFlipCounter`,
+`UiKitAvatarStack`, `UiKitDashedBorder`, and `UiKitQuantityStepper`. They keep
+content and colors owned by the host, while supplying the behavior and
+accessibility wiring shared by mobile experiences.
+
+For host-owned asynchronous or platform work, use `UiKitAsyncSuggestionField`,
+`UiKitFileAttachmentTile`, `UiKitMediaPicker`, and `UiKitCountdown`. These
+widgets expose only UI intents: callers still own searching, camera/file
+permissions, uploads, downloads, persistence, and localization.
+
+`UiKitPressable` and the built-in interactive components use a leading-edge
+tap throttle of 300 ms by default: the first tap runs immediately and rapid
+duplicates are ignored. Set `tapThrottleDuration: Duration.zero` on a direct
+`UiKitPressable` when a control intentionally supports rapid repeated taps.
+
 ## Component map
 
 | Stable id | HTML | Flutter |
 | --- | --- | --- |
 | `button` | `<button>` | `UiKitButton` |
 | `status-pill` | `<span data-status>` | `UiKitBadge` (`text`, `textIcon`, `icon`) |
+| `avatar-stack` | `<div class="avatar-stack">` | `UiKitAvatarStack` |
+| `dashed-border` | `<div class="dashed-border">` | `UiKitDashedBorder` |
 | `text-field` | `<input>` | `UiKitTextField` |
 | `select-field` | `<select>` | `UiKitSelectField` |
 | `filter-chip` | `<button role="checkbox">` | `UiKitFilterChip` |
@@ -71,6 +91,8 @@ depends on `mobile_ui_kit`.
 | `key-value` | `<dl>` | `UiKitKeyValue` |
 | `timeline` | `<ol data-timeline>` | `UiKitTimeline` |
 | `stepper` | `<ol data-stepper>` | `UiKitStepper` |
+| `quantity-stepper` | `<input type="number">` | `UiKitQuantityStepper` |
+| motion | `[data-enter]`, `[data-bounce]`, shimmer, output | `UiKitFadeMotion`, `UiKitBouncingMotion`, `UiKitShimmer`, `UiKitFlipCounter` |
 
 The JSON file is the complete list, including foundation, layout, navigation,
 disclosure, motion and overlay primitives.

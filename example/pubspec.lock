@@ -132,28 +132,35 @@ packages:
     source: hosted
     version: "1.18.3"
   mobile_app_base:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "../mobile_app_base"
       relative: true
     source: path
     version: "0.1.0"
   mobile_devtool:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "../mobile-devtool"
       relative: true
     source: path
     version: "0.1.0"
-  mobile_ui_kit:
+  mobile_sdk:
     dependency: "direct main"
+    description:
+      path: "../mobile_sdk"
+      relative: true
+    source: path
+    version: "0.1.0"
+  mobile_ui_kit:
+    dependency: transitive
     description:
       path: "../mobile_ui_kit"
       relative: true
     source: path
     version: "0.1.0"
   mobile_update:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "../mobile_update"
       relative: true
@@ -167,6 +174,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  pull_to_refresh_flutter3:
+    dependency: transitive
+    description:
+      name: pull_to_refresh_flutter3
+      sha256: "37a88d901cca9a46dbdd46523de8e7b35a3e58634a0e775b1a5904981f69b353"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   skeletonizer:
     dependency: transitive
     description:

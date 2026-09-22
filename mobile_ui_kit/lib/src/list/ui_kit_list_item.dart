@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "package:mobile_ui_kit/src/icon/ui_kit_icon.dart";
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitListItemSize { md, lg }
@@ -11,6 +12,8 @@ class UiKitListItem extends StatelessWidget {
   const UiKitListItem({
     required this.title,
     this.description,
+    this.titleMaxLines = 1,
+    this.descriptionMaxLines = 1,
     this.size,
     this.leading,
     this.trailing,
@@ -25,6 +28,8 @@ class UiKitListItem extends StatelessWidget {
 
   final String title;
   final String? description;
+  final int? titleMaxLines;
+  final int? descriptionMaxLines;
   final UiKitListItemSize? size;
   final Widget? leading;
   final Widget? trailing;
@@ -72,8 +77,10 @@ class UiKitListItem extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: titleMaxLines,
+                      overflow: titleMaxLines == null
+                          ? TextOverflow.clip
+                          : TextOverflow.ellipsis,
                       style: theme.bodyMedium.copyWith(
                         color: isDisabled ? theme.textDisabled : theme.text,
                       ),
@@ -82,8 +89,10 @@ class UiKitListItem extends StatelessWidget {
                       SizedBox(height: theme.spacing2xs),
                       Text(
                         description!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: descriptionMaxLines,
+                        overflow: descriptionMaxLines == null
+                            ? TextOverflow.clip
+                            : TextOverflow.ellipsis,
                         style: theme.caption.copyWith(
                           color: isDisabled ? theme.textDisabled : theme.text,
                         ),
@@ -107,19 +116,12 @@ class UiKitListItem extends StatelessWidget {
       ],
     );
     if (onTap == null) return row;
-    return Semantics(
-      button: true,
+    return UiKitPressable(
+      onPress: isDisabled ? null : onTap,
       selected: selected,
-      enabled: !isDisabled,
-      label: semanticLabel,
-      child: Opacity(
-        opacity: isDisabled ? .4 : 1,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: isDisabled ? null : onTap,
-          child: row,
-        ),
-      ),
+      semanticsLabel: semanticLabel ?? title,
+      builder: (context, states, child) =>
+          Opacity(opacity: isDisabled ? .4 : 1, child: row),
     );
   }
 }

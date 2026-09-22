@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 
 import "package:mobile_ui_kit/src/pressable/ui_kit_pressable_state.dart";
@@ -22,6 +24,8 @@ class UiKitPressable extends StatefulWidget {
     this.onLongPress,
     this.child,
     this.selected = false,
+    this.checked,
+    this.toggled,
     this.hitSlop = EdgeInsets.zero,
     this.semanticsLabel,
     this.excludeSemantics = false,
@@ -29,14 +33,20 @@ class UiKitPressable extends StatefulWidget {
     this.mouseCursor,
     this.autofocus = false,
     this.focusNode,
+    this.tapThrottleDuration = const Duration(milliseconds: 300),
     super.key,
-  });
+  }) : assert(
+         tapThrottleDuration >= Duration.zero,
+         "tapThrottleDuration must not be negative.",
+       );
 
   final UiKitPressableBuilder builder;
   final VoidCallback? onPress;
   final VoidCallback? onLongPress;
   final Widget? child;
   final bool selected;
+  final bool? checked;
+  final bool? toggled;
   final EdgeInsets hitSlop;
   final String? semanticsLabel;
   final bool excludeSemantics;
@@ -44,6 +54,13 @@ class UiKitPressable extends StatefulWidget {
   final MouseCursor? mouseCursor;
   final bool autofocus;
   final FocusNode? focusNode;
+
+  /// Minimum interval between accepted taps.
+  ///
+  /// The first tap is delivered immediately. Further taps during this
+  /// interval are ignored. Set to [Duration.zero] for controls that
+  /// intentionally support rapid repeated taps.
+  final Duration tapThrottleDuration;
 
   bool get _disabled => onPress == null && onLongPress == null;
 
@@ -54,6 +71,8 @@ class UiKitPressable extends StatefulWidget {
 class _UiKitPressableState extends State<UiKitPressable> {
   bool _pressed = false;
   bool _hovered = false;
+  bool _tapThrottled = false;
+  Timer? _tapThrottleTimer;
 
   void _setPressed(bool value) {
     if (_pressed != value) setState(() => _pressed = value);
@@ -61,6 +80,28 @@ class _UiKitPressableState extends State<UiKitPressable> {
 
   void _setHovered(bool value) {
     if (_hovered != value) setState(() => _hovered = value);
+  }
+
+  void _handleTap() {
+    final onPress = widget.onPress;
+    if (onPress == null || _tapThrottled) return;
+
+    final duration = widget.tapThrottleDuration;
+    if (duration > Duration.zero) {
+      _tapThrottled = true;
+      _tapThrottleTimer?.cancel();
+      _tapThrottleTimer = Timer(duration, () {
+        _tapThrottled = false;
+        _tapThrottleTimer = null;
+      });
+    }
+    onPress();
+  }
+
+  @override
+  void dispose() {
+    _tapThrottleTimer?.cancel();
+    super.dispose();
   }
 
   Set<UiKitPressableState> get _states => {
@@ -78,6 +119,8 @@ class _UiKitPressableState extends State<UiKitPressable> {
       button: true,
       enabled: !disabled,
       selected: widget.selected,
+      checked: widget.checked,
+      toggled: widget.toggled,
       label: widget.semanticsLabel,
       excludeSemantics: widget.excludeSemantics,
       child: MouseRegion(
@@ -91,7 +134,7 @@ class _UiKitPressableState extends State<UiKitPressable> {
           onTapDown: disabled ? null : (_) => _setPressed(true),
           onTapCancel: disabled ? null : () => _setPressed(false),
           onTapUp: disabled ? null : (_) => _setPressed(false),
-          onTap: disabled ? null : widget.onPress,
+          onTap: disabled ? null : _handleTap,
           onLongPress: disabled ? null : widget.onLongPress,
           child: Padding(
             padding: widget.hitSlop,

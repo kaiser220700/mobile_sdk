@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 @immutable
@@ -134,10 +135,10 @@ class _StepRow extends StatelessWidget {
       height: isLast ? null : 64,
       child: onTap == null
           ? row
-          : InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(theme.radiusSm),
-              child: row,
+          : UiKitPressable(
+              onPress: onTap,
+              semanticsLabel: step.title,
+              builder: (context, states, child) => row,
             ),
     );
   }

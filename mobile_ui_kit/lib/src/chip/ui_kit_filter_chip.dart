@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable_state.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 /// Toggle chip for filtering a list or table.
@@ -37,45 +39,41 @@ class UiKitFilterChip extends StatelessWidget {
         : selected
         ? theme.primaryBg
         : theme.surface;
-    return Semantics(
-      button: true,
+    return UiKitPressable(
+      onPress: canTap ? () => onSelected!(!selected) : null,
+      selected: selected,
       toggled: selected,
-      enabled: canTap,
-      label: semanticsLabel ?? label,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: canTap ? () => onSelected!(!selected) : null,
-          borderRadius: BorderRadius.circular(theme.radiusFull),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            constraints: BoxConstraints(minHeight: theme.touchMinTarget),
-            padding: EdgeInsets.symmetric(horizontal: theme.spacingMd),
-            decoration: BoxDecoration(
-              color: background,
-              border: Border.all(
-                color: selected ? theme.primary : theme.border,
-              ),
-              borderRadius: BorderRadius.circular(theme.radiusFull),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (selected && selectedIcon != null)
-                  Icon(selectedIcon, size: 16, color: foreground)
-                else if (leadingIcon != null)
-                  Icon(leadingIcon, size: 16, color: foreground),
-                if ((selected && selectedIcon != null) || leadingIcon != null)
-                  SizedBox(width: theme.spacingXs),
-                Text(
-                  label,
-                  style: theme.bodyMedium.copyWith(color: foreground),
-                ),
-              ],
-            ),
+      semanticsLabel: semanticsLabel ?? label,
+      builder: (context, states, child) {
+        final pressed = states.contains(UiKitPressableState.pressed);
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          constraints: BoxConstraints(minHeight: theme.touchMinTarget),
+          padding: EdgeInsets.symmetric(horizontal: theme.spacingMd),
+          decoration: BoxDecoration(
+            color: pressed && canTap
+                ? Color.alphaBlend(
+                    theme.primary.withValues(alpha: .08),
+                    background,
+                  )
+                : background,
+            border: Border.all(color: selected ? theme.primary : theme.border),
+            borderRadius: BorderRadius.circular(theme.radiusFull),
           ),
-        ),
-      ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selected && selectedIcon != null)
+                Icon(selectedIcon, size: 16, color: foreground)
+              else if (leadingIcon != null)
+                Icon(leadingIcon, size: 16, color: foreground),
+              if ((selected && selectedIcon != null) || leadingIcon != null)
+                SizedBox(width: theme.spacingXs),
+              Text(label, style: theme.bodyMedium.copyWith(color: foreground)),
+            ],
+          ),
+        );
+      },
     );
   }
 }

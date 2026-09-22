@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitButtonVariant {
@@ -204,42 +205,32 @@ class UiKitButton extends StatelessWidget {
             ],
           );
 
-    final button = ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: size == UiKitButtonSize.sm ? 40 : 44,
-        minHeight: _height,
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.background,
-          border: colors.hasBorder
-              ? Border.all(color: colors.border, width: 1.5)
-              : null,
-          borderRadius: BorderRadius.circular(theme.radiusFull),
+    final button = UiKitPressable(
+      onPress: _isDisabled ? null : onPressed,
+      semanticsLabel: semanticsLabel ?? label,
+      builder: (context, states, child) => ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: size == UiKitButtonSize.sm ? 40 : 44,
+          minHeight: _height,
         ),
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            onTap: _isDisabled ? null : onPressed,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.background,
+            border: colors.hasBorder
+                ? Border.all(color: colors.border, width: 1.5)
+                : null,
             borderRadius: BorderRadius.circular(theme.radiusFull),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: _horizontalPadding(theme),
-              ),
-              child: Center(child: content),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: _horizontalPadding(theme),
             ),
+            child: Center(child: content),
           ),
         ),
       ),
     );
 
-    return Semantics(
-      button: true,
-      enabled: !_isDisabled,
-      label: semanticsLabel ?? label,
-      child: fullWidth
-          ? SizedBox(width: double.infinity, child: button)
-          : button,
-    );
+    return fullWidth ? SizedBox(width: double.infinity, child: button) : button;
   }
 }

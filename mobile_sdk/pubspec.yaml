@@ -1,0 +1,26 @@
+name: mobile_sdk
+description: Unified Flutter SDK entry point for shared mobile app capabilities.
+publish_to: none
+version: 0.2.0
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  mobile_app_base:
+    path: ../mobile_app_base
+  mobile_devtool:
+    path: ../mobile-devtool
+  mobile_ui_kit:
+    path: ../mobile_ui_kit
+  mobile_update:
+    path: ../mobile_update
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitCheckboxSize { sm, md, lg }
@@ -85,16 +86,11 @@ class UiKitCheckbox extends StatelessWidget {
           ),
       ],
     );
-    return Semantics(
-      container: true,
+    return UiKitPressable(
+      onPress: _disabled ? null : () => onChanged!(!value),
       checked: selected,
-      enabled: !_disabled,
-      label: semanticsLabel ?? label,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _disabled ? null : () => onChanged!(!value),
-        child: content,
-      ),
+      semanticsLabel: semanticsLabel ?? label,
+      builder: (context, states, child) => content,
     );
   }
 

@@ -24,7 +24,10 @@ void main() {
   });
 
   testWidgets("reads the host app ThemeExtension", (tester) async {
-    const customTheme = UiKitThemeData(primary: Colors.indigo, radiusMd: 20);
+    const customTheme = UiKitThemeData.fromDefaults(
+      primary: Colors.indigo,
+      radiusMd: 20,
+    );
     UiKitThemeData? resolved;
 
     await tester.pumpWidget(
@@ -48,7 +51,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(
-          extensions: const [UiKitThemeData(primary: Colors.indigo)],
+          extensions: const [
+            UiKitThemeData.fromDefaults(primary: Colors.indigo),
+          ],
         ),
         home: UiKitButton.text(onPressed: () {}, label: "Continue"),
       ),

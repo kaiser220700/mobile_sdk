@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 /// Select field primitive. The host owns the option sheet/menu and feeds the
@@ -78,46 +79,41 @@ class UiKitSelectField extends StatelessWidget {
         ],
       ),
     );
-    return Semantics(
-      button: true,
-      enabled: enabled && onTap != null,
-      label: semanticsLabel ?? "$label: $displayValue",
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text.rich(
-            TextSpan(
-              text: label,
-              style: theme.bodyMedium.copyWith(
-                color: enabled ? theme.text : theme.textDisabled,
-              ),
-              children: isRequired
-                  ? [
-                      TextSpan(
-                        text: " *",
-                        style: TextStyle(color: theme.error),
-                      ),
-                    ]
-                  : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text.rich(
+          TextSpan(
+            text: label,
+            style: theme.bodyMedium.copyWith(
+              color: enabled ? theme.text : theme.textDisabled,
             ),
+            children: isRequired
+                ? [
+                    TextSpan(
+                      text: " *",
+                      style: TextStyle(color: theme.error),
+                    ),
+                  ]
+                : null,
           ),
+        ),
+        SizedBox(height: theme.spacingXs),
+        UiKitPressable(
+          onPress: enabled ? onTap : null,
+          semanticsLabel: semanticsLabel ?? "$label: $displayValue",
+          builder: (context, states, child) => field,
+        ),
+        if (errorText != null || helperText != null) ...[
           SizedBox(height: theme.spacingXs),
-          GestureDetector(
-            onTap: enabled ? onTap : null,
-            behavior: HitTestBehavior.opaque,
-            child: field,
-          ),
-          if (errorText != null || helperText != null) ...[
-            SizedBox(height: theme.spacingXs),
-            Text(
-              errorText ?? helperText!,
-              style: theme.caption.copyWith(
-                color: errorText == null ? theme.textMuted : theme.error,
-              ),
+          Text(
+            errorText ?? helperText!,
+            style: theme.caption.copyWith(
+              color: errorText == null ? theme.textMuted : theme.error,
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }

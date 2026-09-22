@@ -1,5 +1,5 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_app_base/mobile_app_base.dart";
+import "package:mobile_sdk/mobile_sdk.dart";
 
 void main() {
   test("production never enables developer tools", () {
