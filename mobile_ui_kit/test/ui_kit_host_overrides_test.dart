@@ -176,6 +176,37 @@ void main() {
     expect(find.byType(Scaffold), findsOneWidget);
     expect(tester.getSize(find.byKey(const Key("content"))).height, 10);
   });
+
+  testWidgets("renders a host-styled filter chip without a selected icon", (
+    tester,
+  ) async {
+    var selected = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: UiKitFilterChip(
+            label: "All",
+            trailingText: "3",
+            selected: selected,
+            selectedIcon: null,
+            selectedBackgroundColor: Colors.blue,
+            selectedForegroundColor: Colors.white,
+            height: 36,
+            touchHeight: 44,
+            animationDuration: Duration.zero,
+            tapThrottleDuration: Duration.zero,
+            onSelected: (value) => selected = value,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("All"), findsOneWidget);
+    expect(find.text("3"), findsOneWidget);
+    expect(find.byIcon(Icons.check), findsNothing);
+    await tester.tap(find.text("All"));
+    expect(selected, isFalse);
+  });
 }
 
 void _noop() {}
