@@ -5,6 +5,8 @@ import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 enum UiKitStatTrend { up, down, neutral }
 
+enum UiKitStatTileLayout { labelFirst, valueFirst }
+
 /// Compact metric tile for dashboards and summary screens.
 class UiKitStatTile extends StatelessWidget {
   const UiKitStatTile({
@@ -15,6 +17,12 @@ class UiKitStatTile extends StatelessWidget {
     this.trend,
     this.trendLabel,
     this.onTap,
+    this.layout = UiKitStatTileLayout.labelFirst,
+    this.valueStyle,
+    this.labelStyle,
+    this.valueColor,
+    this.minHeight,
+    this.showBorder = true,
     super.key,
   });
 
@@ -25,6 +33,12 @@ class UiKitStatTile extends StatelessWidget {
   final UiKitStatTrend? trend;
   final String? trendLabel;
   final VoidCallback? onTap;
+  final UiKitStatTileLayout layout;
+  final TextStyle? valueStyle;
+  final TextStyle? labelStyle;
+  final Color? valueColor;
+  final double? minHeight;
+  final bool showBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +48,32 @@ class UiKitStatTile extends StatelessWidget {
       UiKitStatTrend.down => theme.error,
       null || UiKitStatTrend.neutral => theme.textMuted,
     };
+    final labelView = Text(
+      label,
+      style: labelStyle ?? theme.bodyMedium.copyWith(color: theme.textMuted),
+    );
+    final valueView = Text(
+      value,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: (valueStyle ?? theme.title.copyWith(fontSize: 24)).copyWith(
+        color: valueColor,
+      ),
+    );
+    final header = Row(
+      children: [
+        Expanded(child: labelView),
+        if (icon != null) Icon(icon, color: theme.primary),
+      ],
+    );
     final content = Padding(
       padding: EdgeInsets.all(theme.spacingLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: theme.bodyMedium.copyWith(color: theme.textMuted),
-                ),
-              ),
-              if (icon != null) Icon(icon, color: theme.primary),
-            ],
-          ),
+          if (layout == UiKitStatTileLayout.labelFirst) header else valueView,
           SizedBox(height: theme.spacingSm),
-          Text(value, style: theme.title.copyWith(fontSize: 24)),
+          if (layout == UiKitStatTileLayout.labelFirst) valueView else header,
           if (trendLabel != null || description != null) ...[
             SizedBox(height: theme.spacingXs),
             Row(
@@ -84,13 +106,18 @@ class UiKitStatTile extends StatelessWidget {
         ],
       ),
     );
-    final tile = Container(
-      decoration: BoxDecoration(
-        color: theme.surface,
-        border: Border.all(color: theme.border),
-        borderRadius: BorderRadius.circular(theme.radiusLg),
+    final tile = ConstrainedBox(
+      constraints: minHeight == null
+          ? const BoxConstraints()
+          : BoxConstraints(minHeight: minHeight!),
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.surface,
+          border: showBorder ? Border.all(color: theme.border) : null,
+          borderRadius: BorderRadius.circular(theme.radiusLg),
+        ),
+        child: content,
       ),
-      child: content,
     );
     if (onTap == null) {
       return Semantics(label: "$label: $value", child: tile);

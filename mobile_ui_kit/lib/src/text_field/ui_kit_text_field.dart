@@ -23,6 +23,7 @@ class UiKitTextField extends StatefulWidget {
     this.suffixText,
     this.onIconRightPressed,
     this.onChanged,
+    this.onSubmitted,
     this.onTap,
     this.selectOpen = false,
     this.focusNode,
@@ -41,6 +42,7 @@ class UiKitTextField extends StatefulWidget {
     this.keyboardType,
     this.inputFormatters,
     this.labelColor,
+    this.inputHeight,
     super.key,
   }) : assert(
          type != UiKitTextFieldType.select || onTap != null,
@@ -49,6 +51,10 @@ class UiKitTextField extends StatefulWidget {
        assert(
          minLines > 0 && maxLines >= minLines,
          "maxLines must be >= minLines and both positive.",
+       ),
+       assert(
+         inputHeight == null || type != UiKitTextFieldType.textarea,
+         "inputHeight is only available for single-line fields.",
        );
 
   final TextEditingController controller;
@@ -63,6 +69,7 @@ class UiKitTextField extends StatefulWidget {
   final String? suffixText;
   final VoidCallback? onIconRightPressed;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
   final bool selectOpen;
   final FocusNode? focusNode;
@@ -81,6 +88,7 @@ class UiKitTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final Color? labelColor;
+  final double? inputHeight;
 
   @override
   State<UiKitTextField> createState() => _UiKitTextFieldState();
@@ -183,10 +191,12 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
       suffixIcon: suffix,
       suffixText: widget.suffixText,
       suffixStyle: theme.body.copyWith(color: theme.textMuted),
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: theme.spacingMd,
-        vertical: theme.spacingMd,
-      ),
+      contentPadding: widget.inputHeight == null
+          ? EdgeInsets.symmetric(
+              horizontal: theme.spacingMd,
+              vertical: theme.spacingMd,
+            )
+          : EdgeInsets.symmetric(horizontal: theme.spacingMd),
       enabledBorder: _border(theme, _borderColor(theme)),
       focusedBorder: _border(theme, _borderColor(theme), width: 2),
       disabledBorder: _border(theme, theme.border),
@@ -216,34 +226,41 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
           ),
         ),
         SizedBox(height: theme.spacingXs),
-        TextField(
-          controller: widget.controller,
-          focusNode: widget.focusNode,
-          enabled: enabled,
-          readOnly: widget.type == UiKitTextFieldType.select,
-          onTap: widget.onTap,
-          onChanged: widget.onChanged,
-          obscureText: _obscure,
-          maxLength: widget.maxLength,
-          minLines: _textarea ? widget.minLines : 1,
-          maxLines: _textarea ? widget.maxLines : 1,
-          keyboardType:
-              widget.keyboardType ??
-              (widget.type == UiKitTextFieldType.phone
-                  ? TextInputType.phone
-                  : null),
-          textInputAction: widget.textInputAction,
-          inputFormatters: widget.inputFormatters,
-          autofillHints: widget.autofillHints,
-          decoration: widget.type == UiKitTextFieldType.select
-              ? decoration.copyWith(
-                  suffixIcon: Icon(
-                    widget.selectOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                  ),
-                )
-              : decoration,
+        SizedBox(
+          height: widget.inputHeight,
+          child: TextField(
+            controller: widget.controller,
+            focusNode: widget.focusNode,
+            enabled: enabled,
+            readOnly: widget.type == UiKitTextFieldType.select,
+            onTap: widget.onTap,
+            onChanged: widget.onChanged,
+            onSubmitted: widget.onSubmitted,
+            obscureText: _obscure,
+            maxLength: widget.maxLength,
+            minLines: _textarea ? widget.minLines : 1,
+            maxLines: _textarea ? widget.maxLines : 1,
+            keyboardType:
+                widget.keyboardType ??
+                (widget.type == UiKitTextFieldType.phone
+                    ? TextInputType.phone
+                    : null),
+            textInputAction: widget.textInputAction,
+            inputFormatters: widget.inputFormatters,
+            autofillHints: widget.autofillHints,
+            textAlignVertical: widget.inputHeight == null
+                ? null
+                : TextAlignVertical.center,
+            decoration: widget.type == UiKitTextFieldType.select
+                ? decoration.copyWith(
+                    suffixIcon: Icon(
+                      widget.selectOpen
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                    ),
+                  )
+                : decoration,
+          ),
         ),
       ],
     );

@@ -4,6 +4,21 @@ Reusable Flutter interaction and overlay primitives. Components own behavior
 and accessibility semantics; the host app owns composition, content and visual
 tokens through `UiKitThemeData`.
 
+## 0.2.1 host overrides
+
+This release keeps every existing default unchanged and adds opt-in seams for
+host design systems:
+
+- `UiKitButtonLoadingBehavior.showBeforeContent` keeps an action label visible
+  while its request is pending.
+- `UiKitTextField` accepts a fixed `inputHeight` for single-line controls and
+  forwards `onSubmitted` from the platform keyboard.
+- `UiKitBadge` can render a leading status dot and accept bounded dimensions.
+- `UiKitKeyValue` supports a stacked label/value layout with optional leading
+  content, divider and empty-value copy.
+- `UiKitStatTile` supports value-first hierarchy, visual overrides and a
+  borderless compact tile.
+
 ## Interactive preview
 
 The standalone preview is also a cross-platform reference for the HTML team:

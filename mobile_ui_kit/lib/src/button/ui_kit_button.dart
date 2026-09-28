@@ -15,6 +15,13 @@ enum UiKitButtonVariant {
 
 enum UiKitButtonSize { sm, md, lg }
 
+/// Controls whether loading replaces the button content or is shown before it.
+///
+/// [replaceContent] preserves the historical kit appearance. Hosts whose
+/// design system requires the action label to remain readable while submitting
+/// can opt into [showBeforeContent].
+enum UiKitButtonLoadingBehavior { replaceContent, showBeforeContent }
+
 /// Basic visual button with app-overridable theme tokens.
 class UiKitButton extends StatelessWidget {
   const UiKitButton({
@@ -26,6 +33,8 @@ class UiKitButton extends StatelessWidget {
     this.iconRight,
     this.fullWidth = false,
     this.loading = false,
+    this.loadingBehavior = UiKitButtonLoadingBehavior.replaceContent,
+    this.loadingIndicator,
     this.disabled = false,
     this.semanticsLabel,
     super.key,
@@ -82,10 +91,17 @@ class UiKitButton extends StatelessWidget {
   final IconData? iconRight;
   final bool fullWidth;
   final bool loading;
+  final UiKitButtonLoadingBehavior loadingBehavior;
+  final Widget? loadingIndicator;
   final bool disabled;
   final String? semanticsLabel;
 
   bool get _isDisabled => disabled || loading || onPressed == null;
+
+  bool get _usesDisabledColors =>
+      disabled ||
+      onPressed == null ||
+      (loading && loadingBehavior == UiKitButtonLoadingBehavior.replaceContent);
 
   double get _height => switch (size) {
     UiKitButtonSize.sm => 32,
@@ -111,7 +127,7 @@ class UiKitButton extends StatelessWidget {
   ({Color background, Color foreground, Color border, bool hasBorder}) _colors(
     UiKitThemeData theme,
   ) {
-    if (_isDisabled) {
+    if (_usesDisabledColors) {
       return (
         background:
             variant == UiKitButtonVariant.ghost ||
@@ -177,33 +193,47 @@ class UiKitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final colors = _colors(theme);
-    final content = loading
-        ? SizedBox.square(
-            dimension: _iconSize,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: colors.foreground,
-            ),
-          )
-        : Row(
+    final indicator =
+        loadingIndicator ??
+        SizedBox.square(
+          dimension: _iconSize,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: colors.foreground,
+          ),
+        );
+    final regularContent = Row(
+      mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (iconLeft != null)
+          Icon(iconLeft, size: _iconSize, color: colors.foreground),
+        if (iconLeft != null && label != null) SizedBox(width: theme.spacingSm),
+        if (label != null)
+          Text(
+            label!,
+            style: _textStyle(theme).copyWith(color: colors.foreground),
+          ),
+        if (iconRight != null && label != null)
+          SizedBox(width: theme.spacingSm),
+        if (iconRight != null)
+          Icon(iconRight, size: _iconSize, color: colors.foreground),
+      ],
+    );
+    final content =
+        loading && loadingBehavior == UiKitButtonLoadingBehavior.replaceContent
+        ? indicator
+        : loading
+        ? Row(
             mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (iconLeft != null)
-                Icon(iconLeft, size: _iconSize, color: colors.foreground),
-              if (iconLeft != null && label != null)
-                SizedBox(width: theme.spacingSm),
-              if (label != null)
-                Text(
-                  label!,
-                  style: _textStyle(theme).copyWith(color: colors.foreground),
-                ),
-              if (iconRight != null && label != null)
-                SizedBox(width: theme.spacingSm),
-              if (iconRight != null)
-                Icon(iconRight, size: _iconSize, color: colors.foreground),
+              indicator,
+              SizedBox(width: theme.spacingSm),
+              regularContent,
             ],
-          );
+          )
+        : regularContent;
 
     final button = UiKitPressable(
       onPress: _isDisabled ? null : onPressed,

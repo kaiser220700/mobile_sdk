@@ -16,13 +16,25 @@ class UiKitBadge extends StatelessWidget {
     this.count,
     this.maxCount = 99,
     this.icon,
+    this.leadingDot = false,
+    this.dotSize = 8,
+    this.height,
+    this.horizontalPadding,
+    this.labelStyle,
+    this.maxWidth,
     this.variant = UiKitBadgeVariant.soft,
     this.semantic = UiKitBadgeSemantic.neutral,
     this.size = UiKitBadgeSize.md,
     this.shape = UiKitBadgeShape.pill,
     this.semanticsLabel,
     super.key,
-  }) : assert(label == null || count == null, "Use label or count, not both.");
+  }) : assert(label == null || count == null, "Use label or count, not both."),
+       assert(
+         !leadingDot || variant != UiKitBadgeVariant.dot,
+         "A dot badge cannot have a leading dot.",
+       ),
+       assert(dotSize > 0, "dotSize must be positive."),
+       assert(height == null || height > 0, "height must be positive.");
 
   /// Text-only badge/status pill.
   const UiKitBadge.text({
@@ -87,6 +99,12 @@ class UiKitBadge extends StatelessWidget {
   final int? count;
   final int maxCount;
   final IconData? icon;
+  final bool leadingDot;
+  final double dotSize;
+  final double? height;
+  final double? horizontalPadding;
+  final TextStyle? labelStyle;
+  final double? maxWidth;
   final UiKitBadgeVariant variant;
   final UiKitBadgeSemantic semantic;
   final UiKitBadgeSize size;
@@ -144,12 +162,12 @@ class UiKitBadge extends StatelessWidget {
     );
   }
 
-  double get _height => switch (size) {
+  double get _defaultHeight => switch (size) {
     UiKitBadgeSize.sm => 20,
     UiKitBadgeSize.md => 24,
     UiKitBadgeSize.lg => 32,
   };
-  double get _padding => switch (size) {
+  double get _defaultPadding => switch (size) {
     UiKitBadgeSize.sm => 8,
     UiKitBadgeSize.md => 12,
     UiKitBadgeSize.lg => 16,
@@ -179,12 +197,17 @@ class UiKitBadge extends StatelessWidget {
       );
     }
     final text = _text;
+    final effectiveHeight = height ?? _defaultHeight;
+    final padding = horizontalPadding ?? _defaultPadding;
     return Semantics(
       label: semanticsLabel,
       child: UnconstrainedBox(
         child: Container(
-          height: _height,
-          padding: EdgeInsets.symmetric(horizontal: _padding),
+          height: effectiveHeight,
+          constraints: maxWidth == null
+              ? null
+              : BoxConstraints(maxWidth: maxWidth!),
+          padding: EdgeInsets.symmetric(horizontal: padding),
           decoration: BoxDecoration(
             color: colors.background,
             border: colors.border == null
@@ -197,6 +220,18 @@ class UiKitBadge extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (leadingDot)
+                SizedBox.square(
+                  dimension: dotSize,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colors.foreground,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              if (leadingDot && (icon != null || text != null))
+                SizedBox(width: theme.spacingXs),
               if (icon != null)
                 Icon(icon, size: _iconSize, color: colors.foreground),
               if (icon != null && text != null)
@@ -204,7 +239,11 @@ class UiKitBadge extends StatelessWidget {
               if (text != null)
                 Text(
                   text,
-                  style: _textStyle(theme).copyWith(color: colors.foreground),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: (labelStyle ?? _textStyle(theme)).copyWith(
+                    color: colors.foreground,
+                  ),
                 ),
             ],
           ),
