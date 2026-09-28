@@ -49,7 +49,9 @@ void main() {
     expect(tester.getSize(find.byType(TextField)), const Size(800, 44));
   });
 
-  testWidgets("renders a compact status pill with a leading dot", (tester) async {
+  testWidgets("renders a compact status pill with a leading dot", (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
@@ -103,6 +105,76 @@ void main() {
       tester.getTopLeft(find.text("3")).dy,
       lessThan(tester.getTopLeft(find.text("Overdue")).dy),
     );
+  });
+
+  testWidgets("caps count badges with host-provided dimensions", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Material(
+          child: Center(
+            child: UiKitCountBadge(
+              count: 120,
+              maxCount: 99,
+              height: 18,
+              minWidth: 18,
+              maxWidth: 40,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("99+"), findsOneWidget);
+    expect(tester.getSize(find.text("99+")).height, lessThanOrEqualTo(18));
+  });
+
+  testWidgets("reports the selected bottom-navigation item", (tester) async {
+    var selectedIndex = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: UiKitBottomNavigation(
+            safeArea: false,
+            tapThrottleDuration: Duration.zero,
+            selectedIndex: selectedIndex,
+            onSelected: (index) => selectedIndex = index,
+            items: [
+              UiKitBottomNavigationItem(
+                label: "Home",
+                iconBuilder: (color) => Icon(Icons.home, color: color),
+              ),
+              UiKitBottomNavigationItem(
+                label: "Inbox",
+                iconBuilder: (color) => Icon(Icons.inbox, color: color),
+                badge: UiKitCountBadge(count: 2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text("Inbox"));
+    expect(selectedIndex, 1);
+    expect(find.text("2"), findsOneWidget);
+  });
+
+  testWidgets("keeps scaffold content unpadded when safe area is disabled", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: UiKitScaffold(
+          safeArea: false,
+          child: SizedBox(key: Key("content"), height: 10),
+        ),
+      ),
+    );
+
+    expect(find.byType(Scaffold), findsOneWidget);
+    expect(tester.getSize(find.byKey(const Key("content"))).height, 10);
   });
 }
 
