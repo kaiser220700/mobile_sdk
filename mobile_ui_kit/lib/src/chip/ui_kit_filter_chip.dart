@@ -98,42 +98,52 @@ class UiKitFilterChip extends StatelessWidget {
     final itemGap = gap ?? theme.spacingXs;
     final hasLeading =
         (selected && selectedIcon != null) || leadingIcon != null;
-    final visual = AnimatedContainer(
-      duration: animationDuration,
-      height: visualHeight,
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding ?? theme.spacingMd,
-      ),
-      decoration: BoxDecoration(
-        color: background,
-        border: Border.all(color: border),
-        borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusFull),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (hasLeading)
-            Icon(
-              selected && selectedIcon != null ? selectedIcon : leadingIcon,
-              size: 16,
+    final decoration = BoxDecoration(
+      color: background,
+      border: Border.all(color: border),
+      borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusFull),
+    );
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (hasLeading)
+          Icon(
+            selected && selectedIcon != null ? selectedIcon : leadingIcon,
+            size: 16,
+            color: foreground,
+          ),
+        if (hasLeading) SizedBox(width: itemGap),
+        Text(
+          label,
+          style: (labelStyle ?? theme.bodyMedium).copyWith(color: foreground),
+        ),
+        if (trailingText != null) SizedBox(width: itemGap),
+        if (trailingText != null)
+          Text(
+            trailingText!,
+            style: (trailingStyle ?? labelStyle ?? theme.bodyMedium).copyWith(
               color: foreground,
             ),
-          if (hasLeading) SizedBox(width: itemGap),
-          Text(
-            label,
-            style: (labelStyle ?? theme.bodyMedium).copyWith(color: foreground),
           ),
-          if (trailingText != null) SizedBox(width: itemGap),
-          if (trailingText != null)
-            Text(
-              trailingText!,
-              style: (trailingStyle ?? labelStyle ?? theme.bodyMedium).copyWith(
-                color: foreground,
-              ),
-            ),
-        ],
-      ),
+      ],
     );
+    final padding = EdgeInsets.symmetric(
+      horizontal: horizontalPadding ?? theme.spacingMd,
+    );
+    final Widget visual = animationDuration == Duration.zero
+        ? Container(
+            height: visualHeight,
+            padding: padding,
+            decoration: decoration,
+            child: content,
+          )
+        : AnimatedContainer(
+            duration: animationDuration,
+            height: visualHeight,
+            padding: padding,
+            decoration: decoration,
+            child: content,
+          );
     return UiKitPressable(
       onPress: canTap ? () => onSelected!(!selected) : null,
       selected: selected,
