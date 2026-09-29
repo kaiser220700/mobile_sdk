@@ -1,0 +1,11 @@
+name: mobile_sdk_core
+description: Firebase-independent configuration and telemetry contracts for mobile apps.
+publish_to: none
+version: 0.3.0
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^6.0.0

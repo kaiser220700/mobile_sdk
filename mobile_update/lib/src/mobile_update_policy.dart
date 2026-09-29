@@ -5,7 +5,8 @@ enum MobileUpdateRequirement { none, soft, force }
 class MobileUpdateDecision {
   const MobileUpdateDecision(this.requirement);
 
-  const MobileUpdateDecision.none() : requirement = MobileUpdateRequirement.none;
+  const MobileUpdateDecision.none()
+    : requirement = MobileUpdateRequirement.none;
 
   final MobileUpdateRequirement requirement;
 
@@ -19,8 +20,21 @@ class MobileUpdateDecision {
 class MobileUpdatePolicy {
   const MobileUpdatePolicy();
 
-  MobileUpdateDecision evaluate({required String currentVersion, required MobileUpdateConfig config}) {
+  MobileUpdateDecision evaluate({
+    required String currentVersion,
+    required MobileUpdateConfig config,
+  }) {
     if (!config.enabled) return const MobileUpdateDecision.none();
+
+    // A mandatory prompt without a valid install destination can lock users out.
+    final storeUri = Uri.tryParse(config.storeUrl);
+    if (storeUri == null ||
+        !storeUri.hasAuthority ||
+        (storeUri.scheme != "https" &&
+            storeUri.scheme != "market" &&
+            storeUri.scheme != "itms-apps")) {
+      return const MobileUpdateDecision.none();
+    }
 
     final current = MobileVersion.tryParse(currentVersion);
     if (current == null) return const MobileUpdateDecision.none();

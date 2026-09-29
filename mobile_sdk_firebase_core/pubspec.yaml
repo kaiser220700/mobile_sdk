@@ -1,0 +1,18 @@
+name: mobile_sdk_firebase_core
+description: Firebase app bootstrap and opt-in module lifecycle for mobile_sdk.
+publish_to: none
+version: 0.3.0
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  firebase_core: ^4.15.0
+  mobile_sdk_core:
+    path: ../mobile_sdk_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
