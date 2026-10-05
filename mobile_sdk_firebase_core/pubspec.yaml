@@ -1,7 +1,7 @@
 name: mobile_sdk_firebase_core
 description: Firebase app bootstrap and opt-in module lifecycle for mobile_sdk.
 publish_to: none
-version: 0.3.0
+version: 0.4.0
 
 environment:
   sdk: ">=3.12.0 <4.0.0"

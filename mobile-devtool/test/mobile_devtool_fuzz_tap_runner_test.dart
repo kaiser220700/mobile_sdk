@@ -19,6 +19,40 @@ void main() {
     expect(log.sessions, hasLength(2));
   });
 
+  test(
+    "fails a route-restricted run safely when the host route accessor throws",
+    () {
+      final log = MobileDevToolFuzzRunLog();
+      final controller = MobileDevToolController();
+      final runner = MobileDevToolFuzzTapRunner(
+        log: log,
+        networkController: controller,
+        currentRouteKey: () => throw StateError('route unavailable'),
+      );
+      addTearDown(() {
+        runner.stop();
+        log.dispose();
+        controller.dispose();
+      });
+
+      runner.start(
+        config: const MobileDevToolFuzzRunConfig(
+          label: 'test',
+          description: 'test',
+          tickInterval: Duration(seconds: 1),
+          sessionDuration: null,
+          restrictToCurrentRoute: true,
+        ),
+      );
+
+      expect(runner.isRunning, isFalse);
+      expect(
+        log.currentSession?.status,
+        MobileDevToolFuzzRunStatus.stoppedStuck,
+      );
+    },
+  );
+
   testWidgets(
     "fuzz tap invokes a semantic tap target after semantics is ready",
     (tester) async {

@@ -262,7 +262,10 @@ class _StatusFilterChip extends StatelessWidget {
             child: DefaultTextStyle.merge(
               style: TextStyle(color: foregroundColor),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
                 child: label,
               ),
             ),

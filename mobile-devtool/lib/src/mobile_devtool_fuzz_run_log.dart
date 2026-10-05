@@ -123,8 +123,9 @@ class MobileDevToolFuzzRunLog extends ChangeNotifier {
     );
     _currentSessionId = session.id;
     final next = [session, ..._sessions];
-    _sessions =
-        next.length > _maxSessions ? next.sublist(0, _maxSessions) : next;
+    _sessions = next.length > _maxSessions
+        ? next.sublist(0, _maxSessions)
+        : next;
     notifyListeners();
   }
 
@@ -146,17 +147,15 @@ class MobileDevToolFuzzRunLog extends ChangeNotifier {
   );
 
   void pause() => _updateCurrent(
-    (s) =>
-        s.isRunning
-            ? s._copyWith(status: MobileDevToolFuzzRunStatus.paused)
-            : s,
+    (s) => s.isRunning
+        ? s._copyWith(status: MobileDevToolFuzzRunStatus.paused)
+        : s,
   );
 
   void resume() => _updateCurrent(
-    (s) =>
-        s.isRunning
-            ? s._copyWith(status: MobileDevToolFuzzRunStatus.running)
-            : s,
+    (s) => s.isRunning
+        ? s._copyWith(status: MobileDevToolFuzzRunStatus.running)
+        : s,
   );
 
   void adjustElapsed(Duration adjustment) => _updateCurrent((s) {

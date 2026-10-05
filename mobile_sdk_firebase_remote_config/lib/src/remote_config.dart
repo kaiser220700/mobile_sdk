@@ -115,6 +115,7 @@ final class MobileRemoteConfigSource
         }
       });
     } catch (_) {
+      _initialized = false;
       onStatus?.call('initialize_failed');
     }
   }
@@ -159,6 +160,7 @@ final class MobileRemoteConfigSource
 final class InMemoryRemoteConfigTransport implements RemoteConfigTransport {
   final StreamController<void> _updates = StreamController.broadcast();
   Map<String, String> values = {};
+  bool failConfigure = false;
   bool failFetch = false;
   Map<String, String> _defaults = {};
 
@@ -167,6 +169,7 @@ final class InMemoryRemoteConfigTransport implements RemoteConfigTransport {
     MobileRemoteConfigSettings settings,
     Map<String, String> defaults,
   ) async {
+    if (failConfigure) throw StateError('Configure failed');
     _defaults = Map.of(defaults);
   }
 

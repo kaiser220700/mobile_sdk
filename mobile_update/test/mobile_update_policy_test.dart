@@ -30,4 +30,24 @@ void main() {
     );
     expect(decision.requirement, MobileUpdateRequirement.force);
   });
+
+  test('malformed JSON config fails closed instead of throwing', () {
+    final config = MobileUpdateConfig.fromJson({
+      'enabled': 'true',
+      'min_version': 2,
+      'latest_version': ['3.0.0'],
+      'store_url': {'url': 'https://example.com/app'},
+    });
+
+    expect(config.enabled, isFalse);
+    expect(config.minVersion, isEmpty);
+    expect(config.latestVersion, isEmpty);
+    expect(config.storeUrl, isEmpty);
+    expect(
+      const MobileUpdatePolicy()
+          .evaluate(currentVersion: '1.0.0', config: config)
+          .requirement,
+      MobileUpdateRequirement.none,
+    );
+  });
 }

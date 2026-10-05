@@ -8,7 +8,11 @@ abstract interface class MobileUpdateConfigSource {
 typedef MobileAppVersionLoader = Future<String> Function();
 
 class MobileUpdateCheckResult {
-  const MobileUpdateCheckResult({required this.config, required this.currentVersion, required this.decision});
+  const MobileUpdateCheckResult({
+    required this.config,
+    required this.currentVersion,
+    required this.decision,
+  });
 
   final MobileUpdateConfig config;
   final String currentVersion;
@@ -31,7 +35,11 @@ class MobileUpdateChecker {
   Future<MobileUpdateCheckResult> check() async {
     final config = await configSource.fetch();
     if (!config.enabled) {
-      return MobileUpdateCheckResult(config: config, currentVersion: "", decision: const MobileUpdateDecision.none());
+      return MobileUpdateCheckResult(
+        config: config,
+        currentVersion: "",
+        decision: const MobileUpdateDecision.none(),
+      );
     }
 
     final currentVersion = await loadCurrentVersion();

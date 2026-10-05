@@ -36,4 +36,29 @@ void main() {
       await source.dispose();
     },
   );
+
+  test('allows retrying initialization after transport setup fails', () async {
+    final transport = InMemoryRemoteConfigTransport()..failConfigure = true;
+    final statuses = <String>[];
+    final source = MobileRemoteConfigSource(
+      schema: MobileRemoteConfigSchema([
+        ConfigKey.bool('enabled', defaultValue: false),
+      ]),
+      settings: const MobileRemoteConfigSettings(
+        fetchTimeout: Duration(seconds: 1),
+        minimumFetchInterval: Duration.zero,
+      ),
+      transport: transport,
+      onStatus: statuses.add,
+    );
+
+    await source.start();
+    expect(statuses, contains('initialize_failed'));
+    expect(source.load(), throwsStateError);
+
+    transport.failConfigure = false;
+    await source.start();
+    await expectLater(source.load(), completion(isA<ConfigSnapshot>()));
+    await source.dispose();
+  });
 }

@@ -12,6 +12,18 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
+## 0.4.0 - 2026-09-29
+
+### Added
+
+- Added one workspace command for dependency resolution, formatting checks,
+  analysis, and tests across every package and example.
+- Added a GitHub Actions verification workflow using Flutter `3.47.4`.
+
+### Changed
+
+- Aligned all SDK packages to `0.4.0`.
+
 ## 0.3.0 - 2026-09-29
 
 ### Added

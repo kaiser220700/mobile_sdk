@@ -317,12 +317,16 @@ class _PreviewHomeState extends State<_PreviewHome> {
       category: "feedback",
       html: "<span data-status>...</span>",
       flutterWidget: "UiKitBadge",
-      description: "Status pill dùng chung UiKitBadge, tránh thêm component trùng tên.",
+      description:
+          "Status pill dùng chung UiKitBadge, tránh thêm component trùng tên.",
       builder: (context) => const Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
-          UiKitBadge.text(label: "Active", semantic: UiKitBadgeSemantic.success),
+          UiKitBadge.text(
+            label: "Active",
+            semantic: UiKitBadgeSemantic.success,
+          ),
           UiKitBadge.textIcon(
             label: "Pending",
             icon: Icons.schedule_outlined,
@@ -427,10 +431,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
                   leadingIcon: Icons.circle,
                   onSelected: (_) => setState(() => selected = !selected),
                 ),
-                const UiKitFilterChip(
-                  label: "Disabled",
-                  enabled: false,
-                ),
+                const UiKitFilterChip(label: "Disabled", enabled: false),
               ],
             ),
           );
@@ -773,8 +774,20 @@ class _PreviewHomeState extends State<_PreviewHome> {
       description: "Metadata row cho detail/settings screen.",
       builder: (context) => Column(
         children: [
-          UiKitKeyValue(label: "Status", value: "Active", valueWidget: const UiKitBadge.text(label: "Active", semantic: UiKitBadgeSemantic.success)),
-          UiKitKeyValue(label: "Request ID", value: "req_123456", compact: true, onCopy: () => _showToast(UiKitToastType.success, "Copied")),
+          UiKitKeyValue(
+            label: "Status",
+            value: "Active",
+            valueWidget: const UiKitBadge.text(
+              label: "Active",
+              semantic: UiKitBadgeSemantic.success,
+            ),
+          ),
+          UiKitKeyValue(
+            label: "Request ID",
+            value: "req_123456",
+            compact: true,
+            onCopy: () => _showToast(UiKitToastType.success, "Copied"),
+          ),
         ],
       ),
     ),
@@ -883,9 +896,24 @@ class _PreviewHomeState extends State<_PreviewHome> {
       description: "Timeline dọc với completed/current/upcoming/error.",
       builder: (context) => const UiKitTimeline(
         items: [
-          UiKitTimelineItem(title: "Order created", time: "09:10", status: UiKitTimelineStatus.completed),
-          UiKitTimelineItem(title: "Payment confirmed", description: "Waiting for fulfillment", time: "09:12", status: UiKitTimelineStatus.current, icon: Icons.sync),
-          UiKitTimelineItem(title: "Delivered", time: "--", status: UiKitTimelineStatus.upcoming, icon: Icons.local_shipping_outlined),
+          UiKitTimelineItem(
+            title: "Order created",
+            time: "09:10",
+            status: UiKitTimelineStatus.completed,
+          ),
+          UiKitTimelineItem(
+            title: "Payment confirmed",
+            description: "Waiting for fulfillment",
+            time: "09:12",
+            status: UiKitTimelineStatus.current,
+            icon: Icons.sync,
+          ),
+          UiKitTimelineItem(
+            title: "Delivered",
+            time: "--",
+            status: UiKitTimelineStatus.upcoming,
+            icon: Icons.local_shipping_outlined,
+          ),
         ],
       ),
     ),
@@ -904,7 +932,10 @@ class _PreviewHomeState extends State<_PreviewHome> {
               onStepTapped: (index) => setState(() => current = index),
               steps: const [
                 UiKitStep(title: "Account", subtitle: "Basic information"),
-                UiKitStep(title: "Preferences", subtitle: "Choose your options"),
+                UiKitStep(
+                  title: "Preferences",
+                  subtitle: "Choose your options",
+                ),
                 UiKitStep(title: "Complete", subtitle: "Review and submit"),
               ],
             ),

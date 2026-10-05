@@ -133,14 +133,14 @@ class _MobileDevToolFuzzPresetSheetState
         tickInterval: _customTickInterval,
         sessionDuration: _customSessionDuration,
         onTickInterval: (value) => setState(() => _customTickInterval = value),
-        onSessionDuration:
-            (value) => setState(() => _customSessionDuration = value),
+        onSessionDuration: (value) =>
+            setState(() => _customSessionDuration = value),
       ),
       _ => _PreviewStep(
         config: _selectedConfig,
         restrictToCurrentRoute: _restrictToCurrentRoute,
-        onRestrictToCurrentRoute:
-            (value) => setState(() => _restrictToCurrentRoute = value),
+        onRestrictToCurrentRoute: (value) =>
+            setState(() => _restrictToCurrentRoute = value),
         keywordsController: _keywordsController,
       ),
     };
@@ -151,10 +151,9 @@ class _MobileDevToolFuzzPresetSheetState
       children: [
         if (_step > 0)
           TextButton(
-            onPressed:
-                () => setState(
-                  () => _step = _step == 2 && !_cameFromCustom ? 0 : _step - 1,
-                ),
+            onPressed: () => setState(
+              () => _step = _step == 2 && !_cameFromCustom ? 0 : _step - 1,
+            ),
             child: const Text("Quay lại"),
           ),
         const Spacer(),
@@ -270,10 +269,9 @@ class _CustomStep extends StatelessWidget {
   }
 }
 
-String _formatTickInterval(Duration duration) =>
-    duration.inMilliseconds < 1000
-        ? "${duration.inMilliseconds}ms"
-        : "${duration.inSeconds}s";
+String _formatTickInterval(Duration duration) => duration.inMilliseconds < 1000
+    ? "${duration.inMilliseconds}ms"
+    : "${duration.inSeconds}s";
 
 class _PreviewStep extends StatelessWidget {
   const _PreviewStep({
@@ -294,10 +292,9 @@ class _PreviewStep extends StatelessWidget {
     if (config == null)
       return const Text("Chưa chọn kịch bản — quay lại bước trước để chọn.");
 
-    final durationLabel =
-        config.sessionDuration == null
-            ? "Không giới hạn"
-            : "${config.sessionDuration}";
+    final durationLabel = config.sessionDuration == null
+        ? "Không giới hạn"
+        : "${config.sessionDuration}";
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,16 +7,24 @@ class MobileUpdateConfig {
     required this.storeUrl,
   });
 
-  const MobileUpdateConfig.disabled() : enabled = false, minVersion = "", latestVersion = "", storeUrl = "";
+  const MobileUpdateConfig.disabled()
+    : enabled = false,
+      minVersion = "",
+      latestVersion = "",
+      storeUrl = "";
 
   factory MobileUpdateConfig.fromJson(Map<String, Object?> json) {
     return MobileUpdateConfig(
-      enabled: json["enabled"] as bool? ?? false,
-      minVersion: json["min_version"] as String? ?? "",
-      latestVersion: json["latest_version"] as String? ?? "",
-      storeUrl: json["store_url"] as String? ?? "",
+      enabled: _boolOrFalse(json["enabled"]),
+      minVersion: _stringOrEmpty(json["min_version"]),
+      latestVersion: _stringOrEmpty(json["latest_version"]),
+      storeUrl: _stringOrEmpty(json["store_url"]),
     );
   }
+
+  static bool _boolOrFalse(Object? value) => value is bool && value;
+
+  static String _stringOrEmpty(Object? value) => value is String ? value : "";
 
   /// Kill-switch. When false, the SDK returns the `none` requirement.
   final bool enabled;

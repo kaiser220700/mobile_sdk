@@ -89,10 +89,25 @@ class MobileDevToolFuzzTapRunner {
   void start({required MobileDevToolFuzzRunConfig config}) {
     if (isRunning) return;
     _config = config;
+    String? startRouteKey;
+    final routeKeyOf = currentRouteKey;
+    if (config.restrictToCurrentRoute && routeKeyOf != null) {
+      try {
+        startRouteKey = routeKeyOf();
+      } on Object catch (error, stackTrace) {
+        log.start(
+          config.label,
+          "Không thể bắt đầu fuzz tap vì không đọc được route hiện tại",
+        );
+        log.logError("LỖI — $error\n$stackTrace");
+        log.stopStuck("không thể đọc route hiện tại để giới hạn phiên fuzz");
+        return;
+      }
+    }
     _active = true;
     _paused = false;
     _semanticsHandle = SemanticsBinding.instance.ensureSemantics();
-    _startRouteKey = currentRouteKey?.call();
+    _startRouteKey = startRouteKey;
     _tickCount = 0;
     _emptyTickStreak = 0;
     _semanticsReady = false;
@@ -240,7 +255,15 @@ class MobileDevToolFuzzTapRunner {
     final routeKeyOf = currentRouteKey;
     if (config == null || !config.restrictToCurrentRoute || routeKeyOf == null)
       return false;
-    final current = routeKeyOf();
+    String? current;
+    try {
+      current = routeKeyOf();
+    } on Object catch (error, stackTrace) {
+      _stopInternal();
+      log.logError("LỖI — $error\n$stackTrace");
+      log.stopStuck("không thể đọc route hiện tại để giới hạn phiên fuzz");
+      return true;
+    }
     if (current == _startRouteKey) return false;
 
     if (_startRouteKey == null) {

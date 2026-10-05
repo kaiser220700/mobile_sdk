@@ -96,10 +96,9 @@ class _MobileDevToolChromeState extends State<MobileDevToolChrome> {
   late final _fuzzTapRunner = MobileDevToolFuzzTapRunner(
     log: _fuzzRunLog,
     networkController: widget.controller,
-    currentRouteKey:
-        widget.currentRouteKey == null
-            ? null
-            : () => widget.currentRouteKey!.value,
+    currentRouteKey: widget.currentRouteKey == null
+        ? null
+        : () => widget.currentRouteKey!.value,
   );
   final _fuzzTapOverlayActive = MobileDevToolFuzzTapOverlayActive();
   bool _menuOpen = false;
