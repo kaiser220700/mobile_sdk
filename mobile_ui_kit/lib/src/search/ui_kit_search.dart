@@ -15,8 +15,24 @@ class UiKitSearch extends StatefulWidget {
     this.disabled = false,
     this.autoFocus = false,
     this.semanticsLabel,
+    this.height = 52,
+    this.padding,
+    this.backgroundColor,
+    this.disabledBackgroundColor,
+    this.borderColor,
+    this.borderWidth = 1,
+    this.borderRadius,
+    this.shadow,
+    this.searchIcon = Icons.search,
+    this.searchIconSize = 20,
+    this.searchIconColor,
+    this.textStyle,
+    this.hintStyle,
+    this.animationDuration = const Duration(milliseconds: 150),
+    this.cancelSpacing,
     super.key,
-  }) : assert(
+  }) : assert(height > 0 && borderWidth > 0),
+       assert(
          !showCancel || onCancel != null,
          "showCancel=true needs onCancel.",
        );
@@ -32,6 +48,21 @@ class UiKitSearch extends StatefulWidget {
   final bool disabled;
   final bool autoFocus;
   final String? semanticsLabel;
+  final double height;
+  final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? borderRadius;
+  final List<BoxShadow>? shadow;
+  final IconData searchIcon;
+  final double searchIconSize;
+  final Color? searchIconColor;
+  final TextStyle? textStyle;
+  final TextStyle? hintStyle;
+  final Duration animationDuration;
+  final double? cancelSpacing;
 
   @override
   State<UiKitSearch> createState() => _UiKitSearchState();
@@ -73,28 +104,41 @@ class _UiKitSearchState extends State<UiKitSearch> {
     final field = AnimatedBuilder(
       animation: Listenable.merge([_focusNode, _controller]),
       builder: (context, _) => AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        constraints: const BoxConstraints(minHeight: 52),
-        padding: EdgeInsets.symmetric(horizontal: theme.spacingMd),
+        duration: widget.animationDuration,
+        constraints: BoxConstraints(minHeight: widget.height),
+        padding:
+            widget.padding ?? EdgeInsets.symmetric(horizontal: theme.spacingMd),
         decoration: BoxDecoration(
-          color: widget.disabled ? theme.surfaceMuted : theme.surface,
-          borderRadius: BorderRadius.circular(theme.radiusFull),
+          color: widget.disabled
+              ? widget.disabledBackgroundColor ?? theme.surfaceMuted
+              : widget.backgroundColor ?? theme.surface,
+          borderRadius: BorderRadius.circular(
+            widget.borderRadius ?? theme.radiusFull,
+          ),
           border: _focusNode.hasFocus && !widget.disabled
-              ? Border.all(color: theme.focusRing)
+              ? Border.all(
+                  color: widget.borderColor ?? theme.focusRing,
+                  width: widget.borderWidth,
+                )
               : null,
           boxShadow: widget.disabled
               ? null
-              : const [
-                  BoxShadow(
-                    color: Color(0x12000000),
-                    blurRadius: 10,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+              : widget.shadow ??
+                    const [
+                      BoxShadow(
+                        color: Color(0x12000000),
+                        blurRadius: 10,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
         ),
         child: Row(
           children: [
-            Icon(Icons.search, size: 20, color: theme.textMuted),
+            Icon(
+              widget.searchIcon,
+              size: widget.searchIconSize,
+              color: widget.searchIconColor ?? theme.textMuted,
+            ),
             SizedBox(width: theme.spacingSm),
             Expanded(
               child: Semantics(
@@ -108,13 +152,17 @@ class _UiKitSearchState extends State<UiKitSearch> {
                   onChanged: widget.onChanged,
                   onSubmitted: widget.onSubmitted,
                   textInputAction: TextInputAction.search,
-                  style: theme.body.copyWith(color: theme.text),
+                  style: (widget.textStyle ?? theme.body).copyWith(
+                    color: theme.text,
+                  ),
                   decoration: InputDecoration(
                     isDense: true,
                     isCollapsed: true,
                     border: InputBorder.none,
                     hintText: widget.placeholder,
-                    hintStyle: theme.body.copyWith(color: theme.textMuted),
+                    hintStyle: (widget.hintStyle ?? theme.body).copyWith(
+                      color: theme.textMuted,
+                    ),
                   ),
                 ),
               ),
@@ -134,7 +182,7 @@ class _UiKitSearchState extends State<UiKitSearch> {
     return Row(
       children: [
         Expanded(child: field),
-        SizedBox(width: theme.spacingMd),
+        SizedBox(width: widget.cancelSpacing ?? theme.spacingMd),
         TextButton(onPressed: widget.onCancel, child: Text(widget.cancelLabel)),
       ],
     );

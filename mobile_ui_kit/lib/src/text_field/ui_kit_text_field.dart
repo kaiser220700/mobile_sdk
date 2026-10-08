@@ -43,6 +43,21 @@ class UiKitTextField extends StatefulWidget {
     this.inputFormatters,
     this.labelColor,
     this.inputHeight,
+    this.backgroundColor,
+    this.disabledBackgroundColor,
+    this.borderColor,
+    this.focusedBorderColor,
+    this.errorBorderColor,
+    this.disabledBorderColor,
+    this.borderWidth = 1,
+    this.focusedBorderWidth = 2,
+    this.borderRadius,
+    this.contentPadding,
+    this.labelStyle,
+    this.textStyle,
+    this.hintStyle,
+    this.helperStyle,
+    this.iconColor,
     super.key,
   }) : assert(
          type != UiKitTextFieldType.select || onTap != null,
@@ -55,7 +70,8 @@ class UiKitTextField extends StatefulWidget {
        assert(
          inputHeight == null || type != UiKitTextFieldType.textarea,
          "inputHeight is only available for single-line fields.",
-       );
+       ),
+       assert(borderWidth > 0 && focusedBorderWidth > 0);
 
   final TextEditingController controller;
   final String label;
@@ -89,6 +105,21 @@ class UiKitTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final Color? labelColor;
   final double? inputHeight;
+  final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
+  final Color? borderColor;
+  final Color? focusedBorderColor;
+  final Color? errorBorderColor;
+  final Color? disabledBorderColor;
+  final double borderWidth;
+  final double focusedBorderWidth;
+  final double? borderRadius;
+  final EdgeInsetsGeometry? contentPadding;
+  final TextStyle? labelStyle;
+  final TextStyle? textStyle;
+  final TextStyle? hintStyle;
+  final TextStyle? helperStyle;
+  final Color? iconColor;
 
   @override
   State<UiKitTextField> createState() => _UiKitTextFieldState();
@@ -116,14 +147,14 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
       ? theme.error
       : widget.variant == UiKitTextFieldVariant.success
       ? theme.success
-      : theme.border;
+      : widget.borderColor ?? theme.border;
 
   OutlineInputBorder _border(
     UiKitThemeData theme,
     Color color, {
     double width = 1,
   }) => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(theme.radiusMd),
+    borderRadius: BorderRadius.circular(widget.borderRadius ?? theme.radiusMd),
     borderSide: BorderSide(color: color, width: width),
   );
 
@@ -131,7 +162,7 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final enabled = widget.enabled;
-    final labelStyle = theme.bodyMedium.copyWith(
+    final labelStyle = (widget.labelStyle ?? theme.bodyMedium).copyWith(
       color: widget.labelColor ?? (enabled ? theme.text : theme.textDisabled),
     );
     final suffix = _password
@@ -180,30 +211,63 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
         ? null
         : Padding(
             padding: EdgeInsets.only(left: theme.spacingMd),
-            child: Icon(widget.iconLeft, color: theme.textMuted),
+            child: Icon(
+              widget.iconLeft,
+              color: widget.iconColor ?? theme.textMuted,
+            ),
           );
     final decoration = InputDecoration(
       filled: true,
-      fillColor: enabled ? theme.surface : theme.surfaceMuted,
+      fillColor: enabled
+          ? widget.backgroundColor ?? theme.surface
+          : widget.disabledBackgroundColor ?? theme.surfaceMuted,
       hintText: widget.placeholder,
-      hintStyle: theme.body.copyWith(color: theme.textMuted),
+      hintStyle: (widget.hintStyle ?? theme.body).copyWith(
+        color: theme.textMuted,
+      ),
       prefixIcon: prefix,
       suffixIcon: suffix,
       suffixText: widget.suffixText,
-      suffixStyle: theme.body.copyWith(color: theme.textMuted),
-      contentPadding: widget.inputHeight == null
-          ? EdgeInsets.symmetric(
-              horizontal: theme.spacingMd,
-              vertical: theme.spacingMd,
-            )
-          : EdgeInsets.symmetric(horizontal: theme.spacingMd),
-      enabledBorder: _border(theme, _borderColor(theme)),
-      focusedBorder: _border(theme, _borderColor(theme), width: 2),
-      disabledBorder: _border(theme, theme.border),
-      errorBorder: _border(theme, theme.error),
-      focusedErrorBorder: _border(theme, theme.error, width: 2),
+      suffixStyle: (widget.textStyle ?? theme.body).copyWith(
+        color: theme.textMuted,
+      ),
+      contentPadding:
+          widget.contentPadding ??
+          (widget.inputHeight == null
+              ? EdgeInsets.symmetric(
+                  horizontal: theme.spacingMd,
+                  vertical: theme.spacingMd,
+                )
+              : EdgeInsets.symmetric(horizontal: theme.spacingMd)),
+      enabledBorder: _border(
+        theme,
+        _borderColor(theme),
+        width: widget.borderWidth,
+      ),
+      focusedBorder: _border(
+        theme,
+        widget.focusedBorderColor ?? _borderColor(theme),
+        width: widget.focusedBorderWidth,
+      ),
+      disabledBorder: _border(
+        theme,
+        widget.disabledBorderColor ?? theme.border,
+        width: widget.borderWidth,
+      ),
+      errorBorder: _border(
+        theme,
+        widget.errorBorderColor ?? theme.error,
+        width: widget.borderWidth,
+      ),
+      focusedErrorBorder: _border(
+        theme,
+        widget.errorBorderColor ?? theme.error,
+        width: widget.focusedBorderWidth,
+      ),
       errorText: widget.errorText,
       helperText: widget.errorText == null ? widget.helperText : null,
+      helperStyle: widget.helperStyle ?? theme.caption,
+      errorStyle: widget.helperStyle ?? theme.caption,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,6 +315,9 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
             textAlignVertical: widget.inputHeight == null
                 ? null
                 : TextAlignVertical.center,
+            style: (widget.textStyle ?? theme.body).copyWith(
+              color: enabled ? theme.text : theme.textDisabled,
+            ),
             decoration: widget.type == UiKitTextFieldType.select
                 ? decoration.copyWith(
                     suffixIcon: Icon(

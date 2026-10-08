@@ -30,14 +30,28 @@ class UiKitDialog {
     List<UiKitDialogAction> actions = const [],
     bool showClose = false,
     bool dismissible = true,
+    Color barrierColor = Colors.black54,
+    Duration transitionDuration = const Duration(milliseconds: 200),
+    EdgeInsets insetPadding = const EdgeInsets.symmetric(horizontal: 24),
+    double minWidth = 280,
+    double maxWidth = 320,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    double? borderRadius,
+    Color? semanticColor,
+    TextStyle? titleStyle,
+    TextStyle? descriptionStyle,
+    double iconSize = 40,
+    IconData closeIcon = Icons.close,
   }) {
     assert(actions.length <= 2, "Dialogs support at most two actions.");
+    assert(minWidth > 0 && maxWidth >= minWidth && iconSize > 0);
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: dismissible,
       barrierLabel: title,
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 200),
+      barrierColor: barrierColor,
+      transitionDuration: transitionDuration,
       pageBuilder: (context, _, __) => _DialogView(
         title: title,
         description: description,
@@ -45,6 +59,17 @@ class UiKitDialog {
         icon: icon,
         actions: actions,
         showClose: showClose,
+        insetPadding: insetPadding,
+        minWidth: minWidth,
+        maxWidth: maxWidth,
+        padding: padding,
+        backgroundColor: backgroundColor,
+        borderRadius: borderRadius,
+        semanticColor: semanticColor,
+        titleStyle: titleStyle,
+        descriptionStyle: descriptionStyle,
+        iconSize: iconSize,
+        closeIcon: closeIcon,
       ),
       transitionBuilder: (context, animation, _, child) => FadeTransition(
         opacity: animation,
@@ -65,6 +90,17 @@ class _DialogView extends StatefulWidget {
     required this.icon,
     required this.actions,
     required this.showClose,
+    required this.insetPadding,
+    required this.minWidth,
+    required this.maxWidth,
+    required this.padding,
+    required this.backgroundColor,
+    required this.borderRadius,
+    required this.semanticColor,
+    required this.titleStyle,
+    required this.descriptionStyle,
+    required this.iconSize,
+    required this.closeIcon,
   });
   final String title;
   final String? description;
@@ -72,6 +108,17 @@ class _DialogView extends StatefulWidget {
   final IconData? icon;
   final List<UiKitDialogAction> actions;
   final bool showClose;
+  final EdgeInsets insetPadding;
+  final double minWidth;
+  final double maxWidth;
+  final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final double? borderRadius;
+  final Color? semanticColor;
+  final TextStyle? titleStyle;
+  final TextStyle? descriptionStyle;
+  final double iconSize;
+  final IconData closeIcon;
 
   @override
   State<_DialogView> createState() => _DialogViewState();
@@ -100,17 +147,22 @@ class _DialogViewState extends State<_DialogView> {
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
-    final color = _color(theme);
+    final color = widget.semanticColor ?? _color(theme);
     return Dialog(
-      backgroundColor: theme.surface,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      backgroundColor: widget.backgroundColor ?? theme.surface,
+      insetPadding: widget.insetPadding,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(theme.radiusXl),
+        borderRadius: BorderRadius.circular(
+          widget.borderRadius ?? theme.radiusXl,
+        ),
       ),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 280, maxWidth: 320),
+        constraints: BoxConstraints(
+          minWidth: widget.minWidth,
+          maxWidth: widget.maxWidth,
+        ),
         child: Padding(
-          padding: EdgeInsets.all(theme.spacingXl),
+          padding: widget.padding ?? EdgeInsets.all(theme.spacingXl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -121,17 +173,17 @@ class _DialogViewState extends State<_DialogView> {
                     onPressed: _pending == -1
                         ? () => Navigator.of(context).pop()
                         : null,
-                    icon: const Icon(Icons.close, size: 18),
+                    icon: Icon(widget.closeIcon, size: 18),
                   ),
                 ),
               if (_icon != null) ...[
-                Icon(_icon, size: 40, color: color),
+                Icon(_icon, size: widget.iconSize, color: color),
                 SizedBox(height: theme.spacingMd),
               ],
               Text(
                 widget.title,
                 textAlign: TextAlign.center,
-                style: theme.bodyLarge.copyWith(
+                style: (widget.titleStyle ?? theme.bodyLarge).copyWith(
                   color: theme.text,
                   fontWeight: FontWeight.w600,
                 ),
@@ -141,7 +193,9 @@ class _DialogViewState extends State<_DialogView> {
                 Text(
                   widget.description!,
                   textAlign: TextAlign.center,
-                  style: theme.body.copyWith(color: theme.textMuted),
+                  style: (widget.descriptionStyle ?? theme.body).copyWith(
+                    color: theme.textMuted,
+                  ),
                 ),
               ],
               if (widget.actions.isNotEmpty) ...[

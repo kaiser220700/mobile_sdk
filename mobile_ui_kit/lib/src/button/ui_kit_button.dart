@@ -36,12 +36,27 @@ class UiKitButton extends StatelessWidget {
     this.loadingBehavior = UiKitButtonLoadingBehavior.replaceContent,
     this.loadingIndicator,
     this.disabled = false,
+    this.outlineBorderColor,
+    this.outlineBorderWidth = 1,
+    this.height,
+    this.minWidth,
+    this.horizontalPadding,
+    this.iconSize,
+    this.borderRadius,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+    this.tapThrottleDuration,
     this.semanticsLabel,
     super.key,
   }) : assert(
          label != null || semanticsLabel != null,
          "Icon-only buttons need semanticsLabel.",
-       );
+       ),
+       assert(outlineBorderWidth > 0, "outlineBorderWidth must be positive."),
+       assert(height == null || height > 0),
+       assert(minWidth == null || minWidth > 0),
+       assert(iconSize == null || iconSize > 0);
 
   const UiKitButton.text({
     required VoidCallback? onPressed,
@@ -51,6 +66,8 @@ class UiKitButton extends StatelessWidget {
     bool fullWidth = false,
     bool loading = false,
     bool disabled = false,
+    Color? outlineBorderColor,
+    double outlineBorderWidth = 1,
     Key? key,
   }) : this(
          onPressed: onPressed,
@@ -60,6 +77,8 @@ class UiKitButton extends StatelessWidget {
          fullWidth: fullWidth,
          loading: loading,
          disabled: disabled,
+         outlineBorderColor: outlineBorderColor,
+         outlineBorderWidth: outlineBorderWidth,
          key: key,
        );
 
@@ -71,6 +90,8 @@ class UiKitButton extends StatelessWidget {
     UiKitButtonSize size = UiKitButtonSize.md,
     bool loading = false,
     bool disabled = false,
+    Color? outlineBorderColor,
+    double outlineBorderWidth = 1,
     Key? key,
   }) : this(
          onPressed: onPressed,
@@ -79,6 +100,8 @@ class UiKitButton extends StatelessWidget {
          size: size,
          loading: loading,
          disabled: disabled,
+         outlineBorderColor: outlineBorderColor,
+         outlineBorderWidth: outlineBorderWidth,
          semanticsLabel: semanticsLabel,
          key: key,
        );
@@ -94,6 +117,22 @@ class UiKitButton extends StatelessWidget {
   final UiKitButtonLoadingBehavior loadingBehavior;
   final Widget? loadingIndicator;
   final bool disabled;
+
+  /// Optional per-button overrides for the outline variant.
+  ///
+  /// When omitted, the button uses the host theme's [UiKitThemeData.borderControl]
+  /// token at 1 dp.
+  final Color? outlineBorderColor;
+  final double outlineBorderWidth;
+  final double? height;
+  final double? minWidth;
+  final double? horizontalPadding;
+  final double? iconSize;
+  final double? borderRadius;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
+  final Duration? tapThrottleDuration;
   final String? semanticsLabel;
 
   bool get _isDisabled => disabled || loading || onPressed == null;
@@ -103,23 +142,29 @@ class UiKitButton extends StatelessWidget {
       onPressed == null ||
       (loading && loadingBehavior == UiKitButtonLoadingBehavior.replaceContent);
 
-  double get _height => switch (size) {
-    UiKitButtonSize.sm => 32,
-    UiKitButtonSize.md => 44,
-    UiKitButtonSize.lg => 52,
-  };
+  double get _height =>
+      height ??
+      switch (size) {
+        UiKitButtonSize.sm => 32,
+        UiKitButtonSize.md => 44,
+        UiKitButtonSize.lg => 52,
+      };
 
-  double _horizontalPadding(UiKitThemeData theme) => switch (size) {
-    UiKitButtonSize.sm => theme.spacingMd,
-    UiKitButtonSize.md => theme.spacingLg,
-    UiKitButtonSize.lg => theme.spacingXl,
-  };
+  double _horizontalPadding(UiKitThemeData theme) =>
+      horizontalPadding ??
+      switch (size) {
+        UiKitButtonSize.sm => theme.spacingMd,
+        UiKitButtonSize.md => theme.spacingLg,
+        UiKitButtonSize.lg => theme.spacingXl,
+      };
 
-  double get _iconSize => switch (size) {
-    UiKitButtonSize.sm => 16,
-    UiKitButtonSize.md => 20,
-    UiKitButtonSize.lg => 24,
-  };
+  double get _iconSize =>
+      iconSize ??
+      switch (size) {
+        UiKitButtonSize.sm => 16,
+        UiKitButtonSize.md => 20,
+        UiKitButtonSize.lg => 24,
+      };
 
   TextStyle _textStyle(UiKitThemeData theme) =>
       size == UiKitButtonSize.lg ? theme.buttonLarge : theme.button;
@@ -143,7 +188,7 @@ class UiKitButton extends StatelessWidget {
         hasBorder: variant == UiKitButtonVariant.outline,
       );
     }
-    return switch (variant) {
+    final colors = switch (variant) {
       UiKitButtonVariant.primary => (
         background: theme.primary,
         foreground: theme.textInverse,
@@ -165,7 +210,7 @@ class UiKitButton extends StatelessWidget {
       UiKitButtonVariant.outline => (
         background: Colors.transparent,
         foreground: theme.primary,
-        border: theme.primary,
+        border: outlineBorderColor ?? theme.borderControl,
         hasBorder: true,
       ),
       UiKitButtonVariant.ghost => (
@@ -187,6 +232,12 @@ class UiKitButton extends StatelessWidget {
         hasBorder: false,
       ),
     };
+    return (
+      background: backgroundColor ?? colors.background,
+      foreground: foregroundColor ?? colors.foreground,
+      border: borderColor ?? colors.border,
+      hasBorder: colors.hasBorder,
+    );
   }
 
   @override
@@ -237,19 +288,26 @@ class UiKitButton extends StatelessWidget {
 
     final button = UiKitPressable(
       onPress: _isDisabled ? null : onPressed,
+      tapThrottleDuration:
+          tapThrottleDuration ?? const Duration(milliseconds: 300),
       semanticsLabel: semanticsLabel ?? label,
+      // The pressable supplies the complete accessible name. Leaving the
+      // label/icon subtree exposed would announce the button name twice.
+      excludeSemantics: true,
       builder: (context, states, child) => ConstrainedBox(
         constraints: BoxConstraints(
-          minWidth: size == UiKitButtonSize.sm ? 40 : 44,
+          minWidth: minWidth ?? (size == UiKitButtonSize.sm ? 40 : 44),
           minHeight: _height,
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: colors.background,
             border: colors.hasBorder
-                ? Border.all(color: colors.border, width: 1.5)
+                ? Border.all(color: colors.border, width: outlineBorderWidth)
                 : null,
-            borderRadius: BorderRadius.circular(theme.radiusFull),
+            borderRadius: BorderRadius.circular(
+              borderRadius ?? theme.radiusFull,
+            ),
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(

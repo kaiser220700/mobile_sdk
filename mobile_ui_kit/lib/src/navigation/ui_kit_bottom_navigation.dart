@@ -25,8 +25,10 @@ class UiKitBottomNavigation extends StatelessWidget {
     required this.onSelected,
     this.height,
     this.safeArea = true,
+    this.bottomPadding = 16,
     this.backgroundColor,
     this.borderColor,
+    this.borderWidth = 1,
     this.selectedColor,
     this.unselectedColor,
     this.selectedBackgroundColor,
@@ -34,10 +36,14 @@ class UiKitBottomNavigation extends StatelessWidget {
     this.selectedLabelStyle,
     this.iconContainerSize,
     this.iconContainerHeight,
+    this.iconContainerBorderRadius,
+    this.labelGap,
     this.badgeOffset,
     this.tapThrottleDuration,
     super.key,
   }) : assert(items.length > 1),
+       assert(borderWidth > 0),
+       assert(bottomPadding >= 0),
        assert(selectedIndex >= 0 && selectedIndex < items.length);
 
   final List<UiKitBottomNavigationItem> items;
@@ -45,8 +51,17 @@ class UiKitBottomNavigation extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final double? height;
   final bool safeArea;
+
+  /// Space below the navigation items, drawn using the navigation background.
+  ///
+  /// A physical device can report no bottom safe-area inset even when the host
+  /// design needs breathing room below the tabs. This space is above, rather
+  /// than part of, the system safe-area inset. The default makes the common
+  /// 64 dp navigation bar occupy 80 dp before any system inset is added.
+  final double bottomPadding;
   final Color? backgroundColor;
   final Color? borderColor;
+  final double borderWidth;
   final Color? selectedColor;
   final Color? unselectedColor;
   final Color? selectedBackgroundColor;
@@ -54,6 +69,8 @@ class UiKitBottomNavigation extends StatelessWidget {
   final TextStyle? selectedLabelStyle;
   final double? iconContainerSize;
   final double? iconContainerHeight;
+  final double? iconContainerBorderRadius;
+  final double? labelGap;
   final double? badgeOffset;
   final Duration? tapThrottleDuration;
 
@@ -79,6 +96,9 @@ class UiKitBottomNavigation extends StatelessWidget {
                 selectedLabelStyle: selectedLabelStyle ?? theme.bodySemibold,
                 iconContainerSize: iconContainerSize ?? 48,
                 iconContainerHeight: iconContainerHeight ?? 28,
+                iconContainerBorderRadius:
+                    iconContainerBorderRadius ?? theme.radiusFull,
+                labelGap: labelGap ?? theme.spacingXs,
                 badgeOffset: badgeOffset ?? theme.spacingXs,
                 tapThrottleDuration:
                     tapThrottleDuration ?? const Duration(milliseconds: 300),
@@ -90,9 +110,25 @@ class UiKitBottomNavigation extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: backgroundColor ?? theme.surface,
-        border: Border(top: BorderSide(color: borderColor ?? theme.border)),
+        border: Border(
+          top: BorderSide(
+            color: borderColor ?? theme.border,
+            width: borderWidth,
+          ),
+        ),
       ),
-      child: safeArea ? SafeArea(top: false, child: child) : child,
+      child: safeArea
+          ? SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomPadding),
+                child: child,
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              child: child,
+            ),
     );
   }
 }
@@ -109,6 +145,8 @@ class _Item extends StatelessWidget {
     required this.selectedLabelStyle,
     required this.iconContainerSize,
     required this.iconContainerHeight,
+    required this.iconContainerBorderRadius,
+    required this.labelGap,
     required this.badgeOffset,
     required this.tapThrottleDuration,
   });
@@ -122,6 +160,8 @@ class _Item extends StatelessWidget {
   final TextStyle selectedLabelStyle;
   final double iconContainerSize;
   final double iconContainerHeight;
+  final double iconContainerBorderRadius;
+  final double labelGap;
   final double badgeOffset;
   final Duration tapThrottleDuration;
   @override
@@ -141,9 +181,7 @@ class _Item extends StatelessWidget {
             DecoratedBox(
               decoration: BoxDecoration(
                 color: selected ? selectedBackgroundColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(
-                  UiKitTheme.of(context).radiusFull,
-                ),
+                borderRadius: BorderRadius.circular(iconContainerBorderRadius),
               ),
               child: SizedBox(
                 width: iconContainerSize,
@@ -163,7 +201,7 @@ class _Item extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: UiKitTheme.of(context).spacingXs),
+            SizedBox(height: labelGap),
             Text(
               item.label,
               maxLines: 1,

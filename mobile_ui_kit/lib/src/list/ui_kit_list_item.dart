@@ -23,8 +23,18 @@ class UiKitListItem extends StatelessWidget {
     this.hideChevron = false,
     this.disabled = false,
     this.semanticLabel,
+    this.minHeight,
+    this.padding,
+    this.selectedColor,
+    this.dividerColor,
+    this.dividerThickness = 1,
+    this.dividerInset,
+    this.titleStyle,
+    this.descriptionStyle,
+    this.contentGap,
+    this.trailingGap,
     super.key,
-  });
+  }) : assert(dividerThickness > 0);
 
   final String title;
   final String? description;
@@ -39,6 +49,16 @@ class UiKitListItem extends StatelessWidget {
   final bool hideChevron;
   final bool disabled;
   final String? semanticLabel;
+  final double? minHeight;
+  final EdgeInsetsGeometry? padding;
+  final Color? selectedColor;
+  final Color? dividerColor;
+  final double dividerThickness;
+  final double? dividerInset;
+  final TextStyle? titleStyle;
+  final TextStyle? descriptionStyle;
+  final double? contentGap;
+  final double? trailingGap;
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +77,23 @@ class UiKitListItem extends StatelessWidget {
       children: [
         Container(
           constraints: BoxConstraints(
-            minHeight: itemSize == UiKitListItemSize.md ? 56 : 72,
+            minHeight:
+                minHeight ?? (itemSize == UiKitListItemSize.md ? 56 : 72),
           ),
-          color: selected ? theme.primaryBg : Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: theme.spacingLg,
-            vertical: theme.spacingMd,
-          ),
+          color: selected
+              ? selectedColor ?? theme.primaryBg
+              : Colors.transparent,
+          padding:
+              padding ??
+              EdgeInsets.symmetric(
+                horizontal: theme.spacingLg,
+                vertical: theme.spacingMd,
+              ),
           child: Row(
             children: [
               if (leading != null) ...[
                 leading!,
-                SizedBox(width: theme.spacingMd),
+                SizedBox(width: contentGap ?? theme.spacingMd),
               ],
               Expanded(
                 child: Column(
@@ -81,7 +106,7 @@ class UiKitListItem extends StatelessWidget {
                       overflow: titleMaxLines == null
                           ? TextOverflow.clip
                           : TextOverflow.ellipsis,
-                      style: theme.bodyMedium.copyWith(
+                      style: (titleStyle ?? theme.bodyMedium).copyWith(
                         color: isDisabled ? theme.textDisabled : theme.text,
                       ),
                     ),
@@ -93,7 +118,7 @@ class UiKitListItem extends StatelessWidget {
                         overflow: descriptionMaxLines == null
                             ? TextOverflow.clip
                             : TextOverflow.ellipsis,
-                        style: theme.caption.copyWith(
+                        style: (descriptionStyle ?? theme.caption).copyWith(
                           color: isDisabled ? theme.textDisabled : theme.text,
                         ),
                       ),
@@ -101,17 +126,22 @@ class UiKitListItem extends StatelessWidget {
                   ],
                 ),
               ),
-              if (end != null) ...[SizedBox(width: theme.spacingMd), end],
+              if (end != null) ...[
+                SizedBox(width: trailingGap ?? theme.spacingMd),
+                end,
+              ],
             ],
           ),
         ),
         if (divider != UiKitListItemDivider.none)
           Container(
-            height: 1,
+            height: dividerThickness,
             margin: EdgeInsets.only(
-              left: divider == UiKitListItemDivider.inset ? theme.spacingLg : 0,
+              left: divider == UiKitListItemDivider.inset
+                  ? dividerInset ?? theme.spacingLg
+                  : 0,
             ),
-            color: theme.border,
+            color: dividerColor ?? theme.border,
           ),
       ],
     );

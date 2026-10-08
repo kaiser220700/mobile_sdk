@@ -2,6 +2,12 @@
 
 All notable changes to this package are documented in this file.
 
+## 0.5.0 - 2026-10-08
+
+### Changed
+
+- Aligned the SDK entry point with the `0.5.0` workspace release.
+
 ## 0.4.0 - 2026-09-29
 
 ### Changed

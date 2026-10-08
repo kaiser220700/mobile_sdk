@@ -19,8 +19,15 @@ class UiKitKeyValue extends StatelessWidget {
     this.emptyValue,
     this.labelStyle,
     this.valueStyle,
+    this.padding,
+    this.labelValueGap,
+    this.leadingGap,
+    this.dividerColor,
+    this.dividerThickness = 1,
+    this.copyIcon,
+    this.copyTooltip,
     super.key,
-  });
+  }) : assert(dividerThickness > 0);
 
   final String label;
   final String value;
@@ -34,6 +41,13 @@ class UiKitKeyValue extends StatelessWidget {
   final String? emptyValue;
   final TextStyle? labelStyle;
   final TextStyle? valueStyle;
+  final EdgeInsetsGeometry? padding;
+  final double? labelValueGap;
+  final double? leadingGap;
+  final Color? dividerColor;
+  final double dividerThickness;
+  final IconData? copyIcon;
+  final String? copyTooltip;
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +70,20 @@ class UiKitKeyValue extends StatelessWidget {
     );
     if (layout == UiKitKeyValueLayout.stacked) {
       return Container(
-        padding: EdgeInsets.only(
-          top: first ? 0 : (compact ? theme.spacingXs : theme.spacingSm),
-          bottom: compact ? theme.spacingXs : theme.spacingSm,
-        ),
+        padding:
+            padding ??
+            EdgeInsets.only(
+              top: first ? 0 : (compact ? theme.spacingXs : theme.spacingSm),
+              bottom: compact ? theme.spacingXs : theme.spacingSm,
+            ),
         decoration: showDivider && !first
             ? BoxDecoration(
-                border: Border(top: BorderSide(color: theme.border)),
+                border: Border(
+                  top: BorderSide(
+                    color: dividerColor ?? theme.border,
+                    width: dividerThickness,
+                  ),
+                ),
               )
             : null,
         child: Row(
@@ -70,7 +91,7 @@ class UiKitKeyValue extends StatelessWidget {
           children: [
             if (leading != null) ...[
               leading!,
-              SizedBox(width: theme.spacingSm),
+              SizedBox(width: leadingGap ?? theme.spacingSm),
             ],
             Expanded(
               child: Column(
@@ -87,14 +108,16 @@ class UiKitKeyValue extends StatelessWidget {
       );
     }
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: compact ? theme.spacingXs : theme.spacingSm,
-      ),
+      padding:
+          padding ??
+          EdgeInsets.symmetric(
+            vertical: compact ? theme.spacingXs : theme.spacingSm,
+          ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: labelView),
-          SizedBox(width: theme.spacingLg),
+          SizedBox(width: labelValueGap ?? theme.spacingLg),
           Flexible(
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -104,9 +127,9 @@ class UiKitKeyValue extends StatelessWidget {
                   SizedBox(width: theme.spacingXs),
                   IconButton(
                     onPressed: onCopy,
-                    icon: const Icon(Icons.copy_outlined, size: 16),
+                    icon: Icon(copyIcon ?? Icons.copy_outlined, size: 16),
                     visualDensity: VisualDensity.compact,
-                    tooltip: "Copy $label",
+                    tooltip: copyTooltip ?? "Copy $label",
                   ),
                 ],
               ],

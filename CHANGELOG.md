@@ -12,6 +12,16 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
+## 0.5.0 - 2026-10-08
+
+### Added
+
+- Added comprehensive per-instance appearance overrides across the UI Kit.
+
+### Changed
+
+- Aligned all SDK packages to `0.5.0`.
+
 ## 0.4.0 - 2026-09-29
 
 ### Added

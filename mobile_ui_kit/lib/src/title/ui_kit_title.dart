@@ -16,6 +16,11 @@ class UiKitTitle extends StatelessWidget {
     this.descriptionSpacing,
     this.isRequired = false,
     this.bottomSpacing = 0,
+    this.headingStyle,
+    this.descriptionStyle,
+    this.headingColor,
+    this.descriptionColor,
+    this.requiredColor,
     super.key,
   });
 
@@ -27,6 +32,11 @@ class UiKitTitle extends StatelessWidget {
   final double? descriptionSpacing;
   final bool isRequired;
   final double bottomSpacing;
+  final TextStyle? headingStyle;
+  final TextStyle? descriptionStyle;
+  final Color? headingColor;
+  final Color? descriptionColor;
+  final Color? requiredColor;
 
   TextStyle _heading(UiKitThemeData theme) => switch (headingSize) {
     UiKitTitleHeadingSize.sm ||
@@ -62,12 +72,14 @@ class UiKitTitle extends StatelessWidget {
           Text.rich(
             TextSpan(
               text: text,
-              style: _heading(theme).copyWith(color: theme.text),
+              style: (headingStyle ?? _heading(theme)).copyWith(
+                color: headingColor ?? theme.text,
+              ),
               children: isRequired
                   ? [
                       TextSpan(
                         text: " *",
-                        style: TextStyle(color: theme.error),
+                        style: TextStyle(color: requiredColor ?? theme.error),
                       ),
                     ]
                   : null,
@@ -79,7 +91,9 @@ class UiKitTitle extends StatelessWidget {
             Text(
               description!,
               textAlign: align,
-              style: _description(theme).copyWith(color: theme.textMuted),
+              style: (descriptionStyle ?? _description(theme)).copyWith(
+                color: descriptionColor ?? theme.textMuted,
+              ),
             ),
           ],
         ],

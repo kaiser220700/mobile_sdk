@@ -39,14 +39,45 @@ class UiKitTabs extends StatelessWidget {
     this.variant = UiKitTabsVariant.underline,
     this.layout = UiKitTabsLayout.equal,
     this.semanticsLabel,
+    this.height = 44,
+    this.gap,
+    this.padding,
+    this.borderColor,
+    this.activeColor,
+    this.inactiveColor,
+    this.disabledColor,
+    this.activeBackgroundColor,
+    this.borderRadius,
+    this.labelStyle,
+    this.activeLabelStyle,
+    this.badgeBackgroundColor,
+    this.activeBadgeBackgroundColor,
+    this.badgeForegroundColor,
+    this.badgeHeight = 18,
     super.key,
-  }) : assert(items.length >= 2, "Tabs need at least two items.");
+  }) : assert(items.length >= 2, "Tabs need at least two items."),
+       assert(height > 0 && badgeHeight > 0);
   final List<UiKitTabItem> items;
   final String activeId;
   final ValueChanged<String> onChanged;
   final UiKitTabsVariant variant;
   final UiKitTabsLayout layout;
   final String? semanticsLabel;
+  final double height;
+  final double? gap;
+  final EdgeInsetsGeometry? padding;
+  final Color? borderColor;
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final Color? disabledColor;
+  final Color? activeBackgroundColor;
+  final double? borderRadius;
+  final TextStyle? labelStyle;
+  final TextStyle? activeLabelStyle;
+  final Color? badgeBackgroundColor;
+  final Color? activeBadgeBackgroundColor;
+  final Color? badgeForegroundColor;
+  final double badgeHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +89,7 @@ class UiKitTabs extends StatelessWidget {
       children: [
         for (var i = 0; i < items.length; i++) ...[
           if (variant == UiKitTabsVariant.pill && i > 0)
-            SizedBox(width: theme.spacingSm),
+            SizedBox(width: gap ?? theme.spacingSm),
           if (layout == UiKitTabsLayout.equal)
             Expanded(child: _item(items[i], theme))
           else
@@ -72,11 +103,11 @@ class UiKitTabs extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: variant == UiKitTabsVariant.underline
-              ? Border(bottom: BorderSide(color: theme.border))
+              ? Border(bottom: BorderSide(color: borderColor ?? theme.border))
               : null,
         ),
         child: SizedBox(
-          height: 44,
+          height: height,
           child: layout == UiKitTabsLayout.auto
               ? SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -91,12 +122,12 @@ class UiKitTabs extends StatelessWidget {
   Widget _item(UiKitTabItem item, UiKitThemeData theme) {
     final active = item.id == activeId;
     final foreground = item.disabled
-        ? theme.textDisabled
+        ? disabledColor ?? theme.textDisabled
         : (active
               ? (variant == UiKitTabsVariant.pill
-                    ? theme.textInverse
-                    : theme.primary)
-              : theme.textMuted);
+                    ? activeColor ?? theme.textInverse
+                    : activeColor ?? theme.primary)
+              : inactiveColor ?? theme.textMuted);
     return UiKitPressable(
       onPress: item.disabled || active ? null : () => onChanged(item.id),
       selected: active,
@@ -106,17 +137,19 @@ class UiKitTabs extends StatelessWidget {
       builder: (context, states, child) => Opacity(
         opacity: item.disabled ? .4 : 1,
         child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: variant == UiKitTabsVariant.pill
-                ? theme.spacingSm
-                : theme.spacingMd,
-          ),
+          padding:
+              padding ??
+              EdgeInsets.symmetric(
+                horizontal: variant == UiKitTabsVariant.pill
+                    ? theme.spacingSm
+                    : theme.spacingMd,
+              ),
           decoration: BoxDecoration(
             color: variant == UiKitTabsVariant.pill && active
-                ? theme.primary
+                ? activeBackgroundColor ?? theme.primary
                 : Colors.transparent,
             borderRadius: variant == UiKitTabsVariant.pill
-                ? BorderRadius.circular(theme.radiusFull)
+                ? BorderRadius.circular(borderRadius ?? theme.radiusFull)
                 : null,
           ),
           child: Row(
@@ -129,26 +162,28 @@ class UiKitTabs extends StatelessWidget {
               ],
               Text(
                 item.label,
-                style: (active ? theme.button : theme.bodyMedium).copyWith(
-                  color: foreground,
-                ),
+                style:
+                    (active
+                            ? activeLabelStyle ?? theme.button
+                            : labelStyle ?? theme.bodyMedium)
+                        .copyWith(color: foreground),
               ),
               if (item.badge?.visible == true) ...[
                 SizedBox(width: theme.spacingXs),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
-                  height: 18,
+                  height: badgeHeight,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: variant == UiKitTabsVariant.pill && active
-                        ? theme.surface
-                        : theme.primaryBg,
+                        ? activeBadgeBackgroundColor ?? theme.surface
+                        : badgeBackgroundColor ?? theme.primaryBg,
                     shape: BoxShape.circle,
                   ),
                   child: Text(
                     item.badge!.dot ? "" : "${item.badge!.count}",
                     style: theme.caption.copyWith(
-                      color: theme.primary,
+                      color: badgeForegroundColor ?? theme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

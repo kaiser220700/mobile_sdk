@@ -18,8 +18,12 @@ class UiKitRadio extends StatelessWidget {
     this.disabledColor,
     this.label,
     this.semanticsLabel,
+    this.borderWidth = 1.5,
+    this.controlPadding = 4,
+    this.labelGap,
+    this.animationDuration = const Duration(milliseconds: 150),
     super.key,
-  });
+  }) : assert(indicatorSize > 0 && borderWidth > 0 && controlPadding >= 0);
 
   final bool value;
 
@@ -42,12 +46,17 @@ class UiKitRadio extends StatelessWidget {
 
   final String? semanticsLabel;
 
+  final double borderWidth;
+  final double controlPadding;
+  final double? labelGap;
+  final Duration animationDuration;
+
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final defaultBorderColor = borderColor ?? theme.borderControl;
     final defaultSelectedColor = selectedColor ?? theme.primary;
-    final circleDiameter = indicatorSize + 8;
+    final circleDiameter = indicatorSize + (controlPadding * 2);
 
     return UiKitPressable(
       onPress: (!enabled || onChanged == null)
@@ -66,11 +75,11 @@ class UiKitRadio extends StatelessWidget {
           height: circleDiameter,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: effectiveColor, width: 1.5),
+            border: Border.all(color: effectiveColor, width: borderWidth),
           ),
           alignment: Alignment.center,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: animationDuration,
             width: value ? indicatorSize : 0,
             height: value ? indicatorSize : 0,
             decoration: BoxDecoration(
@@ -86,7 +95,7 @@ class UiKitRadio extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             circle,
-            SizedBox(width: theme.spacingSm),
+            SizedBox(width: labelGap ?? theme.spacingSm),
             label!,
           ],
         );

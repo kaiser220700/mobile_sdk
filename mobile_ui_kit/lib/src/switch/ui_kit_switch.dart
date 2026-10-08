@@ -14,6 +14,19 @@ class UiKitSwitch extends StatelessWidget {
     this.size = UiKitSwitchSize.md,
     this.disabled = false,
     this.semanticsLabel,
+    this.width,
+    this.height,
+    this.thumbSize,
+    this.touchTargetSize,
+    this.padding,
+    this.activeColor,
+    this.inactiveColor,
+    this.disabledColor,
+    this.thumbColor,
+    this.labelStyle,
+    this.sublabelStyle,
+    this.gap,
+    this.animationDuration = const Duration(milliseconds: 150),
     super.key,
   });
 
@@ -24,6 +37,19 @@ class UiKitSwitch extends StatelessWidget {
   final UiKitSwitchSize size;
   final bool disabled;
   final String? semanticsLabel;
+  final double? width;
+  final double? height;
+  final double? thumbSize;
+  final double? touchTargetSize;
+  final EdgeInsetsGeometry? padding;
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final Color? disabledColor;
+  final Color? thumbColor;
+  final TextStyle? labelStyle;
+  final TextStyle? sublabelStyle;
+  final double? gap;
+  final Duration animationDuration;
 
   bool get _enabled => !disabled && onChanged != null;
   double get _width => size == UiKitSwitchSize.sm ? 32 : 40;
@@ -38,29 +64,33 @@ class UiKitSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final track = SizedBox(
-      width: theme.touchMinTarget,
-      height: theme.touchMinTarget,
+      width: touchTargetSize ?? theme.touchMinTarget,
+      height: touchTargetSize ?? theme.touchMinTarget,
       child: Center(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: _width,
-          height: _height,
-          padding: EdgeInsets.all(theme.spacing2xs),
+          duration: animationDuration,
+          width: width ?? _width,
+          height: height ?? _height,
+          padding: padding ?? EdgeInsets.all(theme.spacing2xs),
           decoration: BoxDecoration(
             color: disabled
-                ? theme.textDisabled
-                : (value ? theme.primary : theme.border),
+                ? disabledColor ?? theme.textDisabled
+                : (value
+                      ? activeColor ?? theme.primary
+                      : inactiveColor ?? theme.border),
             borderRadius: BorderRadius.circular(theme.radiusFull),
           ),
           child: AnimatedAlign(
             alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-            duration: const Duration(milliseconds: 150),
+            duration: animationDuration,
             child: Container(
-              width: _thumb,
-              height: _thumb,
+              width: thumbSize ?? _thumb,
+              height: thumbSize ?? _thumb,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: disabled ? theme.textDisabled : theme.surface,
+                color: disabled
+                    ? disabledColor ?? theme.textDisabled
+                    : thumbColor ?? theme.surface,
                 boxShadow: const [
                   BoxShadow(color: Color(0x22000000), blurRadius: 2),
                 ],
@@ -82,7 +112,7 @@ class UiKitSwitch extends StatelessWidget {
                     if (label != null)
                       Text(
                         label!,
-                        style: theme.bodyMedium.copyWith(
+                        style: (labelStyle ?? theme.bodyMedium).copyWith(
                           color: disabled ? theme.textDisabled : theme.text,
                         ),
                       ),
@@ -91,7 +121,7 @@ class UiKitSwitch extends StatelessWidget {
                         padding: EdgeInsets.only(top: theme.spacing2xs),
                         child: Text(
                           sublabel!,
-                          style: theme.caption.copyWith(
+                          style: (sublabelStyle ?? theme.caption).copyWith(
                             color: disabled
                                 ? theme.textDisabled
                                 : theme.textMuted,
@@ -101,7 +131,7 @@ class UiKitSwitch extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: theme.spacingMd),
+              SizedBox(width: gap ?? theme.spacingMd),
               track,
             ],
           );

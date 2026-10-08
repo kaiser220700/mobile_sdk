@@ -2,6 +2,16 @@
 
 All notable changes to this package are documented in this file.
 
+## 0.5.0 - 2026-10-08
+
+### Changed
+
+- Updated outline buttons to use a 1 dp `borderControl` border by default,
+  with per-button color and width overrides.
+- Added a 16 dp minimum bottom safe-area inset to `UiKitBottomNavigation`.
+- Added per-instance visual overrides for inputs, selection controls, tabs,
+  lists, timelines, steppers, cards, content surfaces, avatars, and dialogs.
+
 ## 0.4.0 - 2026-09-29
 
 ### Changed

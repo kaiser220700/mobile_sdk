@@ -137,42 +137,42 @@ packages:
       path: "../mobile_app_base"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   mobile_devtool:
     dependency: transitive
     description:
       path: "../mobile-devtool"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   mobile_sdk:
     dependency: "direct main"
     description:
       path: "../mobile_sdk"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   mobile_sdk_core:
     dependency: transitive
     description:
       path: "../mobile_sdk_core"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   mobile_ui_kit:
     dependency: transitive
     description:
       path: "../mobile_ui_kit"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   mobile_update:
     dependency: transitive
     description:
       path: "../mobile_update"
       relative: true
     source: path
-    version: "0.4.0"
+    version: "0.5.0"
   path:
     dependency: transitive
     description:

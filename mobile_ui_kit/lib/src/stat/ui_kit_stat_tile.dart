@@ -23,8 +23,16 @@ class UiKitStatTile extends StatelessWidget {
     this.valueColor,
     this.minHeight,
     this.showBorder = true,
+    this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.borderWidth = 1,
+    this.borderRadius,
+    this.descriptionStyle,
+    this.trendColor,
+    this.iconColor,
     super.key,
-  });
+  }) : assert(borderWidth > 0);
 
   final String label;
   final String value;
@@ -39,15 +47,25 @@ class UiKitStatTile extends StatelessWidget {
   final Color? valueColor;
   final double? minHeight;
   final bool showBorder;
+  final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? borderRadius;
+  final TextStyle? descriptionStyle;
+  final Color? trendColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
-    final trendColor = switch (trend) {
-      UiKitStatTrend.up => theme.success,
-      UiKitStatTrend.down => theme.error,
-      null || UiKitStatTrend.neutral => theme.textMuted,
-    };
+    final effectiveTrendColor =
+        trendColor ??
+        switch (trend) {
+          UiKitStatTrend.up => theme.success,
+          UiKitStatTrend.down => theme.error,
+          null || UiKitStatTrend.neutral => theme.textMuted,
+        };
     final labelView = Text(
       label,
       style: labelStyle ?? theme.bodyMedium.copyWith(color: theme.textMuted),
@@ -63,11 +81,11 @@ class UiKitStatTile extends StatelessWidget {
     final header = Row(
       children: [
         Expanded(child: labelView),
-        if (icon != null) Icon(icon, color: theme.primary),
+        if (icon != null) Icon(icon, color: iconColor ?? theme.primary),
       ],
     );
     final content = Padding(
-      padding: EdgeInsets.all(theme.spacingLg),
+      padding: padding ?? EdgeInsets.all(theme.spacingLg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -88,18 +106,25 @@ class UiKitStatTile extends StatelessWidget {
                         null => Icons.trending_flat,
                       },
                       size: 16,
-                      color: trendColor,
+                      color: effectiveTrendColor,
                     ),
                   if (trend != null) SizedBox(width: theme.spacing2xs),
                   Text(
                     trendLabel!,
-                    style: theme.caption.copyWith(color: trendColor),
+                    style: (descriptionStyle ?? theme.caption).copyWith(
+                      color: effectiveTrendColor,
+                    ),
                   ),
                 ],
                 if (trendLabel != null && description != null)
                   SizedBox(width: theme.spacingSm),
                 if (description != null)
-                  Flexible(child: Text(description!, style: theme.caption)),
+                  Flexible(
+                    child: Text(
+                      description!,
+                      style: descriptionStyle ?? theme.caption,
+                    ),
+                  ),
               ],
             ),
           ],
@@ -112,9 +137,14 @@ class UiKitStatTile extends StatelessWidget {
           : BoxConstraints(minHeight: minHeight!),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.surface,
-          border: showBorder ? Border.all(color: theme.border) : null,
-          borderRadius: BorderRadius.circular(theme.radiusLg),
+          color: backgroundColor ?? theme.surface,
+          border: showBorder
+              ? Border.all(
+                  color: borderColor ?? theme.border,
+                  width: borderWidth,
+                )
+              : null,
+          borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusLg),
         ),
         child: content,
       ),

@@ -161,6 +161,122 @@ void main() {
     expect(find.text("2"), findsOneWidget);
   });
 
+  testWidgets("allows outline-button border overrides", (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Material(
+          child: UiKitButton.text(
+            onPressed: _noop,
+            label: "Secondary action",
+            variant: UiKitButtonVariant.outline,
+            outlineBorderColor: Colors.deepPurple,
+            outlineBorderWidth: 2,
+          ),
+        ),
+      ),
+    );
+
+    final decoration = tester.widget<DecoratedBox>(
+      find.ancestor(
+        of: find.text("Secondary action"),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    final border = (decoration.decoration as BoxDecoration).border! as Border;
+
+    expect(border.top.width, 2);
+    expect(border.top.color, Colors.deepPurple);
+  });
+
+  testWidgets("reserves at least 16 dp below bottom-navigation items", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: UiKitBottomNavigation(
+              selectedIndex: 0,
+              onSelected: _noopIndex,
+              items: [
+                UiKitBottomNavigationItem(
+                  label: "Home",
+                  iconBuilder: (color) => Icon(Icons.home, color: color),
+                ),
+                UiKitBottomNavigationItem(
+                  label: "Inbox",
+                  iconBuilder: (color) => Icon(Icons.inbox, color: color),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byType(UiKitBottomNavigation)).height, 80);
+  });
+
+  testWidgets("puts bottom padding above the bottom safe-area inset", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(
+            padding: EdgeInsets.only(bottom: 24),
+          ),
+          child: Material(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: UiKitBottomNavigation(
+                selectedIndex: 0,
+                onSelected: _noopIndex,
+                items: [
+                  UiKitBottomNavigationItem(
+                    label: "Home",
+                    iconBuilder: (color) => Icon(Icons.home, color: color),
+                  ),
+                  UiKitBottomNavigationItem(
+                    label: "Inbox",
+                    iconBuilder: (color) => Icon(Icons.inbox, color: color),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byType(UiKitBottomNavigation)).height, 104);
+  });
+
+  testWidgets("button exposes its accessible name only once", (tester) async {
+    final semantics = tester.ensureSemantics();
+    addTearDown(semantics.dispose);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Material(
+          child: UiKitButton.text(onPressed: _noop, label: "Save changes"),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.byType(UiKitButton)),
+      matchesSemantics(
+        label: "Save changes",
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        hasSelectedState: true,
+      ),
+    );
+  });
+
   testWidgets("keeps scaffold content unpadded when safe area is disabled", (
     tester,
   ) async {
@@ -210,3 +326,5 @@ void main() {
 }
 
 void _noop() {}
+
+void _noopIndex(int _) {}

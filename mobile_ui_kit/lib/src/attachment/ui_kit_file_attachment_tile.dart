@@ -16,8 +16,19 @@ class UiKitFileAttachmentTile extends StatelessWidget {
     this.downloadLabel = "Download",
     this.deleteLabel = "Delete",
     this.semanticsLabel,
+    this.backgroundColor,
+    this.borderColor,
+    this.borderWidth = 1,
+    this.borderRadius,
+    this.padding,
+    this.iconColor,
+    this.titleStyle,
+    this.metadataStyle,
+    this.downloadIcon = Icons.download_outlined,
+    this.deleteIcon = Icons.close,
     super.key,
-  }) : assert(sizeInBytes >= 0);
+  }) : assert(sizeInBytes >= 0),
+       assert(borderWidth > 0);
 
   final String fileName;
   final int sizeInBytes;
@@ -28,21 +39,34 @@ class UiKitFileAttachmentTile extends StatelessWidget {
   final String downloadLabel;
   final String deleteLabel;
   final String? semanticsLabel;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final Color? iconColor;
+  final TextStyle? titleStyle;
+  final TextStyle? metadataStyle;
+  final IconData downloadIcon;
+  final IconData deleteIcon;
 
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final row = DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.surface,
-        border: Border.all(color: theme.border),
-        borderRadius: BorderRadius.circular(theme.radiusMd),
+        color: backgroundColor ?? theme.surface,
+        border: Border.all(
+          color: borderColor ?? theme.border,
+          width: borderWidth,
+        ),
+        borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
       ),
       child: Padding(
-        padding: EdgeInsets.all(theme.spacingMd),
+        padding: padding ?? EdgeInsets.all(theme.spacingMd),
         child: Row(
           children: [
-            Icon(icon, color: theme.textMuted),
+            Icon(icon, color: iconColor ?? theme.textMuted),
             SizedBox(width: theme.spacingSm),
             Expanded(
               child: Column(
@@ -53,10 +77,15 @@ class UiKitFileAttachmentTile extends StatelessWidget {
                     fileName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.bodyMedium.copyWith(color: theme.text),
+                    style: (titleStyle ?? theme.bodyMedium).copyWith(
+                      color: theme.text,
+                    ),
                   ),
                   SizedBox(height: theme.spacing2xs),
-                  Text(_formatFileSize(sizeInBytes), style: theme.caption),
+                  Text(
+                    _formatFileSize(sizeInBytes),
+                    style: metadataStyle ?? theme.caption,
+                  ),
                 ],
               ),
             ),
@@ -64,13 +93,13 @@ class UiKitFileAttachmentTile extends StatelessWidget {
               IconButton(
                 tooltip: downloadLabel,
                 onPressed: onDownload,
-                icon: const Icon(Icons.download_outlined),
+                icon: Icon(downloadIcon),
               ),
             if (onDelete != null)
               IconButton(
                 tooltip: deleteLabel,
                 onPressed: onDelete,
-                icon: const Icon(Icons.close),
+                icon: Icon(deleteIcon),
               ),
           ],
         ),

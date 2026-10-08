@@ -24,12 +24,34 @@ class UiKitStepper extends StatelessWidget {
     required this.steps,
     required this.currentIndex,
     this.onStepTapped,
+    this.indicatorSize = 28,
+    this.rowHeight = 64,
+    this.connectorWidth = 1,
+    this.contentGap,
+    this.itemSpacing,
+    this.activeColor,
+    this.inactiveColor,
+    this.disabledColor,
+    this.connectorColor,
+    this.titleStyle,
+    this.subtitleStyle,
     super.key,
-  });
+  }) : assert(indicatorSize > 0 && rowHeight > 0 && connectorWidth > 0);
 
   final List<UiKitStep> steps;
   final int currentIndex;
   final ValueChanged<int>? onStepTapped;
+  final double indicatorSize;
+  final double rowHeight;
+  final double connectorWidth;
+  final double? contentGap;
+  final double? itemSpacing;
+  final Color? activeColor;
+  final Color? inactiveColor;
+  final Color? disabledColor;
+  final Color? connectorColor;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +68,17 @@ class UiKitStepper extends StatelessWidget {
                 ? () => onStepTapped!(index)
                 : null,
             theme: theme,
+            indicatorSize: indicatorSize,
+            rowHeight: rowHeight,
+            connectorWidth: connectorWidth,
+            contentGap: contentGap ?? theme.spacingMd,
+            itemSpacing: itemSpacing ?? theme.spacingLg,
+            activeColor: activeColor ?? theme.primary,
+            inactiveColor: inactiveColor ?? theme.borderStrong,
+            disabledColor: disabledColor ?? theme.textDisabled,
+            connectorColor: connectorColor ?? theme.border,
+            titleStyle: titleStyle ?? theme.bodyMedium,
+            subtitleStyle: subtitleStyle ?? theme.caption,
           ),
       ],
     );
@@ -60,6 +93,17 @@ class _StepRow extends StatelessWidget {
     required this.isLast,
     required this.onTap,
     required this.theme,
+    required this.indicatorSize,
+    required this.rowHeight,
+    required this.connectorWidth,
+    required this.contentGap,
+    required this.itemSpacing,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.disabledColor,
+    required this.connectorColor,
+    required this.titleStyle,
+    required this.subtitleStyle,
   });
 
   final UiKitStep step;
@@ -68,6 +112,17 @@ class _StepRow extends StatelessWidget {
   final bool isLast;
   final VoidCallback? onTap;
   final UiKitThemeData theme;
+  final double indicatorSize;
+  final double rowHeight;
+  final double connectorWidth;
+  final double contentGap;
+  final double itemSpacing;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Color disabledColor;
+  final Color connectorColor;
+  final TextStyle titleStyle;
+  final TextStyle subtitleStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +130,14 @@ class _StepRow extends StatelessWidget {
     final current = index == currentIndex;
     final active = completed || current;
     final color = !step.enabled
-        ? theme.textDisabled
+        ? disabledColor
         : active
-        ? theme.primary
-        : theme.borderStrong;
+        ? activeColor
+        : inactiveColor;
     final indicator = DecoratedBox(
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       child: SizedBox.square(
-        dimension: 28,
+        dimension: indicatorSize,
         child: Center(
           child: completed
               ? Icon(Icons.check, size: 17, color: theme.textInverse)
@@ -99,31 +154,36 @@ class _StepRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 28,
+          width: indicatorSize,
           child: Column(
             children: [
               indicator,
               if (!isLast)
-                Expanded(child: Container(width: 1, color: theme.border)),
+                Expanded(
+                  child: Container(
+                    width: connectorWidth,
+                    color: connectorColor,
+                  ),
+                ),
             ],
           ),
         ),
-        SizedBox(width: theme.spacingMd),
+        SizedBox(width: contentGap),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.only(bottom: isLast ? 0 : theme.spacingLg),
+            padding: EdgeInsets.only(bottom: isLast ? 0 : itemSpacing),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   step.title,
-                  style: theme.bodyMedium.copyWith(
-                    color: step.enabled ? theme.text : theme.textDisabled,
+                  style: titleStyle.copyWith(
+                    color: step.enabled ? theme.text : disabledColor,
                   ),
                 ),
                 if (step.subtitle != null) ...[
                   SizedBox(height: theme.spacing2xs),
-                  Text(step.subtitle!, style: theme.caption),
+                  Text(step.subtitle!, style: subtitleStyle),
                 ],
               ],
             ),
@@ -132,7 +192,7 @@ class _StepRow extends StatelessWidget {
       ],
     );
     return SizedBox(
-      height: isLast ? null : 64,
+      height: isLast ? null : rowHeight,
       child: onTap == null
           ? row
           : UiKitPressable(

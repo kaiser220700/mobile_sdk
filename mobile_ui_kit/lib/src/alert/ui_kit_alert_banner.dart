@@ -19,8 +19,19 @@ class UiKitAlertBanner extends StatelessWidget {
     this.hideIcon = false,
     this.action,
     this.onClose,
+    this.backgroundColor,
+    this.borderColor,
+    this.foregroundColor,
+    this.padding,
+    this.borderWidth = 1,
+    this.borderRadius,
+    this.iconSize = 20,
+    this.iconGap,
+    this.titleStyle,
+    this.descriptionStyle,
+    this.closeTooltip = "Close",
     super.key,
-  });
+  }) : assert(borderWidth > 0 && iconSize > 0);
 
   final String title;
   final String? description;
@@ -29,6 +40,17 @@ class UiKitAlertBanner extends StatelessWidget {
   final bool hideIcon;
   final UiKitAlertAction? action;
   final VoidCallback? onClose;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final Color? foregroundColor;
+  final EdgeInsetsGeometry? padding;
+  final double borderWidth;
+  final double? borderRadius;
+  final double iconSize;
+  final double? iconGap;
+  final TextStyle? titleStyle;
+  final TextStyle? descriptionStyle;
+  final String closeTooltip;
 
   ({Color background, Color border, Color foreground, IconData icon}) _colors(
     UiKitThemeData theme,
@@ -69,26 +91,31 @@ class UiKitAlertBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
     final colors = _colors(theme);
+    final background = backgroundColor ?? colors.background;
+    final border = borderColor ?? colors.border;
+    final foreground = foregroundColor ?? colors.foreground;
     return Semantics(
       liveRegion: true,
       label: "$title${description == null ? "" : ". $description"}",
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          vertical: theme.spacingMd,
-          horizontal: theme.spacingLg,
-        ),
+        padding:
+            padding ??
+            EdgeInsets.symmetric(
+              vertical: theme.spacingMd,
+              horizontal: theme.spacingLg,
+            ),
         decoration: BoxDecoration(
-          color: colors.background,
-          border: Border.all(color: colors.border),
-          borderRadius: BorderRadius.circular(theme.radiusMd),
+          color: background,
+          border: Border.all(color: border, width: borderWidth),
+          borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!hideIcon) ...[
-              Icon(icon ?? colors.icon, color: colors.foreground, size: 20),
-              SizedBox(width: theme.spacingMd),
+              Icon(icon ?? colors.icon, color: foreground, size: iconSize),
+              SizedBox(width: iconGap ?? theme.spacingMd),
             ],
             Expanded(
               child: Column(
@@ -96,13 +123,17 @@ class UiKitAlertBanner extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.bodyMedium.copyWith(color: theme.text),
+                    style: (titleStyle ?? theme.bodyMedium).copyWith(
+                      color: theme.text,
+                    ),
                   ),
                   if (description != null) ...[
                     SizedBox(height: theme.spacing2xs),
                     Text(
                       description!,
-                      style: theme.caption.copyWith(color: theme.textMuted),
+                      style: (descriptionStyle ?? theme.caption).copyWith(
+                        color: theme.textMuted,
+                      ),
                     ),
                   ],
                   if (action != null) ...[
@@ -116,9 +147,7 @@ class UiKitAlertBanner extends StatelessWidget {
                       ),
                       child: Text(
                         action!.label,
-                        style: theme.bodyMedium.copyWith(
-                          color: colors.foreground,
-                        ),
+                        style: theme.bodyMedium.copyWith(color: foreground),
                       ),
                     ),
                   ],
@@ -130,7 +159,7 @@ class UiKitAlertBanner extends StatelessWidget {
                 onPressed: onClose,
                 icon: const Icon(Icons.close, size: 18),
                 color: theme.textMuted,
-                tooltip: "Close",
+                tooltip: closeTooltip,
               ),
           ],
         ),

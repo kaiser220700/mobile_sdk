@@ -17,8 +17,21 @@ class UiKitCheckbox extends StatelessWidget {
     this.error = false,
     this.disabled = false,
     this.semanticsLabel,
+    this.controlSize,
+    this.touchTargetSize,
+    this.borderWidth = 1.5,
+    this.borderRadius,
+    this.selectedColor,
+    this.unselectedBorderColor,
+    this.errorColor,
+    this.disabledColor,
+    this.checkColor,
+    this.labelStyle,
+    this.descriptionStyle,
+    this.gap,
+    this.animationDuration = const Duration(milliseconds: 150),
     super.key,
-  });
+  }) : assert(borderWidth > 0);
 
   final bool value;
   final bool indeterminate;
@@ -30,6 +43,19 @@ class UiKitCheckbox extends StatelessWidget {
   final bool error;
   final bool disabled;
   final String? semanticsLabel;
+  final double? controlSize;
+  final double? touchTargetSize;
+  final double borderWidth;
+  final double? borderRadius;
+  final Color? selectedColor;
+  final Color? unselectedBorderColor;
+  final Color? errorColor;
+  final Color? disabledColor;
+  final Color? checkColor;
+  final TextStyle? labelStyle;
+  final TextStyle? descriptionStyle;
+  final double? gap;
+  final Duration animationDuration;
 
   bool get _disabled => disabled || onChanged == null;
   double get _size => switch (size) {
@@ -43,32 +69,40 @@ class UiKitCheckbox extends StatelessWidget {
     final theme = UiKitTheme.of(context);
     final selected = value || indeterminate;
     final control = SizedBox(
-      width: theme.touchMinTarget,
-      height: theme.touchMinTarget,
+      width: touchTargetSize ?? theme.touchMinTarget,
+      height: touchTargetSize ?? theme.touchMinTarget,
       child: Center(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: _size,
-          height: _size,
+          duration: animationDuration,
+          width: controlSize ?? _size,
+          height: controlSize ?? _size,
           decoration: BoxDecoration(
             color: _disabled
-                ? (selected ? theme.textDisabled : Colors.transparent)
-                : (selected ? theme.primary : Colors.transparent),
+                ? (selected
+                      ? disabledColor ?? theme.textDisabled
+                      : Colors.transparent)
+                : (selected
+                      ? selectedColor ?? theme.primary
+                      : Colors.transparent),
             border: Border.all(
               color: _disabled
-                  ? theme.textDisabled
+                  ? disabledColor ?? theme.textDisabled
                   : (error
-                        ? theme.error
-                        : (selected ? theme.primary : theme.borderControl)),
-              width: 1.5,
+                        ? errorColor ?? theme.error
+                        : (selected
+                              ? selectedColor ?? theme.primary
+                              : unselectedBorderColor ?? theme.borderControl)),
+              width: borderWidth,
             ),
-            borderRadius: BorderRadius.circular(theme.radiusSm),
+            borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusSm),
           ),
           child: selected
               ? Icon(
                   indeterminate ? Icons.remove : Icons.check,
                   size: 16,
-                  color: _disabled ? theme.textDisabled : theme.textInverse,
+                  color: _disabled
+                      ? disabledColor ?? theme.textDisabled
+                      : checkColor ?? theme.textInverse,
                 )
               : null,
         ),
@@ -80,7 +114,7 @@ class UiKitCheckbox extends StatelessWidget {
         if (label != null)
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(left: theme.spacingSm),
+              padding: EdgeInsets.only(left: gap ?? theme.spacingSm),
               child: _label(theme),
             ),
           ),
@@ -95,10 +129,10 @@ class UiKitCheckbox extends StatelessWidget {
   }
 
   Widget _label(UiKitThemeData theme) {
-    final labelStyle = theme.bodyMedium.copyWith(
+    final labelStyle = (this.labelStyle ?? theme.bodyMedium).copyWith(
       color: _disabled ? theme.textDisabled : theme.text,
     );
-    final descriptionStyle = theme.caption.copyWith(
+    final descriptionStyle = (this.descriptionStyle ?? theme.caption).copyWith(
       color: _disabled ? theme.textDisabled : theme.textMuted,
     );
     if (description == null) return Text(label!, style: labelStyle);

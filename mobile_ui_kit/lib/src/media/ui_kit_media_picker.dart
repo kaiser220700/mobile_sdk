@@ -30,8 +30,18 @@ class UiKitMediaPicker extends StatelessWidget {
     this.fileLabel = "File",
     this.cancelLabel = "Cancel",
     this.placeholder,
+    this.backgroundColor,
+    this.disabledBackgroundColor,
+    this.borderColor,
+    this.borderWidth = 1,
+    this.borderRadius,
+    this.placeholderColor,
+    this.labelStyle,
+    this.previewOverlayColor = Colors.black54,
+    this.removeIcon = Icons.close,
     super.key,
-  }) : assert(aspectRatio > 0);
+  }) : assert(aspectRatio > 0),
+       assert(borderWidth > 0);
 
   final String label;
   final ValueChanged<UiKitMediaSource> onSelectSource;
@@ -50,6 +60,15 @@ class UiKitMediaPicker extends StatelessWidget {
   final String fileLabel;
   final String cancelLabel;
   final Widget? placeholder;
+  final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? borderRadius;
+  final Color? placeholderColor;
+  final TextStyle? labelStyle;
+  final Color previewOverlayColor;
+  final IconData removeIcon;
 
   bool get _uploading => uploadProgress != null && uploadProgress! < 1;
 
@@ -75,15 +94,20 @@ class UiKitMediaPicker extends StatelessWidget {
   }
 
   Widget _empty(BuildContext context, UiKitThemeData theme) => InkWell(
-    borderRadius: BorderRadius.circular(theme.radiusMd),
+    borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
     onTap: enabled ? () => _showSources(context) : null,
     child: AspectRatio(
       aspectRatio: aspectRatio,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: enabled ? theme.surface : theme.surfaceMuted,
-          border: Border.all(color: theme.border),
-          borderRadius: BorderRadius.circular(theme.radiusMd),
+          color: enabled
+              ? backgroundColor ?? theme.surface
+              : disabledBackgroundColor ?? theme.surfaceMuted,
+          border: Border.all(
+            color: borderColor ?? theme.border,
+            width: borderWidth,
+          ),
+          borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
         ),
         child: Center(
           child: Column(
@@ -92,10 +116,10 @@ class UiKitMediaPicker extends StatelessWidget {
               placeholder ??
                   Icon(
                     Icons.add_photo_alternate_outlined,
-                    color: theme.textMuted,
+                    color: placeholderColor ?? theme.textMuted,
                   ),
               SizedBox(height: theme.spacingSm),
-              Text(addLabel, style: theme.bodyMedium),
+              Text(addLabel, style: labelStyle ?? theme.bodyMedium),
             ],
           ),
         ),
@@ -106,14 +130,14 @@ class UiKitMediaPicker extends StatelessWidget {
   Widget _preview(BuildContext context, UiKitThemeData theme) => AspectRatio(
     aspectRatio: aspectRatio,
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(theme.radiusMd),
+      borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
       child: Stack(
         fit: StackFit.expand,
         children: [
           preview!,
           if (_uploading || errorText != null)
             ColoredBox(
-              color: Colors.black54,
+              color: previewOverlayColor,
               child: Center(
                 child: errorText != null
                     ? Padding(
@@ -130,7 +154,7 @@ class UiKitMediaPicker extends StatelessWidget {
               child: IconButton.filledTonal(
                 tooltip: removeLabel,
                 onPressed: onRemove,
-                icon: const Icon(Icons.close),
+                icon: Icon(removeIcon),
               ),
             ),
         ],
