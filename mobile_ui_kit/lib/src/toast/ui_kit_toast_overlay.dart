@@ -3,13 +3,14 @@ import "dart:async";
 import "package:flutter/material.dart";
 
 import "package:mobile_ui_kit/src/toast/ui_kit_toast_queue.dart";
+import "package:mobile_ui_kit/src/toast/ui_kit_toast_surface.dart";
 
 /// Widget mount 1 lần (thường ở root, cạnh `child` chính của app) — lắng
-/// nghe [queue] và hiển thị request hiện tại qua chính `builder` của request
-/// đó. Tự advance khi `duration` hết. Dismiss-gesture (swipe...) do app-layer
-/// tự bọc quanh nội dung trong `builder` của từng `UiKitToastRequest`, gọi
-/// `queue.dismissCurrent()` khi cần — package không ép cơ chế dismiss cụ
-/// thể nào.
+/// nghe [queue], hiển thị toast tuần tự và tự advance khi `duration` hết.
+///
+/// Legacy [UiKitToastRequest.builder] requests preserve their app-owned
+/// visual and interaction. [UiKitToastRequest.content] requests receive the
+/// SDK-owned surface, safe area, motion, tap and swipe-to-dismiss behavior.
 class UiKitToastOverlay extends StatefulWidget {
   const UiKitToastOverlay({
     required this.queue,
@@ -85,7 +86,13 @@ class _UiKitToastOverlayState extends State<UiKitToastOverlay> {
                   ? const SizedBox.shrink(key: ValueKey("ui-kit-toast-empty"))
                   : KeyedSubtree(
                       key: ValueKey(request),
-                      child: Builder(builder: request.builder),
+                      child: request.content != null
+                          ? UiKitToastSurface(
+                              request: request,
+                              onDismiss: widget.queue.dismissCurrent,
+                              animationDuration: widget.animationDuration,
+                            )
+                          : Builder(builder: request.builder),
                     ),
             ),
           ),

@@ -109,6 +109,9 @@ class MobileDevToolConfiguration {
     this.hiddenMenuItemIds = const {},
     this.featureFlags = const [],
     this.accentColor,
+    this.bubbleBackgroundColor,
+    this.bubbleForegroundColor,
+    this.bubbleBorderColor,
     this.themeBuilder,
   });
 
@@ -133,6 +136,27 @@ class MobileDevToolConfiguration {
   /// Optional branding accent for SDK-drawn chrome (bubble, buttons). Falls
   /// back to the ambient `Theme`'s primary color when omitted.
   final Color? accentColor;
+
+  /// Optional background color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.surface]. Without a host theme it preserves the SDK's
+  /// existing white surface.
+  final Color? bubbleBackgroundColor;
+
+  /// Optional icon color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.primary]. Without a host theme, [accentColor] remains the
+  /// legacy fallback.
+  final Color? bubbleForegroundColor;
+
+  /// Optional outline color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.outline]. Without a host theme it preserves the SDK's
+  /// existing black outline.
+  final Color? bubbleBorderColor;
 
   /// Optional theme for SDK-owned chrome and the default root sheet.
   ///
