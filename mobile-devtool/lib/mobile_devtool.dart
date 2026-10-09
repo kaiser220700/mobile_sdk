@@ -27,6 +27,7 @@ export "src/mobile_devtool_configuration.dart"
         MobileDevToolHostAction,
         MobileDevToolMenuItem,
         MobileDevToolPanel;
+export "src/mobile_devtool_menu.dart" show MobileDevToolMenu;
 export "src/mobile_devtool_json_formatter.dart" show MobileDevToolJsonFormatter;
 export "src/mobile_devtool_kv_table.dart"
     show MobileDevToolKvRow, MobileDevToolKvTable;

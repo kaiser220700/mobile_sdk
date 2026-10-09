@@ -72,7 +72,7 @@ Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
 | | `MobileDevToolExpandableSecretText` | Text ẩn/hiện dạng monospace cho giá trị nhạy cảm (token, key...), double-tap copy. |
 | **Refresh / load more** | `MobileDevToolRefreshConfiguration` | App-level wrapper cho cấu hình `pull_to_refresh_flutter3`, gồm `headerBuilder`, `footerBuilder`, spring và trigger distances. |
 | | `MobileDevToolRefreshLoadMore` | Wrapper độc lập cho scrollable: bật/tắt refresh và load more riêng, dùng indicator có sẵn hoặc custom builder/shimmer. |
-| **Cấu hình đăng ký từ host** | `MobileDevToolMenuItem`, `MobileDevToolPanel`, `MobileDevToolFeatureFlag`, `MobileDevToolHostAction` (trong `mobile_devtool_configuration.dart`) | Model host dùng để đăng ký tool/tab/toggle/action riêng của app vào `MobileDevToolConfiguration`. `MobileDevToolBuiltInIds` cho phép ẩn hoặc thay thế tool built-in. |
+| **Cấu hình đăng ký từ host** | `MobileDevToolMenu`, `MobileDevToolMenuItem`, `MobileDevToolPanel`, `MobileDevToolFeatureFlag`, `MobileDevToolHostAction` | `MobileDevToolMenu.resolve` áp dụng `MobileDevToolConfiguration` lên menu do host sở hữu, không vẽ UI; vì vậy host giữ launcher, sheet surface và theme của mình. `MobileDevToolBuiltInIds` cho phép ẩn hoặc thay thế tool built-in. |
 | **Chi tiết vẽ (thường không cần import trực tiếp)** | `MobileDevToolDragTapDetector` | Gesture detector phân biệt tap/drag dùng cho bubble + toolbar kéo-thả. |
 
 ## Tích hợp
@@ -227,6 +227,36 @@ MobileDevToolConfiguration(
   hiddenMenuItemIds: {MobileDevToolBuiltInIds.trace},
 )
 ```
+
+Host có root menu riêng không cần chuyển sang `MobileDevToolChrome`: truyền các
+mục gốc của host vào `MobileDevToolMenu.resolve`, rồi tự vẽ danh sách kết quả.
+Ví dụ dưới đây chỉ thay menu; bubble, bottom sheet và theme vẫn hoàn toàn do
+host sở hữu:
+
+```dart
+final rootMenu = MobileDevToolMenu.resolve(
+  items: [
+    MobileDevToolMenuItem(id: "network", label: "Network", onSelect: openNetwork),
+    MobileDevToolMenuItem(id: "toast", label: "Toast", onSelect: openToast),
+    MobileDevToolMenuItem(id: "loading", label: "Loading", onSelect: openLoading),
+    MobileDevToolMenuItem(id: "splash", label: "Splash", onSelect: openSplash),
+    MobileDevToolMenuItem(id: "push", label: "Push", onSelect: openPush),
+  ],
+  configuration: MobileDevToolConfiguration(
+    hiddenMenuItemIds: {"toast", "loading", "splash", "push"},
+    menuItems: [
+      MobileDevToolMenuItem(
+        id: "debug",
+        label: "Debug",
+        onSelect: () => router.pushNamed("/debug"),
+      ),
+    ],
+  ),
+);
+```
+
+`hiddenMenuItemIds` luôn thắng; một `menuItems` trùng `id` sẽ thay mục gốc và
+mục khai báo cuối cùng thắng khi trùng nhau.
 
 `AccountToolPanel` và `StorageToolPanel` nên do app host sở hữu để kết nối
 đúng auth/session service hoặc secure storage. SDK chỉ host và hiển thị widget;

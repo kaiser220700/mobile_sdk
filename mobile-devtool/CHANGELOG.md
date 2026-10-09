@@ -2,6 +2,14 @@
 
 All notable changes to this package are documented in this file.
 
+## Unreleased
+
+### Added
+
+- Added `MobileDevToolMenu.resolve`, a presentation-free root-menu resolver so
+  hosts can apply `MobileDevToolConfiguration` while retaining their own
+  launcher, sheet surface, and theme.
+
 ## 0.5.0 - 2026-10-08
 
 ### Changed
