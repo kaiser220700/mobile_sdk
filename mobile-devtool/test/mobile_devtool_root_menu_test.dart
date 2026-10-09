@@ -163,6 +163,50 @@ void main() {
     },
   );
 
+  testWidgets("uses the theme supplied by the host configuration", (
+    tester,
+  ) async {
+    final controller = MobileDevToolController();
+    final hostTheme = ThemeData(
+      colorScheme: const ColorScheme.light(
+        primary: Color(0xFF7C3AED),
+        onPrimary: Colors.white,
+        surface: Color(0xFFFFF7ED),
+        onSurface: Color(0xFF431407),
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MobileDevToolRootMenu(
+            controller: controller,
+            configuration: MobileDevToolConfiguration(
+              themeBuilder: (_) => hostTheme,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final scopedTheme = tester.widgetList<Theme>(find.byType(Theme)).last;
+    expect(scopedTheme.data.colorScheme.surface, hostTheme.colorScheme.surface);
+    expect(
+      scopedTheme.data.colorScheme.onSurface,
+      hostTheme.colorScheme.onSurface,
+    );
+    final surface = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(MobileDevToolRootMenu),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(surface.color, hostTheme.colorScheme.surface);
+  });
+
   testWidgets("registers a custom tool from menuItems", (tester) async {
     final controller = MobileDevToolController();
     addTearDown(controller.dispose);

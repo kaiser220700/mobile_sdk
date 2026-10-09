@@ -248,16 +248,21 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
   @override
   Widget build(BuildContext context) {
     final quickActions = _quickActions;
+    final hostTheme = widget.configuration.themeBuilder?.call(context);
+    final theme =
+        hostTheme ??
+        MobileDevToolTheme.data(
+          context,
+          accentColor: widget.configuration.accentColor,
+        );
+    final usesHostTheme = hostTheme != null;
 
     return MobileDevToolToast(
       child: Theme(
-        data: MobileDevToolTheme.data(
-          context,
-          accentColor: widget.configuration.accentColor,
-        ),
+        data: theme,
         child: Material(
           surfaceTintColor: Colors.transparent,
-          color: MobileDevToolTheme.surface,
+          color: theme.colorScheme.surface,
           borderRadius: MobileDevToolTheme.surfaceRadius,
           child: SafeArea(
             top: false,
@@ -293,7 +298,7 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
                                       PopupMenuButton<MobileDevToolMenuItem>(
                                         tooltip: "Chọn chức năng",
                                         icon: const Icon(Icons.menu),
-                                        color: MobileDevToolTheme.surface,
+                                        color: theme.colorScheme.surface,
                                         surfaceTintColor: Colors.transparent,
                                         onSelected: _select,
                                         itemBuilder: (context) => [
@@ -305,7 +310,13 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
                                               child: DecoratedBox(
                                                 decoration: BoxDecoration(
                                                   color: entry.id == _current.id
-                                                      ? const Color(0xFFE3F2FD)
+                                                      ? usesHostTheme
+                                                            ? theme
+                                                                  .colorScheme
+                                                                  .primaryContainer
+                                                            : const Color(
+                                                                0xFFE3F2FD,
+                                                              )
                                                       : null,
                                                   borderRadius:
                                                       BorderRadius.circular(8),
@@ -329,10 +340,11 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
                                                                     entry.id ==
                                                                         _current
                                                                             .id
-                                                                    ? Colors
-                                                                          .blue
-                                                                          .shade700
-                                                                    : MobileDevToolTheme
+                                                                    ? usesHostTheme
+                                                                          ? theme.colorScheme.primary
+                                                                          : Colors.blue.shade700
+                                                                    : theme
+                                                                          .colorScheme
                                                                           .primary,
                                                               ),
                                                       ),
@@ -369,11 +381,10 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
                                 alignment: Alignment.centerRight,
                                 child: IconButton(
                                   tooltip: "Đóng",
-                                  icon: const Icon(
-                                    Icons.close,
-                                    size: 20,
-                                    color: MobileDevToolTheme.textMuted,
-                                  ),
+                                  icon: const Icon(Icons.close, size: 20),
+                                  color: usesHostTheme
+                                      ? theme.colorScheme.onSurfaceVariant
+                                      : MobileDevToolTheme.textMuted,
                                   onPressed: () => Navigator.of(context).pop(),
                                 ),
                               ),
@@ -437,7 +448,7 @@ class _DragHandle extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: MobileDevToolTheme.borderStrong,
+          color: Theme.of(context).colorScheme.outline,
           borderRadius: BorderRadius.circular(MobileDevToolTheme.radiusFull),
         ),
       ),

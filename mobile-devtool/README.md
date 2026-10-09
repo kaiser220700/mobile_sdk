@@ -45,7 +45,7 @@ Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
 | **Chrome / mount** | `MobileDevToolChrome` | Chrome tổng hợp (bubble + root menu + Screen Draw overlay + Fuzz Tap overlay), mount qua `MobileDevToolChrome.attach(navigatorKey, builder)` như 1 `OverlayEntry` thật — không bọc widget tree của host. |
 | | `MobileDevToolOverlay` | Cách mount cũ, bọc `child` bằng `Stack` — dùng khi host đã quen compose overlay kiểu này (vd trong `MaterialApp.builder`). |
 | | `MobileDevToolBubble` | Nút launcher tròn kéo-thả, tự mờ dần khi không tương tác, tap để mở tool sheet. |
-| | `MobileDevToolConfiguration` | Cấu hình chrome: `title`, `hostActions`, `panels`, `menuItems`, `hiddenMenuItemIds`, `featureFlags`, `accentColor`. |
+| | `MobileDevToolConfiguration` | Cấu hình chrome: `title`, `hostActions`, `panels`, `menuItems`, `hiddenMenuItemIds`, `featureFlags`, `accentColor`, `themeBuilder`. |
 | | `MobileDevToolRootMenu` | Bottom-sheet mở thẳng Network; Screen Draw và Fuzz Tap là quick actions trên header, các tool còn lại đổi qua menu header; `Dev Tool Info` hiển thị phạm vi publish và roadmap. |
 | | `MobileDevToolTheme` | Hằng số màu/bo góc/shadow nội bộ chrome — mặc định nền trắng, chữ đen; `accentColor` có thể đổi màu nhấn. |
 | | `MobileDevToolFacade` (`MobileDevTool`) | Facade tĩnh `MobileDevTool.trace()/startNetwork()/completeNetwork()/failNetwork()` cho call site không có DI — cần `attachInstance(controller)` trước. |
@@ -257,6 +257,20 @@ final rootMenu = MobileDevToolMenu.resolve(
 
 `hiddenMenuItemIds` luôn thắng; một `menuItems` trùng `id` sẽ thay mục gốc và
 mục khai báo cuối cùng thắng khi trùng nhau.
+
+Mặc định chrome và root sheet vẫn dùng theme sáng của SDK. Host muốn giữ theme
+của mình khi dùng `MobileDevToolChrome` chỉ cần khai báo `themeBuilder`; không
+cần sao chép launcher hay root sheet:
+
+```dart
+MobileDevToolConfiguration(
+  themeBuilder: (context) => Theme.of(context),
+  // menuItems, hiddenMenuItemIds, panels...
+)
+```
+
+`themeBuilder` cũng có thể trả về một `ThemeData` đã `copyWith` để chỉ đổi
+developer tooling.
 
 `AccountToolPanel` và `StorageToolPanel` nên do app host sở hữu để kết nối
 đúng auth/session service hoặc secure storage. SDK chỉ host và hiển thị widget;

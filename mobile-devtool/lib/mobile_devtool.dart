@@ -26,7 +26,8 @@ export "src/mobile_devtool_configuration.dart"
         MobileDevToolFeatureFlag,
         MobileDevToolHostAction,
         MobileDevToolMenuItem,
-        MobileDevToolPanel;
+        MobileDevToolPanel,
+        MobileDevToolThemeBuilder;
 export "src/mobile_devtool_menu.dart" show MobileDevToolMenu;
 export "src/mobile_devtool_json_formatter.dart" show MobileDevToolJsonFormatter;
 export "src/mobile_devtool_kv_table.dart"

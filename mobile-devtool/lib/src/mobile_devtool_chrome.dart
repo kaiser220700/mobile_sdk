@@ -182,10 +182,12 @@ class _MobileDevToolChromeState extends State<MobileDevToolChrome> {
 
     return ExcludeFromFuzzTap(
       child: Theme(
-        data: MobileDevToolTheme.data(
-          context,
-          accentColor: widget.configuration.accentColor,
-        ),
+        data:
+            widget.configuration.themeBuilder?.call(context) ??
+            MobileDevToolTheme.data(
+              context,
+              accentColor: widget.configuration.accentColor,
+            ),
         child: AnimatedBuilder(
           animation: Listenable.merge([_annotationTool, _fuzzTapOverlayActive]),
           builder: (context, _) {
