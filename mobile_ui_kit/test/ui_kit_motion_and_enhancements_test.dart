@@ -3,6 +3,74 @@ import "package:flutter_test/flutter_test.dart";
 import "package:mobile_ui_kit/mobile_ui_kit.dart";
 
 void main() {
+  testWidgets("timeline motion interpolates keyframes and settles", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: UiKitMotion(
+          duration: const Duration(milliseconds: 100),
+          builder: (context, frame, child) => Text(
+            frame
+                .valueAt(const [
+                  UiKitMotionKeyframe(0, 10),
+                  UiKitMotionKeyframe(1, 30),
+                ])
+                .toStringAsFixed(0),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("10"), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text("20"), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text("30"), findsOneWidget);
+  });
+
+  testWidgets("timeline motion renders a static reduced-motion frame", (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: UiKitMotion(
+            loop: true,
+            reducedMotionValue: .5,
+            builder: (context, frame, child) =>
+                Text("${frame.reduceMotion}:${frame.progress}"),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("true:0.5"), findsOneWidget);
+  });
+
+  testWidgets("timeline motion pauses until activated", (tester) async {
+    Widget buildMotion(bool active) => MaterialApp(
+      home: UiKitMotion(
+        active: active,
+        duration: const Duration(milliseconds: 100),
+        builder: (context, frame, child) =>
+            Text(frame.progress.toStringAsFixed(1)),
+      ),
+    );
+
+    await tester.pumpWidget(buildMotion(false));
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text("0.0"), findsOneWidget);
+
+    await tester.pumpWidget(buildMotion(true));
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(find.text("0.5"), findsOneWidget);
+  });
+
   testWidgets("motion primitives preserve their child and update values", (
     tester,
   ) async {

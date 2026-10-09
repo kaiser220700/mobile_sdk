@@ -24,6 +24,7 @@
     {"id":"item","category":"navigation","html":"<button class=\"item\">...</button>","flutterWidget":"UiKitItem","states":["enabled","disabled","destructive"]},
     {"id":"list-item","category":"navigation","html":"<li>...</li>","flutterWidget":"UiKitListItem","states":["selected","disabled","divider"]},
     {"id":"list-entrance","category":"motion","html":"<li data-enter>...</li>","flutterWidget":"UiKitListEntrance","states":["animated","static","stagger"]},
+    {"id":"timeline-motion","category":"motion","html":"<div data-motion-timeline>...</div>","flutterWidget":"UiKitMotion","states":["one-shot","loop","paused","reduced-motion","keyframes"]},
     {"id":"fade-motion","category":"motion","html":"<div data-enter>...</div>","flutterWidget":"UiKitFadeMotion","states":["shown","hidden","directions"]},
     {"id":"bouncing-motion","category":"motion","html":"<div data-bounce>...</div>","flutterWidget":"UiKitBouncingMotion","states":["enabled","disabled"]},
     {"id":"shimmer","category":"motion","html":"<div aria-busy=\"true\">...</div>","flutterWidget":"UiKitShimmer","states":["enabled","disabled"]},

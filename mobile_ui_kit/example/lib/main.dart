@@ -556,6 +556,15 @@ class _PreviewHomeState extends State<_PreviewHome> {
       ),
     ),
     PreviewDefinition(
+      id: "timeline-motion",
+      category: "motion",
+      html: "<div data-motion-timeline>...</div>",
+      flutterWidget: "UiKitMotion",
+      description:
+          "Một clock chung điều phối reward landing, attention pulse và CTA nudge.",
+      builder: (context) => const _TimelineMotionPreview(),
+    ),
+    PreviewDefinition(
       id: "accordion",
       category: "disclosure",
       html: "<details><summary>...</summary></details>",
@@ -1036,6 +1045,81 @@ class _PreviewHomeState extends State<_PreviewHome> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TimelineMotionPreview extends StatelessWidget {
+  const _TimelineMotionPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    return UiKitMotion(
+      duration: const Duration(milliseconds: 2400),
+      loop: true,
+      builder: (BuildContext context, UiKitMotionFrame frame, Widget? child) {
+        final double landingScale = frame.valueAt(const [
+          UiKitMotionKeyframe(0, .82),
+          UiKitMotionKeyframe(.2, 1.08, Curves.easeOutBack),
+          UiKitMotionKeyframe(.32, 1),
+          UiKitMotionKeyframe(1, 1),
+        ]);
+        final double landingOpacity = frame.valueAt(const [
+          UiKitMotionKeyframe(0, 0),
+          UiKitMotionKeyframe(.16, 1, Curves.easeOut),
+          UiKitMotionKeyframe(1, 1),
+        ]);
+        final double pulseScale = frame.valueAt(const [
+          UiKitMotionKeyframe(0, 1),
+          UiKitMotionKeyframe(.54, 1),
+          UiKitMotionKeyframe(.68, 1.05, Curves.easeOut),
+          UiKitMotionKeyframe(.82, 1, Curves.easeIn),
+          UiKitMotionKeyframe(1, 1),
+        ]);
+        final double nudge = frame.valueAt(const [
+          UiKitMotionKeyframe(0, 0),
+          UiKitMotionKeyframe(.74, 0),
+          UiKitMotionKeyframe(.8, 6, Curves.easeOut),
+          UiKitMotionKeyframe(.86, -3, Curves.easeInOut),
+          UiKitMotionKeyframe(.92, 0, Curves.easeOut),
+          UiKitMotionKeyframe(1, 0),
+        ]);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Opacity(
+              opacity: landingOpacity,
+              child: Transform.scale(
+                scale: landingScale,
+                child: Chip(
+                  avatar: Icon(Icons.stars_rounded, color: colors.primary),
+                  label: const Text("Reward landing"),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Transform.scale(
+              scale: pulseScale,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Attention pulse",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Transform.translate(
+              offset: Offset(nudge, 0),
+              child: FilledButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text("CTA nudge"),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
