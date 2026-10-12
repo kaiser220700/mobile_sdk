@@ -53,6 +53,7 @@ export "src/timeline/ui_kit_timeline.dart";
 export "src/tabs/ui_kit_tabs.dart";
 export "src/toast/ui_kit_toast_overlay.dart";
 export "src/toast/ui_kit_toast_queue.dart";
+export "src/toast/ui_kit_toast_surface.dart";
 export "src/toast/ui_kit_toast_type.dart";
 export "src/tooltip/ui_kit_tooltip.dart";
 export "src/tooltip/ui_kit_tooltip_coordinator.dart";

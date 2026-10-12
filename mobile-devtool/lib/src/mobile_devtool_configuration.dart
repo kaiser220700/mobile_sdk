@@ -1,4 +1,11 @@
-import "package:flutter/widgets.dart";
+import "package:flutter/material.dart";
+
+/// Builds the theme used by SDK-owned devtool chrome and sheets.
+///
+/// The builder receives the ambient host context. Return [Theme.of] from that
+/// context to keep the host's theme unchanged, or return a derived theme for
+/// developer tooling only.
+typedef MobileDevToolThemeBuilder = ThemeData Function(BuildContext context);
 
 class MobileDevToolHostAction {
   const MobileDevToolHostAction({
@@ -102,6 +109,10 @@ class MobileDevToolConfiguration {
     this.hiddenMenuItemIds = const {},
     this.featureFlags = const [],
     this.accentColor,
+    this.bubbleBackgroundColor,
+    this.bubbleForegroundColor,
+    this.bubbleBorderColor,
+    this.themeBuilder,
   });
 
   final String title;
@@ -125,4 +136,32 @@ class MobileDevToolConfiguration {
   /// Optional branding accent for SDK-drawn chrome (bubble, buttons). Falls
   /// back to the ambient `Theme`'s primary color when omitted.
   final Color? accentColor;
+
+  /// Optional background color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.surface]. Without a host theme it preserves the SDK's
+  /// existing white surface.
+  final Color? bubbleBackgroundColor;
+
+  /// Optional icon color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.primary]. Without a host theme, [accentColor] remains the
+  /// legacy fallback.
+  final Color? bubbleForegroundColor;
+
+  /// Optional outline color for the launcher bubble.
+  ///
+  /// When [themeBuilder] is supplied this defaults to that theme's
+  /// [ColorScheme.outline]. Without a host theme it preserves the SDK's
+  /// existing black outline.
+  final Color? bubbleBorderColor;
+
+  /// Optional theme for SDK-owned chrome and the default root sheet.
+  ///
+  /// When omitted, the SDK keeps its existing light devtool theme. Set this
+  /// to `(context) => Theme.of(context)` when the host wants the devtool to
+  /// inherit its own theme without taking ownership of the SDK layout.
+  final MobileDevToolThemeBuilder? themeBuilder;
 }

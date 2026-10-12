@@ -2,6 +2,17 @@
 
 All notable changes to this package are documented in this file.
 
+## 0.6.6 - 2026-10-12
+
+### Added
+
+- Added `MobileDevToolMenu.resolve`, a presentation-free root-menu resolver so
+  hosts can apply `MobileDevToolConfiguration` while retaining their own
+  launcher, sheet surface, and theme.
+- Added `MobileDevToolConfiguration.themeBuilder` so SDK-owned chrome and the
+  default root sheet can inherit or derive the host theme without changing
+  their default appearance.
+
 ## 0.5.0 - 2026-10-08
 
 ### Changed

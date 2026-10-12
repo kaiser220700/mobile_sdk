@@ -12,6 +12,19 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
+## 0.6.6 - 2026-10-12
+
+### Added
+
+- Added composable timeline motion and structured, SDK-owned toast
+  notifications to the UI Kit, including host-provided leading visuals.
+- Added presentation-free devtool root-menu composition and host theme
+  configuration.
+
+### Changed
+
+- Aligned all SDK packages to `0.6.6`.
+
 ## 0.5.0 - 2026-10-08
 
 ### Added

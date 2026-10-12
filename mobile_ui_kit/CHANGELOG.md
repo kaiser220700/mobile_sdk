@@ -2,6 +2,21 @@
 
 All notable changes to this package are documented in this file.
 
+## 0.6.6 - 2026-10-12
+
+### Added
+
+- Added composable timeline motion primitives.
+- Added structured SDK-owned toast notifications with queueing, safe-area
+  placement, auto-dismiss, tap actions, drag dismissal, and optional
+  slide-from-top entrance motion.
+- Added `UiKitToastAppearance.leading` for a host-provided leading widget;
+  artwork replaces the type/default icon without icon color treatment.
+
+### Fixed
+
+- Improved `lockDownward` toast drag activation and axis handling.
+
 ## 0.5.0 - 2026-10-08
 
 ### Changed

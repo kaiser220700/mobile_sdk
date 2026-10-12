@@ -255,26 +255,28 @@ void main() {
 
   testWidgets("button exposes its accessible name only once", (tester) async {
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
-
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: Material(
-          child: UiKitButton.text(onPressed: _noop, label: "Save changes"),
+    try {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Material(
+            child: UiKitButton.text(onPressed: _noop, label: "Save changes"),
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(
-      tester.getSemantics(find.byType(UiKitButton)),
-      matchesSemantics(
-        label: "Save changes",
-        isButton: true,
-        hasEnabledState: true,
-        isEnabled: true,
-        hasSelectedState: true,
-      ),
-    );
+      expect(
+        tester.getSemantics(find.byType(UiKitButton)),
+        matchesSemantics(
+          label: "Save changes",
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasSelectedState: true,
+        ),
+      );
+    } finally {
+      semantics.dispose();
+    }
   });
 
   testWidgets("keeps scaffold content unpadded when safe area is disabled", (

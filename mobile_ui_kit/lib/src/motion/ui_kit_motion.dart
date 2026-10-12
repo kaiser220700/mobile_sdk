@@ -2,6 +2,176 @@ import "dart:math" as math;
 
 import "package:flutter/widgets.dart";
 
+/// A point in a normalized [UiKitMotion] timeline.
+class UiKitMotionKeyframe {
+  const UiKitMotionKeyframe(this.at, this.value, [this.curve = Curves.linear])
+    : assert(at >= 0 && at <= 1);
+
+  final double at;
+  final double value;
+  final Curve curve;
+}
+
+/// Read-only timeline state supplied to [UiKitMotion.builder].
+class UiKitMotionFrame {
+  const UiKitMotionFrame({required this.progress, required this.reduceMotion});
+
+  /// The normalized timeline position after [UiKitMotion.curve] is applied.
+  final double progress;
+
+  /// Whether the platform has asked for animations to be disabled.
+  final bool reduceMotion;
+
+  /// Interpolates [frames] at [progress]. Frames must be ordered by [UiKitMotionKeyframe.at].
+  double valueAt(List<UiKitMotionKeyframe> frames) {
+    assert(frames.isNotEmpty);
+    if (frames.isEmpty || progress <= frames.first.at) {
+      return frames.isEmpty ? 0 : frames.first.value;
+    }
+    for (int index = 1; index < frames.length; index++) {
+      final UiKitMotionKeyframe next = frames[index];
+      if (progress <= next.at) {
+        final UiKitMotionKeyframe previous = frames[index - 1];
+        final double span = next.at - previous.at;
+        if (span <= 0) {
+          return next.value;
+        }
+        final double localProgress = (progress - previous.at) / span;
+        return previous.value +
+            (next.value - previous.value) *
+                previous.curve.transform(localProgress);
+      }
+    }
+    return frames.last.value;
+  }
+}
+
+/// Builds a host-owned visual effect from a timeline [UiKitMotionFrame].
+typedef UiKitMotionBuilder =
+    Widget Function(
+      BuildContext context,
+      UiKitMotionFrame frame,
+      Widget? child,
+    );
+
+/// A dependency-free timeline host for custom product motion.
+///
+/// Use this when a host needs a choreography beyond the focused fade, bounce,
+/// shimmer, and counter primitives in this package. The host owns assets,
+/// colors, and transforms; this widget owns ticker lifecycle and reduced-motion
+/// behavior.
+class UiKitMotion extends StatefulWidget {
+  const UiKitMotion({
+    required this.builder,
+    this.child,
+    this.active = true,
+    this.loop = false,
+    this.duration = const Duration(milliseconds: 1200),
+    this.curve = Curves.linear,
+    this.reducedMotionValue,
+    super.key,
+  }) : assert(duration > Duration.zero),
+       assert(
+         reducedMotionValue == null ||
+             (reducedMotionValue >= 0 && reducedMotionValue <= 1),
+       );
+
+  final UiKitMotionBuilder builder;
+  final Widget? child;
+
+  /// Pauses the timeline while false and resumes it when true again.
+  final bool active;
+  final bool loop;
+  final Duration duration;
+  final Curve curve;
+
+  /// The static timeline position used when the platform disables animation.
+  /// Defaults to the settled end for one-shot motion and the rest frame for loops.
+  final double? reducedMotionValue;
+
+  @override
+  State<UiKitMotion> createState() => _UiKitMotionState();
+}
+
+class _UiKitMotionState extends State<UiKitMotion>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: widget.duration,
+    vsync: this,
+  );
+  bool _reduceMotion = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sync();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(covariant UiKitMotion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (oldWidget.active != widget.active ||
+        oldWidget.loop != widget.loop ||
+        oldWidget.reducedMotionValue != widget.reducedMotionValue ||
+        oldWidget.duration != widget.duration) {
+      _sync();
+    }
+  }
+
+  void _sync() {
+    if (_reduceMotion) {
+      _controller.stop();
+      _controller.value = widget.reducedMotionValue ?? (widget.loop ? 0 : 1);
+      return;
+    }
+    if (!widget.active) {
+      _controller.stop();
+      return;
+    }
+    if (widget.loop) {
+      _controller.repeat();
+    } else {
+      _controller.forward();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Animation<double> animation = CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve,
+    );
+    return AnimatedBuilder(
+      animation: animation,
+      child: widget.child,
+      builder: (BuildContext context, Widget? child) => widget.builder(
+        context,
+        UiKitMotionFrame(
+          progress: animation.value,
+          reduceMotion: _reduceMotion,
+        ),
+        child,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
 /// Direction used by [UiKitFadeMotion] when its child enters the viewport.
 enum UiKitMotionDirection { up, down, left, right }
 

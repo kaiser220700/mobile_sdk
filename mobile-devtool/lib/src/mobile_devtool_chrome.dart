@@ -180,12 +180,17 @@ class _MobileDevToolChromeState extends State<MobileDevToolChrome> {
   Widget build(BuildContext context) {
     if (!widget.enabled) return const SizedBox.shrink();
 
-    return ExcludeFromFuzzTap(
-      child: Theme(
-        data: MobileDevToolTheme.data(
+    final hostTheme = widget.configuration.themeBuilder?.call(context);
+    final theme =
+        hostTheme ??
+        MobileDevToolTheme.data(
           context,
           accentColor: widget.configuration.accentColor,
-        ),
+        );
+
+    return ExcludeFromFuzzTap(
+      child: Theme(
+        data: theme,
         child: AnimatedBuilder(
           animation: Listenable.merge([_annotationTool, _fuzzTapOverlayActive]),
           builder: (context, _) {
@@ -204,6 +209,15 @@ class _MobileDevToolChromeState extends State<MobileDevToolChrome> {
                     position: _bubblePosition,
                     idle: _bubbleIdle,
                     accentColor: widget.configuration.accentColor,
+                    backgroundColor:
+                        widget.configuration.bubbleBackgroundColor ??
+                        hostTheme?.colorScheme.surface,
+                    foregroundColor:
+                        widget.configuration.bubbleForegroundColor ??
+                        hostTheme?.colorScheme.primary,
+                    borderColor:
+                        widget.configuration.bubbleBorderColor ??
+                        hostTheme?.colorScheme.outline,
                     onTap: () => unawaited(_openMenu()),
                   ),
                 if (isFuzzTapOpen)

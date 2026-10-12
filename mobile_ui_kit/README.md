@@ -68,10 +68,34 @@ depends on `mobile_ui_kit`.
 ## Motion and compact layout primitives
 
 The kit also includes dependency-free motion and composition primitives:
-`UiKitFadeMotion`, `UiKitBouncingMotion`, `UiKitShimmer`, `UiKitFlipCounter`,
+`UiKitMotion`, `UiKitFadeMotion`, `UiKitBouncingMotion`, `UiKitShimmer`, `UiKitFlipCounter`,
 `UiKitAvatarStack`, `UiKitDashedBorder`, and `UiKitQuantityStepper`. They keep
 content and colors owned by the host, while supplying the behavior and
 accessibility wiring shared by mobile experiences.
+
+Use `UiKitMotion` for a product-specific choreography that needs more than one
+of the focused primitives. It owns the ticker, respects the platform reduced-
+motion setting, and supplies one normalized timeline to the host's builder.
+Set `active` to false when the host knows its content is hidden to pause it:
+
+```dart
+UiKitMotion(
+  duration: const Duration(milliseconds: 1200),
+  loop: true,
+  builder: (context, frame, child) {
+    final scale = frame.valueAt(const [
+      UiKitMotionKeyframe(0, 1),
+      UiKitMotionKeyframe(.5, 1.06, Curves.easeOut),
+      UiKitMotionKeyframe(1, 1, Curves.easeIn),
+    ]);
+    return Transform.scale(scale: scale, child: child);
+  },
+  child: const Text('Reward'),
+)
+```
+
+The interactive preview includes a `timeline-motion` example with reward
+landing, attention pulse, and CTA nudge choreography.
 
 For host-owned asynchronous or platform work, use `UiKitAsyncSuggestionField`,
 `UiKitFileAttachmentTile`, `UiKitMediaPicker`, and `UiKitCountdown`. These

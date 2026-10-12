@@ -1,0 +1,26 @@
+name: Verify release metadata
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - "release/**"
+  push:
+    branches:
+      - main
+      - develop
+      - "release/**"
+
+permissions:
+  contents: read
+
+jobs:
+  release-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify version and changelog policy
+        env:
+          TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}
+        run: ./tool/verify_release_metadata.sh "$TARGET_BRANCH"

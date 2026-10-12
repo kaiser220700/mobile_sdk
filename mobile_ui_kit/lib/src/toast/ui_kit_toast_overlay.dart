@@ -3,13 +3,14 @@ import "dart:async";
 import "package:flutter/material.dart";
 
 import "package:mobile_ui_kit/src/toast/ui_kit_toast_queue.dart";
+import "package:mobile_ui_kit/src/toast/ui_kit_toast_surface.dart";
 
 /// Widget mount 1 lần (thường ở root, cạnh `child` chính của app) — lắng
-/// nghe [queue] và hiển thị request hiện tại qua chính `builder` của request
-/// đó. Tự advance khi `duration` hết. Dismiss-gesture (swipe...) do app-layer
-/// tự bọc quanh nội dung trong `builder` của từng `UiKitToastRequest`, gọi
-/// `queue.dismissCurrent()` khi cần — package không ép cơ chế dismiss cụ
-/// thể nào.
+/// nghe [queue], hiển thị toast tuần tự và tự advance khi `duration` hết.
+///
+/// Legacy [UiKitToastRequest.builder] requests preserve their app-owned
+/// visual and interaction. [UiKitToastRequest.content] requests receive the
+/// SDK-owned surface, safe area, motion, tap and swipe-to-dismiss behavior.
 class UiKitToastOverlay extends StatefulWidget {
   const UiKitToastOverlay({
     required this.queue,
@@ -70,6 +71,7 @@ class _UiKitToastOverlayState extends State<UiKitToastOverlay> {
   @override
   Widget build(BuildContext context) {
     final request = widget.queue.current;
+    final entrance = request?.content?.entrance;
 
     return Stack(
       fit: StackFit.expand,
@@ -80,12 +82,24 @@ class _UiKitToastOverlayState extends State<UiKitToastOverlay> {
           child: IgnorePointer(
             ignoring: request == null,
             child: AnimatedSwitcher(
-              duration: widget.animationDuration,
+              duration: entrance == UiKitToastEntrance.slideFromTop
+                  ? Duration.zero
+                  : widget.animationDuration,
+              transitionBuilder: (child, animation) =>
+                  entrance == UiKitToastEntrance.slideFromTop
+                  ? child
+                  : FadeTransition(opacity: animation, child: child),
               child: request == null
                   ? const SizedBox.shrink(key: ValueKey("ui-kit-toast-empty"))
                   : KeyedSubtree(
                       key: ValueKey(request),
-                      child: Builder(builder: request.builder),
+                      child: request.content != null
+                          ? UiKitToastSurface(
+                              request: request,
+                              onDismiss: widget.queue.dismissCurrent,
+                              animationDuration: widget.animationDuration,
+                            )
+                          : Builder(builder: request.builder),
                     ),
             ),
           ),
