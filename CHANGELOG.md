@@ -12,6 +12,10 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
+## Unreleased
+
+Target version: `0.7.0`.
+
 ## 0.6.6 - 2026-10-12
 
 ### Added
