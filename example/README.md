@@ -47,3 +47,5 @@ flutter create --platforms=android,ios .
 Màn hình được chia thành ba tab. Bubble ở góc màn hình mở `mobile_devtool`;
 `mobile_ui_kit` được dùng trực tiếp trong tab UI Kit; tab Update Policy mô
 phỏng config từ remote và hiển thị quyết định của `mobile_update`.
+
+The showcase explicitly depends on `mobile_devtool`; `mobile_sdk` itself no longer includes developer tooling.

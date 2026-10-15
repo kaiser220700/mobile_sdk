@@ -334,3 +334,11 @@ trang nên không tự thấy `ScrollNotification` của nó.
 `lib/core/dev_tool/app_dev_tool_panels.dart` của app host — đây là nơi DUY
 NHẤT app còn "biết" về business logic của dev tool (auth, storage, KYC, mock
 data...); SDK không import ngược bất kỳ thứ gì từ app.
+
+## SDK-12 migration
+
+Refresh/load-more now lives in `mobile_ui_kit`. Use `UiKitRefreshLoadMore`,
+`UiKitRefreshConfiguration`, `UiKitRefreshContentBuilder` and
+`UiKitLoadMoreContentBuilder` from that package or `mobile_sdk` in production.
+The old names remain deprecated aliases. See
+[production migration](../mobile_sdk/README.md#production-without-devtool-sdk-12-070).

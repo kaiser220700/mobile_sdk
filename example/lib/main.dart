@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:mobile_devtool/mobile_devtool.dart";
 import "package:mobile_sdk/mobile_sdk.dart";
 
 void main() => runApp(const MobileSdkExampleApp());

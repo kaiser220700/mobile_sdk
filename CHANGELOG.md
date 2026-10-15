@@ -12,9 +12,13 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
-## Unreleased
+## 0.7.0 - 2026-10-15
 
-Target version: `0.7.0`.
+- SDK-12: move refresh/load-more to `mobile_ui_kit` (`UiKitRefreshLoadMore`,
+  `UiKitRefreshConfiguration`); keep deprecated aliases in DevTool.
+- Remove the DevTool dependency and exports from `mobile_sdk`. Developer
+  tooling now requires an explicit `mobile_devtool` dependency and import.
+
 
 ## 0.6.6 - 2026-10-12
 

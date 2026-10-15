@@ -135,3 +135,11 @@ duplicates are ignored. Set `tapThrottleDuration: Duration.zero` on a direct
 
 The JSON file is the complete list, including foundation, layout, navigation,
 disclosure, motion and overlay primitives.
+
+## Refresh and pagination (SDK-12)
+
+Use `UiKitRefreshLoadMore` and `UiKitRefreshConfiguration` for production list
+refresh/pagination. `onRefresh` returns `FutureOr<void>`; `onLoadMore` returns
+`FutureOr<bool>` (`false` marks the end of the list). Existing controllers,
+indicator widgets and status enums are exported from this package. No DevTool
+dependency is required. See [migration guide](../mobile_sdk/README.md).

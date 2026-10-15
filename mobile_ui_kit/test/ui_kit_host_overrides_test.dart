@@ -224,9 +224,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: MediaQuery(
-          data: const MediaQueryData(
-            padding: EdgeInsets.only(bottom: 24),
-          ),
+          data: const MediaQueryData(padding: EdgeInsets.only(bottom: 24)),
           child: Material(
             child: Align(
               alignment: Alignment.topCenter,

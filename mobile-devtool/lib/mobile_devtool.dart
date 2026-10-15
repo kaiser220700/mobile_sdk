@@ -2,7 +2,7 @@
 ///
 /// The repository contains additional source-only devtool experiments, but
 /// the public package surface exports the network/trace tooling and the
-/// refresh/load-more primitives documented in the README.
+/// deprecated refresh/load-more aliases. Production primitives live in mobile_ui_kit.
 library;
 
 // Keep the package's public surface explicit. The remaining source files are
@@ -50,7 +50,7 @@ export "src/mobile_devtool_refresh.dart"
         MobileDevToolRefreshContentBuilder,
         MobileDevToolRefreshLoadMore;
 
-export "package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart"
+export "package:mobile_ui_kit/mobile_ui_kit.dart"
     show
         ClassicFooter,
         ClassicHeader,
