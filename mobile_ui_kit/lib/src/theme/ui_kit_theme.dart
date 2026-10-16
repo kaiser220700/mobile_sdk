@@ -7,26 +7,26 @@ import "package:flutter/material.dart";
 /// These defaults keep the package usable on its own without assuming a
 /// product brand. Apps can override them globally with [UiKitThemeData].
 abstract final class UiKitTheme {
-  static const primary = Color(0xFF3F5F73);
-  static const primaryBg = Color(0xFFEAF1F5);
+  static const primary = Color(0xFF2563EB);
+  static const primaryBg = Color(0xFFEFF6FF);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceMuted = Color(0xFFF7F8FA);
-  static const text = Color(0xFF1F2933);
-  static const textMuted = Color(0xFF667085);
-  static const textDisabled = Color(0xFFB8C1CC);
+  static const surfaceMuted = Color(0xFFF8FAFC);
+  static const text = Color(0xFF0F172A);
+  static const textMuted = Color(0xFF475569);
+  static const textDisabled = Color(0xFF94A3B8);
   static const textInverse = Color(0xFFFFFFFF);
-  static const success = Color(0xFF2E7D5B);
-  static const successBg = Color(0xFFE8F5EE);
-  static const warning = Color(0xFFA15C00);
-  static const warningBg = Color(0xFFFFF4E5);
-  static const error = Color(0xFFB42318);
-  static const errorBg = Color(0xFFFEECEB);
-  static const info = Color(0xFF2563EB);
-  static const infoBg = Color(0xFFEFF4FF);
-  static const border = Color(0xFFD0D5DD);
-  static const borderStrong = Color(0xFFB8C0CC);
-  static const borderControl = Color(0xFF667085);
-  static const focusRing = Color(0xFF8AB4F8);
+  static const success = Color(0xFF15803D);
+  static const successBg = Color(0xFFF0FDF4);
+  static const warning = Color(0xFFB45309);
+  static const warningBg = Color(0xFFFFFBEB);
+  static const error = Color(0xFFB91C1C);
+  static const errorBg = Color(0xFFFEF2F2);
+  static const info = Color(0xFF0369A1);
+  static const infoBg = Color(0xFFF0F9FF);
+  static const border = Color(0xFFE2E8F0);
+  static const borderStrong = Color(0xFFCBD5E1);
+  static const borderControl = Color(0xFF64748B);
+  static const focusRing = Color(0xFF93C5FD);
 
   static const spacing2xs = 2.0;
   static const spacingXs = 4.0;
@@ -34,12 +34,12 @@ abstract final class UiKitTheme {
   static const spacingMd = 12.0;
   static const spacingLg = 16.0;
   static const spacingXl = 24.0;
-  static const radiusSm = 4.0;
-  static const radiusMd = 8.0;
-  static const radiusLg = 12.0;
-  static const radiusXl = 16.0;
+  static const radiusSm = 6.0;
+  static const radiusMd = 12.0;
+  static const radiusLg = 16.0;
+  static const radiusXl = 24.0;
   static const radiusFull = 9999.0;
-  static const touchMinTarget = 44.0;
+  static const touchMinTarget = 48.0;
 
   static const body = TextStyle(fontSize: 14, height: 1.5, color: text);
   static const bodyMedium = TextStyle(
@@ -72,6 +72,79 @@ abstract final class UiKitTheme {
     fontWeight: FontWeight.w700,
     color: text,
   );
+
+  /// Complete light theme synchronizing Material and kit semantic tokens.
+  static ThemeData material({UiKitThemeData tokens = UiKitThemeData.defaults}) {
+    final scheme = ColorScheme.light(
+      primary: tokens.primary,
+      onPrimary: tokens.textInverse,
+      primaryContainer: tokens.primaryBg,
+      onPrimaryContainer: tokens.text,
+      secondary: tokens.primary,
+      onSecondary: tokens.textInverse,
+      secondaryContainer: tokens.primaryBg,
+      onSecondaryContainer: tokens.primary,
+      error: tokens.error,
+      onError: tokens.textInverse,
+      errorContainer: tokens.errorBg,
+      onErrorContainer: tokens.error,
+      surface: tokens.surface,
+      onSurface: tokens.text,
+      onSurfaceVariant: tokens.textMuted,
+      outline: tokens.borderControl,
+      outlineVariant: tokens.border,
+    );
+    final base = ThemeData(useMaterial3: true, colorScheme: scheme);
+    return base.copyWith(
+      scaffoldBackgroundColor: tokens.surfaceMuted,
+      extensions: [tokens],
+      textTheme: base.textTheme.copyWith(
+        bodyMedium: tokens.body,
+        bodyLarge: tokens.bodyLarge,
+        bodySmall: tokens.caption,
+        titleLarge: tokens.title,
+        titleMedium: tokens.bodySemibold,
+        labelLarge: tokens.button.copyWith(color: tokens.text),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: tokens.surface,
+        foregroundColor: tokens.text,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: tokens.surface,
+        contentPadding: EdgeInsets.all(tokens.spacingLg),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(tokens.radiusMd),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(tokens.radiusMd),
+          borderSide: BorderSide(color: tokens.borderControl),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(tokens.radiusMd),
+          borderSide: BorderSide(color: tokens.primary, width: 2),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: tokens.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(tokens.radiusXl),
+          ),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: tokens.border,
+        thickness: 1,
+        space: 1,
+      ),
+    );
+  }
 
   /// Reads the app-provided UI Kit theme, falling back to the package
   /// defaults when the app has not registered one.

@@ -36,14 +36,22 @@ final class MobileFirebaseRuntime {
   final MobileFirebasePrivacy privacy;
   final Set<MobileFirebaseModule> modules;
   final List<MobileFirebaseAdapter> _adapters;
-  bool _disposed = false;
+  Future<void>? _disposing;
 
-  Future<void> dispose() async {
-    if (_disposed) return;
-    _disposed = true;
+  Future<void> dispose() => _disposing ??= _dispose();
+
+  Future<void> _dispose() async {
+    Object? firstError;
+    StackTrace? firstStack;
     for (final adapter in _adapters.reversed) {
-      await adapter.dispose();
+      try {
+        await adapter.dispose();
+      } catch (error, stackTrace) {
+        firstError ??= error;
+        firstStack ??= stackTrace;
+      }
     }
+    if (firstError != null) Error.throwWithStackTrace(firstError, firstStack!);
   }
 }
 

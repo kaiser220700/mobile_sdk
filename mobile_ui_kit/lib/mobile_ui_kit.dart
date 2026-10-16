@@ -79,3 +79,6 @@ export "package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart"
         WaterDropMaterialHeader;
 
 export "src/ui_api.dart";
+
+export 'src/formatting/decimal_input_formatter.dart';
+export 'src/layout/bottom_action_area.dart';

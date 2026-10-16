@@ -4,6 +4,9 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Dispose all adapters even if one cleanup fails; concurrent disposal callers
+  await the same cleanup and receive the original failure.
+
 - Add concise public names with module import aliases; keep existing names for migration.
 
 ## 0.7.0 - 2026-10-15

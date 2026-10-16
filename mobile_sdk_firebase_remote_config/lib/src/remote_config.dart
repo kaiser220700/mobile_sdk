@@ -88,6 +88,10 @@ final class MobileRemoteConfigSource
   ConfigSnapshot _snapshot;
   StreamSubscription<void>? _subscription;
   bool _initialized = false;
+  bool _disposed = false;
+  Future<void>? _starting;
+  Future<void>? _disposing;
+  Future<ConfigSnapshot>? _loading;
 
   @override
   MobileFirebaseModule get module => MobileFirebaseModule.remoteConfig;
@@ -100,40 +104,60 @@ final class MobileRemoteConfigSource
       start();
 
   /// Starts the transport; test transports do not need a native Firebase app.
-  Future<void> start() async {
-    if (_initialized) return;
-    _initialized = true;
+  Future<void> start() {
+    if (_disposed) return Future.error(StateError('Remote Config is disposed'));
+    if (_initialized) return Future.value();
+    return _starting ??= _start().whenComplete(() => _starting = null);
+  }
+
+  Future<void> _start() async {
     try {
       await _transport.configure(settings, schema.encodedDefaults);
+      if (_disposed) return;
       _accept(ConfigValueSource.cache);
-      _subscription = _transport.updates.listen((_) async {
-        try {
-          await _transport.activate();
-          _accept(ConfigValueSource.remote);
-        } catch (_) {
-          onStatus?.call('realtime_update_failed');
-        }
-      });
+      _subscription = _transport.updates.listen(
+        (_) async {
+          try {
+            await _transport.activate();
+            if (!_disposed) _accept(ConfigValueSource.remote);
+          } catch (_) {
+            if (!_disposed) onStatus?.call('realtime_update_failed');
+          }
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          if (!_disposed) onStatus?.call('realtime_update_failed');
+        },
+      );
+      _initialized = true;
     } catch (_) {
-      _initialized = false;
-      onStatus?.call('initialize_failed');
+      if (!_disposed) onStatus?.call('initialize_failed');
     }
   }
 
   @override
-  Future<ConfigSnapshot> load() async {
-    if (!_initialized)
-      throw StateError('Initialize the Remote Config module first');
+  Future<ConfigSnapshot> load() {
+    if (_disposed || !_initialized) {
+      return Future.error(
+        StateError('Initialize a live Remote Config module first'),
+      );
+    }
+    return _loading ??= _load().whenComplete(() => _loading = null);
+  }
+
+  Future<ConfigSnapshot> _load() async {
     try {
       await _transport.fetchAndActivate().timeout(settings.fetchTimeout);
-      if (_accept(ConfigValueSource.remote)) onStatus?.call('fetch_succeeded');
+      if (!_disposed && _accept(ConfigValueSource.remote)) {
+        onStatus?.call('fetch_succeeded');
+      }
     } catch (_) {
-      onStatus?.call('fetch_failed');
+      if (!_disposed) onStatus?.call('fetch_failed');
     }
     return _snapshot;
   }
 
   bool _accept(ConfigValueSource source) {
+    if (_disposed) return false;
     try {
       final candidate = schema.decode(
         _transport.read(schema.names),
@@ -149,10 +173,20 @@ final class MobileRemoteConfigSource
   }
 
   @override
-  Future<void> dispose() async {
-    await _subscription?.cancel();
-    await _transport.dispose();
-    await _changes.close();
+  Future<void> dispose() {
+    if (_disposing != null) return _disposing!;
+    _disposed = true;
+    _initialized = false;
+    return _disposing = _dispose();
+  }
+
+  Future<void> _dispose() async {
+    try {
+      await _subscription?.cancel();
+      await _transport.dispose();
+    } finally {
+      await _changes.close();
+    }
   }
 }
 

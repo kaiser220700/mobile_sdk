@@ -14,6 +14,11 @@ class UiKitMediaPicker extends StatelessWidget {
     this.preview,
     this.errorText,
     this.uploadProgress,
+    this.uploading = false,
+    this.errorStyle,
+    this.sourcePicker,
+    this.replaceButtonBuilder,
+    this.removeButtonBuilder,
     this.onRemove,
     this.allowedSources = const {
       UiKitMediaSource.camera,
@@ -41,13 +46,30 @@ class UiKitMediaPicker extends StatelessWidget {
     this.removeIcon = Icons.close,
     super.key,
   }) : assert(aspectRatio > 0),
-       assert(borderWidth > 0);
+       assert(borderWidth > 0),
+       assert(
+         uploadProgress == null || (uploadProgress >= 0 && uploadProgress <= 1),
+       );
 
   final String label;
   final ValueChanged<UiKitMediaSource> onSelectSource;
   final Widget? preview;
   final String? errorText;
   final double? uploadProgress;
+  final bool uploading;
+  final TextStyle? errorStyle;
+
+  /// Host-owned presentation. Null means cancellation; only allowed sources
+  /// are accepted. The host owns closing its dialog or sheet.
+  final Future<UiKitMediaSource?> Function(
+    BuildContext context,
+    Set<UiKitMediaSource> allowedSources,
+  )?
+  sourcePicker;
+  final Widget Function(BuildContext context, VoidCallback? onPressed)?
+  replaceButtonBuilder;
+  final Widget Function(BuildContext context, VoidCallback? onPressed)?
+  removeButtonBuilder;
   final VoidCallback? onRemove;
   final Set<UiKitMediaSource> allowedSources;
   final bool enabled;
@@ -70,7 +92,9 @@ class UiKitMediaPicker extends StatelessWidget {
   final Color previewOverlayColor;
   final IconData removeIcon;
 
-  bool get _uploading => uploadProgress != null && uploadProgress! < 1;
+  bool get _uploading =>
+      uploading || (uploadProgress != null && uploadProgress! < 1);
+  bool get _interactive => enabled && !_uploading;
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +108,14 @@ class UiKitMediaPicker extends StatelessWidget {
         Semantics(label: label, child: field),
         if (preview != null) ...[
           SizedBox(height: theme.spacingSm),
-          OutlinedButton(
-            onPressed: enabled ? () => _showSources(context) : null,
-            child: Text(replaceLabel),
-          ),
+          replaceButtonBuilder?.call(
+                context,
+                _interactive ? () => _showSources(context) : null,
+              ) ??
+              OutlinedButton(
+                onPressed: _interactive ? () => _showSources(context) : null,
+                child: Text(replaceLabel),
+              ),
         ],
       ],
     );
@@ -95,7 +123,7 @@ class UiKitMediaPicker extends StatelessWidget {
 
   Widget _empty(BuildContext context, UiKitThemeData theme) => InkWell(
     borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
-    onTap: enabled ? () => _showSources(context) : null,
+    onTap: _interactive ? () => _showSources(context) : null,
     child: AspectRatio(
       aspectRatio: aspectRatio,
       child: DecoratedBox(
@@ -120,6 +148,14 @@ class UiKitMediaPicker extends StatelessWidget {
                   ),
               SizedBox(height: theme.spacingSm),
               Text(addLabel, style: labelStyle ?? theme.bodyMedium),
+              if (_uploading) CircularProgressIndicator(value: uploadProgress),
+              if (errorText != null)
+                Text(
+                  errorText!,
+                  style:
+                      errorStyle ?? theme.caption.copyWith(color: theme.error),
+                  textAlign: TextAlign.center,
+                ),
             ],
           ),
         ),
@@ -142,7 +178,13 @@ class UiKitMediaPicker extends StatelessWidget {
                 child: errorText != null
                     ? Padding(
                         padding: EdgeInsets.all(theme.spacingLg),
-                        child: Text(errorText!, textAlign: TextAlign.center),
+                        child: Text(
+                          errorText!,
+                          style:
+                              errorStyle ??
+                              theme.caption.copyWith(color: theme.error),
+                          textAlign: TextAlign.center,
+                        ),
                       )
                     : CircularProgressIndicator(value: uploadProgress),
               ),
@@ -151,11 +193,13 @@ class UiKitMediaPicker extends StatelessWidget {
             Positioned(
               top: theme.spacingSm,
               right: theme.spacingSm,
-              child: IconButton.filledTonal(
-                tooltip: removeLabel,
-                onPressed: onRemove,
-                icon: Icon(removeIcon),
-              ),
+              child:
+                  removeButtonBuilder?.call(context, onRemove) ??
+                  IconButton.filledTonal(
+                    tooltip: removeLabel,
+                    onPressed: onRemove,
+                    icon: Icon(removeIcon),
+                  ),
             ),
         ],
       ),
@@ -163,40 +207,49 @@ class UiKitMediaPicker extends StatelessWidget {
   );
 
   Future<void> _showSources(BuildContext context) async {
-    final source = await showModalBottomSheet<UiKitMediaSource>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (allowedSources.contains(UiKitMediaSource.camera))
-              ListTile(
-                leading: const Icon(Icons.camera_alt_outlined),
-                title: Text(cameraLabel),
-                onTap: () =>
-                    Navigator.pop(sheetContext, UiKitMediaSource.camera),
+    final source = sourcePicker != null
+        ? await sourcePicker!(context, Set.unmodifiable(allowedSources))
+        : await showModalBottomSheet<UiKitMediaSource>(
+            context: context,
+            builder: (sheetContext) => SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (allowedSources.contains(UiKitMediaSource.camera))
+                    ListTile(
+                      leading: const Icon(Icons.camera_alt_outlined),
+                      title: Text(cameraLabel),
+                      onTap: () =>
+                          Navigator.pop(sheetContext, UiKitMediaSource.camera),
+                    ),
+                  if (allowedSources.contains(UiKitMediaSource.gallery))
+                    ListTile(
+                      leading: const Icon(Icons.photo_library_outlined),
+                      title: Text(galleryLabel),
+                      onTap: () =>
+                          Navigator.pop(sheetContext, UiKitMediaSource.gallery),
+                    ),
+                  if (allowedSources.contains(UiKitMediaSource.file))
+                    ListTile(
+                      leading: const Icon(Icons.folder_open_outlined),
+                      title: Text(fileLabel),
+                      onTap: () =>
+                          Navigator.pop(sheetContext, UiKitMediaSource.file),
+                    ),
+                  ListTile(
+                    title: Text(cancelLabel),
+                    onTap: () => Navigator.pop(sheetContext),
+                  ),
+                ],
               ),
-            if (allowedSources.contains(UiKitMediaSource.gallery))
-              ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: Text(galleryLabel),
-                onTap: () =>
-                    Navigator.pop(sheetContext, UiKitMediaSource.gallery),
-              ),
-            if (allowedSources.contains(UiKitMediaSource.file))
-              ListTile(
-                leading: const Icon(Icons.folder_open_outlined),
-                title: Text(fileLabel),
-                onTap: () => Navigator.pop(sheetContext, UiKitMediaSource.file),
-              ),
-            ListTile(
-              title: Text(cancelLabel),
-              onTap: () => Navigator.pop(sheetContext),
             ),
-          ],
-        ),
-      ),
-    );
-    if (source != null && enabled) onSelectSource(source);
+          );
+    if (!context.mounted || source == null) return;
+    final current = context.widget;
+    if (current is UiKitMediaPicker &&
+        current._interactive &&
+        current.allowedSources.contains(source)) {
+      current.onSelectSource(source);
+    }
   }
 }

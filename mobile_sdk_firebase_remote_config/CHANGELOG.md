@@ -4,6 +4,9 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Coalesce concurrent initialization/fetches, reject use after disposal, ignore
+  late async results, handle update stream errors and make disposal idempotent.
+
 - Add concise public names with module import aliases; keep existing names for migration.
 
 ## 0.7.0 - 2026-10-15

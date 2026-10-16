@@ -267,7 +267,8 @@ class _UiKitTextFieldState extends State<UiKitTextField> {
       errorText: widget.errorText,
       helperText: widget.errorText == null ? widget.helperText : null,
       helperStyle: widget.helperStyle ?? theme.caption,
-      errorStyle: widget.helperStyle ?? theme.caption,
+      errorStyle:
+          widget.helperStyle ?? theme.caption.copyWith(color: theme.error),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

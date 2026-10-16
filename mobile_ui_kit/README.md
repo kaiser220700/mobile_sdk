@@ -156,3 +156,108 @@ refresh/pagination. `onRefresh` returns `FutureOr<void>`; `onLoadMore` returns
 `FutureOr<bool>` (`false` marks the end of the list). Existing controllers,
 indicator widgets and status enums are exported from this package. No DevTool
 dependency is required. See [migration guide](../mobile_sdk/README.md).
+
+### Decimal input and bottom actions
+
+```dart
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
+
+final formatter = ui.DecimalInputFormatter(
+  decimalDigits: 2,
+  decimalSeparator: ',',
+  maxIntegerDigits: 9,
+);
+// Pass [formatter] to ui.TextField(inputFormatters: ...).
+// Wrap a Scaffold.bottomNavigationBar action with ui.BottomActionArea.
+```
+
+The formatter preserves editing state and accepts either decimal key. It does
+not add grouping, round values, or calculate money. Empty text, a trailing
+separator and an optional minus sign are valid intermediate editing states.
+Parse and validate the completed value in the host application. Configure
+precision and limits for the field rather than applying a global quantity cap.
+`BottomActionArea` reserves the greater of its minimum spacing and device bottom
+padding; keyboard layout remains controlled by the host Scaffold.
+
+`ui.Autocomplete` debounces to the latest query and ignores obsolete results.
+Use `onSearchError: (error, stackTrace) { ... }` to report current search errors;
+failed searches return no options. The host can update `errorText` to present an
+error or retry action. Disposing or disabling the field prevents pending
+searches from starting; requests already sent remain owned by the host.
+
+### Host-owned media presentation
+
+`ui.MediaPicker` accepts `sourcePicker: (context, allowedSources) async => ...`.
+Open your own sheet/dialog and return an allowed `ui.MediaSource`, or null on
+cancel. Results arriving after disposal, disabling or upload start are ignored.
+Use `replaceButtonBuilder` and `removeButtonBuilder` for branded controls; a null
+callback means the control must be disabled. Existing Material controls remain
+the defaults. An absent remove callback hides the remove control.
+
+Set `uploading: true` without `uploadProgress` for indeterminate upload. A
+progress value below 1 also implies uploading for existing callers. Selection,
+replacement and removal are blocked while uploading. `errorText` now appears
+for empty fields too; `errorStyle` controls its typography/color. Permissions,
+file access and transfers remain host-owned.
+
+### Concurrent loading
+
+```dart
+final loading = ui.LoadingController();
+await loading.run(() => repository.save());
+// Or hold a lease explicitly:
+final release = loading.acquire();
+try {
+  await repository.refresh();
+} finally {
+  release();
+}
+```
+
+Each acquire returns an idempotent release callback. Dispose the controller with
+its owning scope; releasing an old lease after disposal is safe. A widget that
+acquires a lease must release it when unmounted if its operation does not finish.
+`run` releases on both success and failure and preserves the operation's result
+or error. It does not cancel the operation when the controller is disposed.
+
+Active leases keep the spinner visible. Manual `showSpinner`/`showSuccess`/
+`showError` states become visible after the last lease releases; `hide` clears
+only the manual state. Therefore dismissing an overlay cannot hide outstanding
+leases. `activeCount` reports outstanding leases, not manual visibility. The
+controller is local to its owner; acquiring loading does not install a global
+app overlay.
+
+### Default visual system
+
+The kit includes a complete light visual baseline: blue primary, slate neutral
+surfaces/text/borders, and green/amber/red/sky semantic pairs. Defaults use a
+2/4/8/12/16/24 spacing scale, 6/12/16/24 corner radii, 48 logical pixel minimum
+touch targets, and 12/14/16/24 typography roles. Platform fonts remain host-owned.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
+
+MaterialApp(
+  theme: ui.Theme.material(),
+  home: const MyHomePage(),
+);
+```
+
+`ui.Theme.material(tokens: myTokens)` synchronizes Material controls, sheets,
+app bars, typography and kit components. Existing apps can continue registering
+only `ui.ThemeData` as a ThemeExtension in their own Material theme. This factory
+returns a light theme; it is not an automatic dark-mode generator. Override the
+complete semantic palette for a product theme rather than replacing a single
+brand color and assuming contrast remains valid.
+
+Open **UI foundations** from the preview app bar for a composed sample. Default
+text/semantic foreground pairs have contrast tests at 4.5:1; this is not a claim
+that every component/state or an arbitrary host theme meets WCAG. Disabled and
+focus indicators need separate evaluation. The default palette, corner radii and
+minimum target size changed visibly; explicitly themed hosts retain their
+specified tokens, while hosts relying on defaults should review layout changes.
+
+[Foundations preview](../docs/assets/ui-foundations.png) is rendered from the
+example widgets with a local system font for review; no font asset is bundled
+or required by the SDK.

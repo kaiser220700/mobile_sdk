@@ -15,6 +15,7 @@ class UiKitAsyncSuggestionField<T extends Object> extends StatefulWidget {
     required this.optionBuilder,
     required this.optionLabel,
     required this.onSelected,
+    this.onSearchError,
     this.controller,
     this.focusNode,
     this.placeholder,
@@ -33,6 +34,9 @@ class UiKitAsyncSuggestionField<T extends Object> extends StatefulWidget {
   final Widget Function(BuildContext context, T option) optionBuilder;
   final String Function(T option) optionLabel;
   final ValueChanged<T> onSelected;
+
+  /// Failed searches produce no options and report here when provided.
+  final void Function(Object error, StackTrace stackTrace)? onSearchError;
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final String? placeholder;
@@ -52,6 +56,18 @@ class _UiKitAsyncSuggestionFieldState<T extends Object>
     extends State<UiKitAsyncSuggestionField<T>> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  int _searchRevision = 0;
+  Timer? _debounceTimer;
+  Completer<void>? _debounceDone;
+
+  void _cancelDebounce() {
+    _debounceTimer?.cancel();
+    _debounceTimer = null;
+    final done = _debounceDone;
+    _debounceDone = null;
+    if (done != null && !done.isCompleted) done.complete();
+  }
+
   bool _ownsController = false;
   bool _ownsFocusNode = false;
 
@@ -71,6 +87,14 @@ class _UiKitAsyncSuggestionFieldState<T extends Object>
   @override
   void didUpdateWidget(covariant UiKitAsyncSuggestionField<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller ||
+        oldWidget.enabled != widget.enabled ||
+        oldWidget.onSearch != widget.onSearch ||
+        oldWidget.debounceDuration != widget.debounceDuration ||
+        oldWidget.minSearchLength != widget.minSearchLength) {
+      _searchRevision++;
+      _cancelDebounce();
+    }
     if (oldWidget.controller != widget.controller) {
       if (_ownsController) _controller.dispose();
       _ownsController = widget.controller == null;
@@ -84,12 +108,32 @@ class _UiKitAsyncSuggestionFieldState<T extends Object>
   }
 
   Future<Iterable<T>> _optionsFor(TextEditingValue value) async {
+    final revision = ++_searchRevision;
+    _cancelDebounce();
     final query = value.text.trim();
-    if (query.length < widget.minSearchLength) return <T>[];
+    if (!widget.enabled || query.length < widget.minSearchLength) return <T>[];
     if (widget.debounceDuration > Duration.zero) {
-      await Future<void>.delayed(widget.debounceDuration);
+      final done = Completer<void>();
+      _debounceDone = done;
+      _debounceTimer = Timer(widget.debounceDuration, () {
+        _debounceTimer = null;
+        _debounceDone = null;
+        done.complete();
+      });
+      await done.future;
     }
-    return widget.onSearch(query);
+    if (!mounted || revision != _searchRevision || !widget.enabled)
+      return <T>[];
+    try {
+      final options = await widget.onSearch(query);
+      if (!mounted || revision != _searchRevision) return <T>[];
+      return options.toList(growable: false);
+    } catch (error, stackTrace) {
+      if (mounted && revision == _searchRevision) {
+        widget.onSearchError?.call(error, stackTrace);
+      }
+      return <T>[];
+    }
   }
 
   @override
@@ -177,6 +221,8 @@ class _UiKitAsyncSuggestionFieldState<T extends Object>
 
   @override
   void dispose() {
+    _searchRevision++;
+    _cancelDebounce();
     if (_ownsController) _controller.dispose();
     if (_ownsFocusNode) _focusNode.dispose();
     super.dispose();

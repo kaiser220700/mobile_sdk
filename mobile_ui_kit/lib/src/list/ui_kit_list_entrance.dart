@@ -78,7 +78,7 @@ class _UiKitListEntranceState extends State<UiKitListEntrance>
 
   @override
   Widget build(BuildContext context) {
-    final curved = CurvedAnimation(parent: _controller, curve: widget.curve);
+    final curved = _controller.drive(CurveTween(curve: widget.curve));
     return FadeTransition(
       opacity: curved,
       child: SlideTransition(

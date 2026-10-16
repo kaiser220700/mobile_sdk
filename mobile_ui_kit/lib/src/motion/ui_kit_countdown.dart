@@ -30,7 +30,7 @@ class UiKitCountdown extends StatefulWidget {
 }
 
 class _UiKitCountdownState extends State<UiKitCountdown>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   AnimationController? _controller;
   late Duration _remaining;
 

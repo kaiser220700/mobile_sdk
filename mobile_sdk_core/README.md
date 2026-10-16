@@ -19,3 +19,24 @@ final schema = core.ConfigSchema([
 ]);
 final snapshot = schema.defaults();
 ```
+
+### Vietnamese dong in words
+
+Import this optional pure Dart entrypoint when presenting whole dong amounts:
+
+```dart
+import 'package:mobile_sdk_core/money.dart';
+
+final label = vietnameseDongInWords(1005);
+// một nghìn không trăm lẻ năm đồng
+final large = vietnameseDongBigIntInWords(BigInt.parse('1000000000000000000000'));
+```
+
+Amounts are integer dong, not cents or floating-point values. Negative amounts
+use “âm”; zero is “không đồng”. Output is lowercase and uses “lẻ”, “nghìn”,
+“mốt” and “lăm”. This converts amounts to text; it does not provide speech audio
+or perform financial calculations.
+
+An optional local AOT microbenchmark lives in `benchmark/money_benchmark.dart`;
+compile it with `dart compile exe` before interpreting timings. It measures
+conversion throughput, not UI frame time or application memory leaks.

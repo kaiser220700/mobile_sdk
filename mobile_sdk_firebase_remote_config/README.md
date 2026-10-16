@@ -46,3 +46,8 @@ The adapter validates a complete candidate and keeps the last good app-facing
 snapshot after a fetch or validation failure. Firebase's native cache is used
 for offline reads. Firebase's `fetchAndActivate` activates raw values before
 app-level validation; do not use this adapter for secrets or authorization.
+
+Concurrent `start` calls await the same initialization; concurrent `load` calls
+share one fetch while it is pending. Dispose is terminal and idempotent. Late
+setup/fetch/update completions do not emit snapshots or status after disposal.
+A timeout stops waiting but cannot cancel Firebase's underlying native request.

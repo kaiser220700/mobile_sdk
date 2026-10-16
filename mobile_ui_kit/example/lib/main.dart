@@ -5,6 +5,7 @@ import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 import "component_catalog.dart";
 import "example_colors.dart";
+import "foundation_preview.dart";
 
 void main() => runApp(const UiKitPreviewApp());
 
@@ -23,12 +24,7 @@ class _UiKitPreviewAppState extends State<UiKitPreviewApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "mobile_ui_kit preview",
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: _colors.primary),
-        scaffoldBackgroundColor: _colors.surface,
-        useMaterial3: true,
-        extensions: [_colors.theme],
-      ),
+      theme: ui.Theme.material(tokens: _colors.theme),
       home: _PreviewHome(
         colors: _colors,
         onColorsChanged: (colors) => setState(() => _colors = colors),
@@ -101,6 +97,15 @@ class _PreviewHomeState extends State<_PreviewHome> {
           appBar: AppBar(
             title: const Text("UI Kit Preview"),
             actions: [
+              IconButton(
+                tooltip: "UI foundations",
+                icon: const Icon(Icons.dashboard_outlined),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const FoundationPreview(),
+                  ),
+                ),
+              ),
               IconButton(
                 tooltip: "Theme tokens",
                 icon: const Icon(Icons.palette_outlined),

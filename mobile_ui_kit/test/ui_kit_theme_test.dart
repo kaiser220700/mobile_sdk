@@ -3,6 +3,64 @@ import "package:flutter_test/flutter_test.dart";
 import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
+  testWidgets('field error text uses the semantic error token', (tester) async {
+    final controller = TextEditingController();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ui.Theme.material(),
+        home: Material(
+          child: ui.TextField(
+            controller: controller,
+            label: 'Email',
+            errorText: 'Invalid email',
+          ),
+        ),
+      ),
+    );
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.decoration!.errorStyle!.color, ui.ThemeData.defaults.error);
+    await tester.pumpWidget(const SizedBox());
+    controller.dispose();
+  });
+
+  test(
+    'default semantic colors meet normal text contrast on paired surfaces',
+    () {
+      final t = ui.ThemeData.defaults;
+      double contrast(Color a, Color b) {
+        final x = a.computeLuminance(), y = b.computeLuminance();
+        return x > y ? (x + .05) / (y + .05) : (y + .05) / (x + .05);
+      }
+
+      for (final pair in [
+        (t.text, t.surface),
+        (t.textMuted, t.surfaceMuted),
+        (t.textInverse, t.primary),
+        (t.textInverse, t.success),
+        (t.textInverse, t.warning),
+        (t.textInverse, t.error),
+        (t.textInverse, t.info),
+        (t.success, t.successBg),
+        (t.warning, t.warningBg),
+        (t.error, t.errorBg),
+        (t.info, t.infoBg),
+      ]) {
+        expect(contrast(pair.$1, pair.$2), greaterThanOrEqualTo(4.5));
+      }
+    },
+  );
+  test('Material and kit share semantic tokens', () {
+    final theme = ui.Theme.material();
+    expect(theme.colorScheme.primary, ui.ThemeData.defaults.primary);
+    expect(theme.extension<ui.ThemeData>(), ui.ThemeData.defaults);
+    expect(theme.scaffoldBackgroundColor, ui.ThemeData.defaults.surfaceMuted);
+    final custom = ui.ThemeData.defaults.copyWith(primary: Colors.purple);
+    expect(
+      ui.Theme.material(tokens: custom).colorScheme.primary,
+      Colors.purple,
+    );
+  });
+
   testWidgets("falls back to the package defaults", (tester) async {
     ui.ThemeData? resolved;
 
@@ -18,7 +76,7 @@ void main() {
     );
 
     expect(resolved, ui.ThemeData.defaults);
-    expect(resolved!.primary, const Color(0xFF3F5F73));
+    expect(resolved!.primary, const Color(0xFF2563EB));
     expect(resolved!.primary, ui.Theme.primary);
     expect(resolved!.primary, isNot(const Color(0xFFBC0000)));
   });

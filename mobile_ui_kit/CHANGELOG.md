@@ -2,6 +2,30 @@
 
 All notable changes to this package are documented in this file.
 
+## Unreleased
+
+- Add configurable DecimalInputFormatter with caret and IME preservation.
+- Add BottomActionArea for device bottom spacing inside Scaffold layouts.
+- Fix autocomplete debounce to skip superseded searches and pending work after
+  disposal or configuration changes. Ignore stale async results and expose
+  onSearchError for failed current queries instead of an unhandled async error.
+- Extend MediaPicker with host source presentation/control builders, explicit
+  indeterminate uploading, empty-field errors and error styling. Block actions
+  during upload and ignore late source results after disposal or state changes.
+- Add LoadingController.acquire/run/activeCount for independent concurrent tasks;
+  preserve manual loading states and make lease release idempotent.
+- Refresh default light visuals with blue/slate semantic colors, 6/12/16/24 radii
+  and 48px minimum touch targets. This intentionally changes fallback appearance.
+- Add Theme.material() to synchronize the kit with Material colors/typography,
+  app bars, input decoration and bottom sheets. Add a composed foundations preview
+  and default foreground contrast tests.
+- Fix default TextField error typography to use the semantic error color;
+  preserve explicit host helperStyle overrides.
+- Cancel pending autocomplete debounce timers on replacement/disposal and
+  materialize lazy options once. Remove per-build CurvedAnimation listeners
+  from motion/list entrance and allow Countdown duration changes safely.
+- Add a bounded repeated-lifecycle check with Flutter disposal leak tracking.
+
 ## 1.0.0-rc.1 - 2026-10-16
 
 - Reset exhausted pagination after a successful refresh, with regression coverage.

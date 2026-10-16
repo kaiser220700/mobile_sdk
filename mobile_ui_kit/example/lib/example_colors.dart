@@ -8,11 +8,11 @@ import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 /// contracts. Runtime widgets consume [theme] through [ui.ThemeData].
 class ExampleColors implements ui.ColorsContract {
   const ExampleColors({
-    this.primary = const Color(0xFF176B87),
-    this.surface = Colors.white,
-    this.border = const Color(0xFFD7E1E5),
-    this.text = const Color(0xFF17242A),
-    this.error = const Color(0xFFB42318),
+    this.primary = ui.Theme.primary,
+    this.surface = ui.Theme.surface,
+    this.border = ui.Theme.border,
+    this.text = ui.Theme.text,
+    this.error = ui.Theme.error,
   });
 
   final Color primary;

@@ -147,9 +147,8 @@ class _UiKitMotionState extends State<UiKitMotion>
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> animation = CurvedAnimation(
-      parent: _controller,
-      curve: widget.curve,
+    final Animation<double> animation = _controller.drive(
+      CurveTween(curve: widget.curve),
     );
     return AnimatedBuilder(
       animation: animation,
@@ -236,7 +235,7 @@ class _UiKitFadeMotionState extends State<UiKitFadeMotion>
 
   @override
   Widget build(BuildContext context) {
-    final curved = CurvedAnimation(parent: _controller, curve: widget.curve);
+    final curved = _controller.drive(CurveTween(curve: widget.curve));
     return FadeTransition(
       opacity: curved,
       child: AnimatedBuilder(
