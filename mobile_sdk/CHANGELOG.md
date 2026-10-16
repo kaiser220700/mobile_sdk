@@ -2,7 +2,7 @@
 
 All notable changes to this package are documented in this file.
 
-## 1.0.0 - 2026-10-16
+## Unreleased
 
 - Apply module-based public API naming to core, app wiring, updates, Firebase and DevTool.
 

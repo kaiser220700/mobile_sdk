@@ -12,17 +12,22 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
-## 1.0.0 - 2026-10-16
+## Unreleased
 
-- Stabilize production API naming; compatibility names remain supported in 1.x.
-- Extract opt-in Fuzz Tap and Screen Draw as independently versioned 0.1.0 tools.
+- Organize packages into application libraries, service adapters and developer tools.
+- Keep package paths and umbrella exports; recommend direct dependencies by default.
+- Replace workspace-wide version alignment with independent package release checks.
+- UI Kit is 1.0.0-rc.1; other packages remain development/experimental versions.
+- Supersede the unpublished workspace-wide 1.0.0 preparation; no existing tags are moved.
+
+- Add concise public API names while retaining compatibility APIs for migration.
+- Extract opt-in Fuzz Tap and Screen Draw as independently versioned experimental tools.
 - Hosts register optional tool actions and compose overlays outside DevTool.
 - Add production-only integration coverage and dependency boundary checks.
 - Restore pagination after refreshing a previously exhausted list.
 - Distribution remains Git-based; pub.dev publication stays disabled.
 
 - Apply module-based public API naming to core, app wiring, updates, Firebase and DevTool.
-
 
 - Add unprefixed UI names for use with an `as ui` import, including `Button`,
   `TextField`, `Autocomplete`, `RefreshView`, `RefreshScope` and `Theme`.
@@ -35,7 +40,6 @@ details are maintained beside each package:
   `UiKitRefreshConfiguration`); keep deprecated aliases in DevTool.
 - Remove the DevTool dependency and exports from `mobile_sdk`. Developer
   tooling now requires an explicit `mobile_devtool` dependency and import.
-
 
 ## 0.6.6 - 2026-10-12
 

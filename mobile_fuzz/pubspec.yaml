@@ -1,7 +1,7 @@
 name: mobile_fuzz
 description: Opt-in Semantics-based crash exploration for Flutter debug builds.
 publish_to: none
-version: 0.1.0
+version: 0.1.0-dev.0
 
 environment:
   sdk: ">=3.12.2 <4.0.0"

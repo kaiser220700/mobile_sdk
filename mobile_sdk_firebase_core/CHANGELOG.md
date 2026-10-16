@@ -2,7 +2,7 @@
 
 All notable changes to this package are documented in this file.
 
-## 1.0.0 - 2026-10-16
+## Unreleased
 
 - Add concise public names with module import aliases; keep existing names for migration.
 

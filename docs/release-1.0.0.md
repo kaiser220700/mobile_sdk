@@ -1,5 +1,13 @@
 # Chuẩn bị release Git 1.0.0 — 16/10/2026
 
+> Historical preparation at commit 1f86577, not a published release.
+> Superseded by independent package versioning. The native artifacts below
+> describe that snapshot, not the new direct-package consumer. Local build
+> paths are disposable and may now contain output from a newer build.
+> See [current organization](package-organization.md) and
+> [current verification](organization-validation.md).
+
+
 ## Phạm vi chốt
 
 Tám package stable dùng version 1.0.0: mobile_sdk, mobile_sdk_core,

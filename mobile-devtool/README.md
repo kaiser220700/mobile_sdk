@@ -1,7 +1,7 @@
 # mobile_devtool
 
 Non-production network/trace logging, a draggable launcher, tool menu, host
-actions and custom panels. Version 1.0.0 does not depend on Fuzz or Screen Draw.
+actions and custom panels. The development package does not depend on Fuzz or Screen Draw.
 
 ```dart
 import 'package:mobile_devtool/mobile_devtool.dart' as dev;
@@ -31,7 +31,7 @@ overlay visibility and disposal belong to host composition.
 
 Only the exports in `lib/mobile_devtool.dart` are public. Internal implementation
 files such as the root menu/theme/info widgets are not an integration API.
-Existing public MobileDevTool names remain compatibility aliases/types in 1.x;
+Existing public MobileDevTool names remain available during migration;
 see [the name mapping](../docs/sdk-api-naming.md).
 
 ## Production boundary

@@ -1,4 +1,4 @@
-# UI API naming for 1.0.0
+# UI API naming
 
 The package remains `mobile_ui_kit`. Import its public barrel with `as ui` and
 use component names without a `UiKit`, `Mobile` or `Sdk` prefix:
@@ -14,7 +14,8 @@ ui.RefreshView(onRefresh: reload, child: taskList);
 These public names are type aliases to the existing implementations, so theme
 extensions, controller ownership, enum values, widget state and constructors
 retain their behavior. `UiKit*` names remain available for migration; they are
-supported throughout 1.x. Implementation file names remain unchanged.
+not removed by this organization change. Stability is decided per package;
+implementation file names remain unchanged.
 
 Alias the import even when using `mobile_sdk`, which re-exports this UI API.
 Names such as `TextField`, `Theme`, `ThemeData`, `Icon` and `Scaffold` overlap

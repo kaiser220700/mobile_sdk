@@ -1,6 +1,6 @@
 # mobile_update
 
-## Public API naming (1.0.0)
+## Public API naming (candidate/development)
 
 Import with `as updates` and use the concise names documented in the
 [SDK API naming guide](../docs/sdk-api-naming.md). Existing names remain

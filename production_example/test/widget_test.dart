@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_sdk/mobile_sdk.dart' as ui;
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 import 'package:mobile_sdk_production_example/main.dart';
 
 void main() {
@@ -13,6 +13,10 @@ void main() {
             as Map;
     final names = (config['packages'] as List).map((p) => (p as Map)['name']);
     for (final forbidden in [
+      'mobile_sdk',
+      'mobile_app_base',
+      'mobile_sdk_core',
+      'mobile_update',
       'mobile_devtool',
       'mobile_fuzz',
       'mobile_screen_draw',

@@ -1,5 +1,10 @@
 # Migration to 1.0.0
 
+> Historical migration notes for the unpublished global 1.0.0 preparation.
+> Names and DevTool composition notes below remain useful, but the shared
+> version/scope proposal is superseded by [independent package organization](package-organization.md).
+
+
 ## Stable scope
 
 App wiring, UI primitives, typed config/telemetry contracts, update policy,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_sdk/mobile_sdk.dart' as sdk;
-import 'package:mobile_sdk/mobile_sdk.dart' as ui;
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
 void main() => runApp(const ProductionExample());
 
@@ -8,14 +7,8 @@ class ProductionExample extends StatelessWidget {
   const ProductionExample({super.key});
 
   @override
-  Widget build(BuildContext context) => sdk.AppShell(
-    config: const sdk.AppConfig(
-      environment: sdk.AppEnvironment.prod,
-      appName: 'SDK production integration',
-    ),
-    navigatorKey: GlobalKey<NavigatorState>(),
-    home: const TaskList(),
-  );
+  Widget build(BuildContext context) =>
+      const MaterialApp(title: 'Production UI integration', home: TaskList());
 }
 
 class TaskList extends StatefulWidget {

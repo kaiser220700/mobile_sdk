@@ -1,70 +1,21 @@
 # mobile_sdk
 
-Unified entry point for existing shared SDK modules and Firebase-independent
-configuration/telemetry contracts. Firebase integrations are separate opt-in
-packages, so importing `mobile_sdk` does not pull native Firebase plugins.
+Optional compatibility umbrella for existing consumers. It still depends on
+and exports mobile_app_base, core, UI and update packages. Its package path and
+public entrypoint are retained. Firebase and developer tools remain opt-ins.
 
-```yaml
-dependencies:
-  mobile_sdk:
-    path: ../mobile_sdk
-```
+For new consumers, depend directly on only the modules required:
+mobile_ui_kit for UI, mobile_sdk_core for typed config/telemetry, and
+mobile_update for update decisions. Host-owned MaterialApp/environment wiring
+is the default; mobile_app_base is an optional helper.
 
-```dart
-import 'package:mobile_sdk/mobile_sdk.dart' as ui;
-```
+This package is 0.8.0-dev.0, not a workspace-wide stable 1.0.0 release.
+See [organization](../docs/package-organization.md),
+[module API names](../docs/sdk-api-naming.md),
+[release workflow](../docs/release-workflow.md), and
+[Firebase integration status](../docs/firebase-implementation.md).
 
-See [Firebase implementation](../docs/firebase-implementation.md) for the
-available adapter and rollout status.
-
-## UI naming (1.0.0)
-
-UI names are now unprefixed when imported with `as ui`. See the
-[complete mapping](../docs/ui-api-naming.md). The examples below use the 1.0.0 names; `v0.7.0` still uses the `UiKit*` names in the migration table.
-
-## Production without DevTool (SDK-12, 0.7.0)
-
-`mobile_sdk` no longer depends on or exports `mobile_devtool`. This is a breaking
-change from 0.6.6. Refresh/load-more is owned by `mobile_ui_kit` and re-exported
-by `mobile_sdk`; neither production package requires DevTool.
-
-```dart
-import 'package:mobile_sdk/mobile_sdk.dart' as ui;
-
-ui.RefreshView(
-  onRefresh: reloadTasks,
-  enableLoadMore: true,
-  onLoadMore: loadNextPage, // Future<bool>: true if another page exists
-  child: taskList,
-);
-```
-
-Migration keeps constructor arguments and callback behavior unchanged:
-
-| Old DevTool name | Production name in v0.7.0 | New name (1.0.0) |
-| --- | --- | --- |
-| `MobileDevToolRefreshLoadMore` | `UiKitRefreshLoadMore` | `ui.RefreshView` |
-| `MobileDevToolRefreshConfiguration` | `UiKitRefreshConfiguration` | `ui.RefreshScope` |
-| `MobileDevToolRefreshContentBuilder` | `UiKitRefreshContentBuilder` | `ui.RefreshContentBuilder` |
-| `MobileDevToolLoadMoreContentBuilder` | `UiKitLoadMoreContentBuilder` | `ui.LoadMoreContentBuilder` |
-
-Controllers, indicator widgets and status enums remain exported with their
-existing names. You can also import `package:mobile_ui_kit/mobile_ui_kit.dart`
-directly. DevTool retains deprecated aliases pointing at the same implementation.
-Apps that need developer tooling must depend on and import `mobile_devtool`
-explicitly in their development integration. Merely hiding its launcher does
-not remove the dependency from a production graph.
-
-For station-app: migrate SDK pins together to a published revision containing
-this change, rename the refresh APIs, and remove development wrappers/assets
-from the production source. Run the app's no-DevTool gate, refresh/pagination
-tests and Prod APK build before distribution. The SDK change alone does not
-remove existing DevTool source or assets from the app. This production path is
-available starting with 0.7.0; 0.6.6 does not provide it.
-
-## Other module APIs (1.0.0)
-
-Use `sdk.AppShell`, `sdk.ConfigSchema`, `sdk.UpdateChecker` and
-`sdk.UpdatePolicy` from an `as sdk` umbrella import, or import each package
-directly with its module alias. Firebase and DevTool remain separate opt-ins.
-See the [SDK-wide naming and migration guide](../docs/sdk-api-naming.md).
+Existing integrations can continue importing package:mobile_sdk/mobile_sdk.dart.
+New unprefixed UI names may collide with Flutter names, so prefer import aliases.
+Earlier breaking DevTool composition changes remain described in the historical
+[migration notes](../docs/migration-1.0.0.md).

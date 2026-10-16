@@ -81,3 +81,6 @@ while IFS= read -r package; do
 done <<< "$PACKAGES"
 
 python3 "$ROOT_DIR/tool/verify_boundaries.py"
+
+python3 -m unittest discover -s "$ROOT_DIR/tool" -p "test_*.py"
+"$ROOT_DIR/tool/verify_release_metadata.sh"

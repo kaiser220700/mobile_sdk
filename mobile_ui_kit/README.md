@@ -4,7 +4,7 @@ Reusable Flutter interaction and overlay primitives. Components own behavior
 and accessibility semantics; the host app owns composition, content and visual
 tokens through `ui.ThemeData`.
 
-## Public API (1.0.0)
+## Public API (candidate/development)
 
 ```dart
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;

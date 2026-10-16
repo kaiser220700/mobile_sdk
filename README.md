@@ -1,64 +1,71 @@
-# Mobile SDK
+# Shared Flutter libraries
 
-Stable shared Flutter capabilities, prepared for 1.0.0. Distribution uses Git;
-pub.dev publication remains disabled.
+A monorepo of independently chosen Flutter packages. Distribution remains
+Git-based; pub.dev publication is disabled. There is no workspace-wide 1.0.0
+release: each package earns its own version and stability contract.
 
-## Packages
+## Choose a package by responsibility
 
-| Package | Scope |
-| --- | --- |
-| mobile_sdk | Production umbrella: app, core, UI and updates |
-| mobile_app_base | App environment and Flutter app composition |
-| mobile_sdk_core | Provider-independent configuration and telemetry contracts |
-| mobile_ui_kit | UI components, behavior and accessibility |
-| mobile_update | Host-driven version/config loading and update decisions |
-| mobile_sdk_firebase_core | Opt-in Firebase adapter lifecycle |
-| mobile_sdk_firebase_remote_config | Opt-in typed Firebase Remote Config |
-| mobile_devtool | Non-production logging, launcher and tool menu |
-| mobile_fuzz | Experimental 0.1.0 Semantics-based crash exploration |
-| mobile_screen_draw | Experimental 0.1.0 screen annotations |
+| Group | Packages | When to use |
+| --- | --- | --- |
+| Application libraries | mobile_ui_kit | Reusable UI and interaction behavior |
+| Application libraries | mobile_sdk_core | Typed config/telemetry contracts when the app needs them |
+| Application libraries | mobile_update | Update decisions and host-supplied config/version loading |
+| Service adapters | mobile_sdk_firebase_core, mobile_sdk_firebase_remote_config | Explicit Firebase integration |
+| Developer tools | mobile_devtool, mobile_fuzz, mobile_screen_draw | Non-production diagnostics and optional tools |
+| Compatibility helpers | mobile_app_base | Optional app wiring; the host normally owns MaterialApp/config |
+| Compatibility umbrella | mobile_sdk | Existing consumers that want app/core/UI/update together |
 
-Stable packages share version 1.0.0. Experimental tools have independent
-versions and are not covered by the stable 1.x API promise.
+The [package catalog](docs/package-catalog.json) records responsibility and
+readiness. Versions live in each pubspec, not in a shared version field.
+UI Kit is currently `1.0.0-rc.1`, a candidate rather than a stable 1.0.0.
+Other existing libraries are `0.8.0-dev.0`; Fuzz/Screen Draw are `0.1.0-dev.0`.
+Matching version numbers do not imply a release dependency between packages.
 
-## Integration
+## Default integration: only what the app uses
 
-After the release tag is published:
+After the package tag is published, a UI-only app can use:
 
 ```yaml
 dependencies:
-  mobile_sdk:
+  mobile_ui_kit:
     git:
       url: https://github.com/kaiser220700/mobile_sdk.git
-      ref: v1.0.0
-      path: mobile_sdk
+      ref: mobile_ui_kit/v1.0.0-rc.1
+      path: mobile_ui_kit
 ```
 
 ```dart
-import 'package:mobile_sdk/mobile_sdk.dart' as sdk;
-import 'package:mobile_sdk/mobile_sdk.dart' as ui;
+import 'package:flutter/material.dart';
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
+
+// The app owns its MaterialApp, routes and environment configuration.
+ui.Button(onPressed: save, child: const Text('Save'));
 ```
 
-Use `sdk.AppShell`, `sdk.ConfigSchema`, `sdk.UpdatePolicy`, `ui.Button` and
-`ui.RefreshView`. Firebase and developer tools require explicit opt-in package
-dependencies. Keep developer tool imports/assets out of production source.
+Until a package tag is published, use an approved full commit revision instead.
+Add config, update or Firebase packages only when the app needs those functions.
 
-See [migration](docs/migration-1.0.0.md),
-[API names](docs/sdk-api-naming.md), [UI names](docs/ui-api-naming.md),
-[release evidence](docs/release-1.0.0.md) and
-[release workflow](docs/release-workflow.md).
+## Existing consumers
+
+All package directories remain at their existing root paths. The
+`package:mobile_sdk/mobile_sdk.dart` umbrella still exports app/core/UI/update
+and still depends on mobile_app_base; its public exports have not been trimmed.
+Existing consumers need not migrate simply for this organizational change.
+It remains separate from Firebase and developer tools.
+
+Direct package integration is recommended for new consumers. It avoids
+pulling app composition into a UI-only app. See
+[organization and compatibility](docs/package-organization.md),
+[API names](docs/sdk-api-naming.md), [UI names](docs/ui-api-naming.md) and
+[package release workflow](docs/release-workflow.md).
 
 ## Validation
 
-Supported minimum: Flutter 3.44.6 / Dart 3.12.2. CI also exercises Flutter 3.47.4.
-Run `./tool/verify_workspace.sh` for all dependencies, formatting, analysis,
-tests and package boundaries; `./tool/verify_release_metadata.sh main` checks
-stable/experimental version policy.
+Minimum supported toolchain: Flutter 3.44.6 / Dart 3.12.2. CI also exercises
+Flutter 3.47.4. Run `./tool/verify_workspace.sh` for package resolution, format,
+analysis, tests, release-policy tests and dependency boundaries.
 
-`example` is the full developer showcase. `production_example` is a production
-consumer with refresh/pagination coverage and no DevTool/Fuzz/Screen Draw or
-Firebase in its resolved graph. Its native builds are smoke artifacts rather
-than an app-store/Firebase distribution release.
-
-Public registry publication is separate: license/publisher ownership,
-hosted dependencies and publish dry-runs must be established first.
+`production_example` uses only mobile_ui_kit and host-owned MaterialApp.
+`example` retains umbrella compatibility coverage and explicitly composes
+optional developer tools. Existing Git tags/revisions remain unchanged.

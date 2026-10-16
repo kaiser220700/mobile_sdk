@@ -1,7 +1,8 @@
-/// Unified public API for the mobile SDK.
+/// Optional compatibility umbrella for the mobile libraries.
 ///
-/// Import this library for shared UI, app, update, and Firebase-independent
-/// contracts. Firebase adapters are separate opt-in packages.
+/// New consumers should depend directly on the packages they need.
+/// This entrypoint retains app, UI, update and core exports for existing users.
+/// Firebase adapters and developer tools remain explicit opt-ins.
 library;
 
 export "package:mobile_app_base/mobile_app_base.dart";

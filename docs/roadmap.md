@@ -1,5 +1,11 @@
 # Roadmap Mobile SDK
 
+> The unpublished global 1.0.0 plan below is historical. Current scope and
+> independent package maturity are defined in [package organization](package-organization.md)
+> and [the package catalog](package-catalog.json). UI is a candidate; other
+> packages are not automatically stable. Existing paths/umbrella exports stay.
+
+
 > Trạng thái: chuẩn bị bản Git 1.0.0; phạm vi và bằng chứng hiện hành ở
 > [release-1.0.0.md](release-1.0.0.md). Các mốc dưới đây là lịch sử kế hoạch.
 

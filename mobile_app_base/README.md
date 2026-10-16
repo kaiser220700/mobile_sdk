@@ -1,6 +1,6 @@
 # mobile_app_base
 
-## Public API naming (1.0.0)
+## Public API naming (candidate/development)
 
 Import with `as app` and use the concise names documented in the
 [SDK API naming guide](../docs/sdk-api-naming.md). Existing names remain
@@ -19,3 +19,10 @@ The package owns only composition concerns:
 
 Business features, routing policy, authentication, storage and remote config
 remain owned by the consuming app.
+
+## Optional compatibility helper
+
+This package is not required for UI or other shared capabilities. For new apps,
+prefer host-owned MaterialApp, route/navigation policy, theme and environment
+configuration. AppConfig and AppShell remain available, including through the
+unchanged mobile_sdk umbrella. See [organization](../docs/package-organization.md).

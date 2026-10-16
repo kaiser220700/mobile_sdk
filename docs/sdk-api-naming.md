@@ -1,6 +1,6 @@
 # Public API naming across SDK packages
 
-Status: stable API in 1.0.0. Package names and existing public names remain
+Status: proposed public names; stability is decided per package. Package names and existing public names remain
 available. New names are type aliases sharing the same implementation, state,
 controllers and static methods. They do not introduce duplicate services.
 
@@ -16,7 +16,8 @@ controllers and static methods. They do not introduce duplicate services.
   `ConfigSource` and `AppEnvironment`.
 - A source loads configuration, a transport talks to a provider, a schema
   validates values, a policy makes a decision, and a checker coordinates I/O.
-- Compatibility names are retained, supported throughout 1.x.
+- Compatibility names remain available during migration. Once a package reaches
+  stable 1.x, its public contract must be preserved until a major migration.
   Constructor parameters, defaults, ownership and runtime behavior are unchanged.
 
 The [UI naming guide](ui-api-naming.md) covers UI classes and the additive

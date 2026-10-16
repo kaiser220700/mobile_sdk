@@ -1,11 +1,30 @@
 import "dart:convert";
 import "dart:io";
 
+import "package:flutter/widgets.dart" as flutter;
 import "package:flutter_test/flutter_test.dart";
 import "package:mobile_sdk/mobile_sdk.dart" as sdk;
 import "package:mobile_sdk/mobile_sdk.dart" as ui;
 
 void main() {
+  testWidgets("legacy umbrella retains optional app composition", (
+    tester,
+  ) async {
+    final navigator = flutter.GlobalKey<flutter.NavigatorState>();
+    await tester.pumpWidget(
+      sdk.AppShell(
+        config: const sdk.AppConfig(
+          environment: sdk.AppEnvironment.prod,
+          appName: "Legacy integration",
+        ),
+        navigatorKey: navigator,
+        home: const flutter.Text("Legacy app shell"),
+      ),
+    );
+    expect(find.text("Legacy app shell"), findsOneWidget);
+    expect(navigator.currentState, isNotNull);
+  });
+
   test("production entry point keeps DevTool and Firebase opt-in", () {
     final config =
         jsonDecode(File(".dart_tool/package_config.json").readAsStringSync())

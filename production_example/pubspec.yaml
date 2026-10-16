@@ -1,5 +1,5 @@
 name: mobile_sdk_production_example
-description: Production-only SDK consumer without developer tools or Firebase.
+description: Minimal production UI consumer with host-owned app composition.
 publish_to: none
 version: 1.0.0+1
 environment:
@@ -8,8 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  mobile_sdk:
-    path: ../mobile_sdk
+  mobile_ui_kit:
+    path: ../mobile_ui_kit
 dev_dependencies:
   flutter_test:
     sdk: flutter

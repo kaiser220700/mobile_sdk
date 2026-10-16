@@ -1,7 +1,7 @@
 name: mobile_sdk
-description: Unified Flutter SDK entry point for shared mobile app capabilities.
+description: Optional compatibility umbrella for existing shared Flutter integrations.
 publish_to: none
-version: 1.0.0
+version: 0.8.0-dev.0
 
 environment:
   sdk: ">=3.12.2 <4.0.0"

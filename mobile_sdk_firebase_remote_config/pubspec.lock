@@ -190,14 +190,14 @@ packages:
       path: "../mobile_sdk_core"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "0.8.0-dev.0"
   mobile_sdk_firebase_core:
     dependency: "direct main"
     description:
       path: "../mobile_sdk_firebase_core"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "0.8.0-dev.0"
   path:
     dependency: transitive
     description:

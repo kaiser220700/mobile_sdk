@@ -1,0 +1,74 @@
+{
+  "packages": [
+    {
+      "name": "mobile_sdk",
+      "path": "mobile_sdk",
+      "group": "compatibility",
+      "stage": "development",
+      "purpose": "Optional legacy umbrella; retains app/core/UI/update exports."
+    },
+    {
+      "name": "mobile_ui_kit",
+      "path": "mobile_ui_kit",
+      "group": "app-library",
+      "stage": "candidate",
+      "purpose": "UI primitives and interactions; candidate for first independent stable release."
+    },
+    {
+      "name": "mobile_sdk_core",
+      "path": "mobile_sdk_core",
+      "group": "app-library",
+      "stage": "development",
+      "purpose": "Typed config, telemetry contracts and test fakes."
+    },
+    {
+      "name": "mobile_update",
+      "path": "mobile_update",
+      "group": "app-library",
+      "stage": "development",
+      "purpose": "Update policy and host-supplied input orchestration."
+    },
+    {
+      "name": "mobile_app_base",
+      "path": "mobile_app_base",
+      "group": "compatibility",
+      "stage": "development",
+      "purpose": "Optional app composition helpers; host-owned app wiring is the default."
+    },
+    {
+      "name": "mobile_sdk_firebase_core",
+      "path": "mobile_sdk_firebase_core",
+      "group": "service-adapter",
+      "stage": "development",
+      "purpose": "Opt-in Firebase adapter lifecycle."
+    },
+    {
+      "name": "mobile_sdk_firebase_remote_config",
+      "path": "mobile_sdk_firebase_remote_config",
+      "group": "service-adapter",
+      "stage": "development",
+      "purpose": "Opt-in Firebase Remote Config source and transport."
+    },
+    {
+      "name": "mobile_devtool",
+      "path": "mobile-devtool",
+      "group": "developer-tool",
+      "stage": "development",
+      "purpose": "Non-production logs, launcher and tool registration."
+    },
+    {
+      "name": "mobile_fuzz",
+      "path": "mobile_fuzz",
+      "group": "developer-tool",
+      "stage": "experimental",
+      "purpose": "Independent Semantics-based crash exploration."
+    },
+    {
+      "name": "mobile_screen_draw",
+      "path": "mobile_screen_draw",
+      "group": "developer-tool",
+      "stage": "experimental",
+      "purpose": "Independent annotation state and overlay."
+    }
+  ]
+}

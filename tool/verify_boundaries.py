@@ -10,7 +10,9 @@ FIREBASE = {"firebase_core", "firebase_remote_config",
             "mobile_sdk_firebase_core", "mobile_sdk_firebase_remote_config"}
 rules = {
     "mobile_sdk": TOOLING | FIREBASE,
-    "production_example": TOOLING | FIREBASE,
+    "production_example": TOOLING | FIREBASE | {
+        "mobile_sdk", "mobile_app_base", "mobile_sdk_core", "mobile_update"
+    },
     "mobile-devtool": {"mobile_fuzz", "mobile_screen_draw"},
     "mobile_fuzz": {"mobile_devtool", "mobile_screen_draw", "mobile_sdk"},
     "mobile_screen_draw": {"mobile_devtool", "mobile_fuzz", "mobile_sdk"},

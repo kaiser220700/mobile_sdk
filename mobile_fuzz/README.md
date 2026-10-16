@@ -1,6 +1,6 @@
 # mobile_fuzz
 
-Experimental 0.1.0, opt-in non-production crash exploration. Independent of
+Experimental 0.1.0-dev.0, opt-in non-production crash exploration. Independent of
 DevTool and the production SDK. Import with `as fuzz`.
 
 ```dart

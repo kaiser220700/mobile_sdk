@@ -1,79 +1,75 @@
-# Release workflow
+# Independent package releases
 
-Stable SDK packages share one version. Experimental opt-in packages
-`mobile_fuzz` and `mobile_screen_draw` keep independent `0.x` versions. `main` contains only stable releases;
-`develop` contains the next pre-release; a short-lived `release/X.Y.Z` branch
-is used for final validation and release notes.
+Versioning is per package. main/develop may contain different package versions
+and a mixture of prerelease/stable packages. There is no mandatory shared
+version or automatic mass bump.
 
-| Branch | Version format | Purpose |
-|---|---|---|
-| `main` | `X.Y.Z` | Released SDK; root changelog must contain `X.Y.Z`. |
-| `develop` | `X.Y.Z-dev.N` | Ongoing work for the next release. |
-| `release/X.Y.Z` | `X.Y.Z` | Stabilization, changelog completion, and release verification. |
+The package catalog defines group/stage; pubspec.yaml is the source of truth
+for each version. Package changelogs describe changes. The root changelog is
+a cross-package summary, not the authority for one global release version.
 
-## Starting the next release
+## Prepare one package
 
-After tagging the stable release on `main`, create `develop`, set every SDK
-package to its next development version, refresh path lockfiles, and push it:
+1. Confirm its public responsibility and required consumer validation.
+2. Change only the affected package version. Bump dependent packages only when
+   their implementation/API/constraints change; a shared repo is not a reason.
+3. Add dated notes for the exact version. Development versions can use an
+   Unreleased section until a release is prepared.
+4. Resolve dependencies and refresh changed path lockfiles.
+5. Run `./tool/verify_workspace.sh` and relevant native/consumer checks.
+6. Validate the release ref, for example:
 
-```bash
-git switch main
-git switch -c develop
-# Set all SDK package versions to the next X.Y.Z-dev.0 version.
-./tool/verify_workspace.sh
-git add -A
-git commit -m "chore: start X.Y.Z development"
-git push -u origin develop
+```sh
+./tool/verify_release_metadata.sh release/mobile_ui_kit/1.0.0-rc.1
 ```
 
-Increment `dev.N` only when a separately distributed development build needs a
-new identity. Feature branches merge into `develop`; they do not change the
-shared version by themselves.
+The guard checks all package metadata, but only the selected package must
+match this release version and dated heading. It never aligns unrelated
+package versions. Workspace-wide release/X.Y.Z refs are retired.
 
-## Cutting a release
+## Publish after review/merge
 
-```bash
-git switch develop
-git pull --ff-only
-git switch -c release/X.Y.Z
-# Replace X.Y.Z-dev.N with X.Y.Z in every SDK package and refresh lockfiles.
-# Add the root and package release notes.
-./tool/verify_workspace.sh
-./tool/verify_release_metadata.sh release/X.Y.Z
-git add -A
-git commit -m "chore: prepare mobile SDK vX.Y.Z"
-git push -u origin release/X.Y.Z
+Tag the intended commit with `<package>/v<version>`. For example, once the
+UI candidate is approved and merged:
+
+```sh
+git tag -a mobile_ui_kit/v1.0.0-rc.1 -m "mobile_ui_kit 1.0.0-rc.1"
+git push origin mobile_ui_kit/v1.0.0-rc.1
 ```
 
-Open a pull request from `release/X.Y.Z` to `main`. After it is merged, tag
-the resulting `main` commit and publish the tag:
+A package tag points to the entire repository snapshot; relative path
+dependencies still come from that checkout. For graphs sharing internal
+dependencies, pick compatible common snapshots. See
+[organization](package-organization.md#git-distribution-constraints).
 
-```bash
-git switch main
-git pull --ff-only
-git tag -a vX.Y.Z -m "mobile SDK vX.Y.Z"
-git push origin vX.Y.Z
-```
+Do not move existing tags. Legacy v0.x tags continue to identify their
+original snapshots. Keep tags already consumed by apps for resolution/rollback.
+Creating a GitHub Release page is optional and independent of keeping a tag.
 
-Then merge `main` back into `develop` and advance `develop` to the next
-`-dev.0` version.
+After release, increment only packages entering new development. No immediate
+workspace-wide next-major bump is required.
 
-## CI guard
+## Stability
 
-`.github/workflows/release-metadata.yml` runs
-`tool/verify_release_metadata.sh` on `main`, `develop`, and `release/**`.
-It requires all SDK packages to share a version, enforces each branch's version
-format, and requires a root changelog heading for stable/release branches.
+A candidate is not stable simply because its tests pass. Its owner must
+confirm scope/support and relevant consumer validation before promoting it.
+For a package at stable 1.x, incompatible public changes require a new major
+version. Deprecated aliases still form part of the supported public surface
+until that major migration. Experimental packages are explicitly marked 0.x.
 
-## 1.0.0 distribution
+## CI and checks
 
-This release is distributed through Git revisions/tags. All packages retain
-`publish_to: none`; no public license or pub.dev ownership is inferred.
-A pub.dev release is separate work: establish the license and publisher, check
-package-name availability, replace path dependencies with hosted constraints,
-and pass publish dry-runs in dependency order.
+Release metadata is checked on main, develop, release/** and package tags.
+Policy tests cover mixed versions, isolated release selection, invalid names,
+maturity rules, changelog requirements and malformed release refs.
+The workspace command also checks graph boundaries and all Dart/Flutter tests.
 
-Before publishing the Git tag, run `./tool/verify_workspace.sh`,
-`./tool/verify_release_metadata.sh main`, and build the production example.
-Follow [the 1.0.0 release record](release-1.0.0.md) for validation evidence and
-[the migration guide](migration-1.0.0.md) for consumers.
+## Distribution
+
+Git remains the distribution channel; publish_to: none stays in place.
+Pub.dev publication is separate: establish license/publisher ownership,
+package names, hosted dependencies and publish dry-runs first.
+
+Rollback a consumer by restoring its previous app commit, SDK revision and
+lockfile, resolving dependencies and rebuilding its own flavor. Do not move
+a published tag to simulate rollback.

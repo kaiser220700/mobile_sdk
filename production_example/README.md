@@ -1,18 +1,12 @@
-# Production SDK integration
+# Minimal production UI integration
 
-A small host app using only mobile_sdk. It exercises production app wiring,
-refresh, pagination and refreshing after the last page. It has no backend
-credentials or developer tool/native Firebase dependencies.
+This consumer depends directly on mobile_ui_kit. The host owns MaterialApp.
+It deliberately resolves no mobile_sdk umbrella, mobile_app_base, core, update,
+Firebase or developer tool packages. Add other modules only when needed.
 
-Run from this folder:
+Widget tests cover refresh, pagination, reaching the last page and refreshing
+before loading more again. The workspace boundary check verifies the minimal
+graph. Native builds are smoke artifacts, not distribution-signed releases.
 
-```sh
-flutter pub get
-flutter test
-flutter build apk --release
-flutter build ios --release --no-codesign
-```
-
-This is a build/smoke consumer, not a station-app release or a distribution-signed
-application. The workspace boundary check verifies its resolved dependencies.
-Station-app integration and Firebase distribution remain separate app work.
+Run flutter pub get, flutter test, flutter build apk --release, or
+flutter build ios --release --no-codesign from this folder.
