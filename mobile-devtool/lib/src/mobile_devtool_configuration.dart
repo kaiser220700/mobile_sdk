@@ -104,6 +104,7 @@ class MobileDevToolConfiguration {
   const MobileDevToolConfiguration({
     this.title = "Mobile Dev Tool",
     this.hostActions = const [],
+    this.quickActions = const [],
     this.panels = const [],
     this.menuItems = const [],
     this.hiddenMenuItemIds = const {},
@@ -117,6 +118,10 @@ class MobileDevToolConfiguration {
 
   final String title;
   final List<MobileDevToolHostAction> hostActions;
+
+  /// Host-registered header actions. Entries without onSelect are ignored.
+  /// Tool packages are composed by the host, never imported by DevTool.
+  final List<MobileDevToolMenuItem> quickActions;
 
   /// Host-owned tool screens appended after the SDK's built-in sections
   /// (network log, trace log...) in the root menu.

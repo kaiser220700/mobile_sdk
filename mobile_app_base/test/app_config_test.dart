@@ -1,10 +1,10 @@
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_app_base/mobile_app_base.dart";
+import "package:mobile_app_base/mobile_app_base.dart" as app;
 
 void main() {
   test("production never enables developer tools", () {
-    const config = AppConfig(
-      environment: AppEnvironment.prod,
+    const config = app.AppConfig(
+      environment: app.AppEnvironment.prod,
       appName: "Production",
       enableDeveloperTools: true,
     );
@@ -13,6 +13,6 @@ void main() {
   });
 
   test("demo config enables developer tools", () {
-    expect(AppConfig.demo.developerToolsEnabled, isTrue);
+    expect(app.AppConfig.demo.developerToolsEnabled, isTrue);
   });
 }

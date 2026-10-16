@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
   testWidgets("timeline motion interpolates keyframes and settles", (
@@ -8,13 +8,13 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: UiKitMotion(
+        home: ui.Motion(
           duration: const Duration(milliseconds: 100),
           builder: (context, frame, child) => Text(
             frame
                 .valueAt(const [
-                  UiKitMotionKeyframe(0, 10),
-                  UiKitMotionKeyframe(1, 30),
+                  ui.MotionKeyframe(0, 10),
+                  ui.MotionKeyframe(1, 30),
                 ])
                 .toStringAsFixed(0),
           ),
@@ -39,7 +39,7 @@ void main() {
         data: const MediaQueryData(disableAnimations: true),
         child: Directionality(
           textDirection: TextDirection.ltr,
-          child: UiKitMotion(
+          child: ui.Motion(
             loop: true,
             reducedMotionValue: .5,
             builder: (context, frame, child) =>
@@ -54,7 +54,7 @@ void main() {
 
   testWidgets("timeline motion pauses until activated", (tester) async {
     Widget buildMotion(bool active) => MaterialApp(
-      home: UiKitMotion(
+      home: ui.Motion(
         active: active,
         duration: const Duration(milliseconds: 100),
         builder: (context, frame, child) =>
@@ -78,14 +78,14 @@ void main() {
       const MaterialApp(
         home: Column(
           children: [
-            UiKitFadeMotion(child: Text("fade")),
-            UiKitBouncingMotion(child: Text("bounce")),
-            UiKitShimmer(
+            ui.FadeMotion(child: Text("fade")),
+            ui.BouncingMotion(child: Text("bounce")),
+            ui.Shimmer(
               baseColor: Colors.grey,
               highlightColor: Colors.white,
               child: Text("shimmer"),
             ),
-            UiKitFlipCounter(value: 2),
+            ui.FlipCounter(value: 2),
           ],
         ),
       ),
@@ -106,17 +106,17 @@ void main() {
         home: StatefulBuilder(
           builder: (context, setState) => Column(
             children: [
-              UiKitDashedBorder(
+              ui.DashedBorder(
                 color: Colors.blue,
                 child: const SizedBox(width: 80, height: 32),
               ),
-              UiKitAvatarStack(
+              ui.AvatarStack(
                 avatars: const [
                   ColoredBox(color: Colors.red),
                   ColoredBox(color: Colors.green),
                 ],
               ),
-              UiKitQuantityStepper(
+              ui.QuantityStepper(
                 value: value,
                 min: 1,
                 max: 3,
@@ -128,8 +128,8 @@ void main() {
       ),
     );
 
-    expect(find.byType(UiKitDashedBorder), findsOneWidget);
-    expect(find.byType(UiKitAvatarStack), findsOneWidget);
+    expect(find.byType(ui.DashedBorder), findsOneWidget);
+    expect(find.byType(ui.AvatarStack), findsOneWidget);
     await tester.tap(find.bySemanticsLabel("Increase Quantity"));
     await tester.pump();
     expect(find.text("3"), findsOneWidget);
@@ -142,7 +142,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: UiKitAsyncSuggestionField<String>(
+          body: ui.Autocomplete<String>(
             label: "Assignee",
             debounceDuration: Duration.zero,
             onSearch: (query) => ["Ada Lovelace"],
@@ -164,25 +164,22 @@ void main() {
     tester,
   ) async {
     var downloaded = false;
-    UiKitMediaSource? selectedSource;
+    ui.MediaSource? selectedSource;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: Column(
             children: [
-              UiKitFileAttachmentTile(
+              ui.FileAttachmentTile(
                 fileName: "brief.pdf",
                 sizeInBytes: 1024,
                 onDownload: () => downloaded = true,
               ),
-              UiKitMediaPicker(
+              ui.MediaPicker(
                 label: "Receipt",
                 onSelectSource: (source) => selectedSource = source,
               ),
-              const UiKitCountdown(
-                duration: Duration(seconds: 2),
-                paused: true,
-              ),
+              const ui.Countdown(duration: Duration(seconds: 2), paused: true),
             ],
           ),
         ),
@@ -194,7 +191,7 @@ void main() {
     await tester.tap(find.text("Add media"));
     await tester.pumpAndSettle();
     await tester.tap(find.text("Photo library"));
-    expect(selectedSource, UiKitMediaSource.gallery);
+    expect(selectedSource, ui.MediaSource.gallery);
     expect(find.text("00:02"), findsOneWidget);
   });
 }

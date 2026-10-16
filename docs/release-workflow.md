@@ -1,6 +1,7 @@
 # Release workflow
 
-All SDK packages share one version. `main` contains only stable releases;
+Stable SDK packages share one version. Experimental opt-in packages
+`mobile_fuzz` and `mobile_screen_draw` keep independent `0.x` versions. `main` contains only stable releases;
 `develop` contains the next pre-release; a short-lived `release/X.Y.Z` branch
 is used for final validation and release notes.
 
@@ -63,3 +64,16 @@ Then merge `main` back into `develop` and advance `develop` to the next
 `tool/verify_release_metadata.sh` on `main`, `develop`, and `release/**`.
 It requires all SDK packages to share a version, enforces each branch's version
 format, and requires a root changelog heading for stable/release branches.
+
+## 1.0.0 distribution
+
+This release is distributed through Git revisions/tags. All packages retain
+`publish_to: none`; no public license or pub.dev ownership is inferred.
+A pub.dev release is separate work: establish the license and publisher, check
+package-name availability, replace path dependencies with hosted constraints,
+and pass publish dry-runs in dependency order.
+
+Before publishing the Git tag, run `./tool/verify_workspace.sh`,
+`./tool/verify_release_metadata.sh main`, and build the production example.
+Follow [the 1.0.0 release record](release-1.0.0.md) for validation evidence and
+[the migration guide](migration-1.0.0.md) for consumers.

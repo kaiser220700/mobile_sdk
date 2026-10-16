@@ -21,9 +21,22 @@ void main() {
             onPressed: () => MobileDevToolRootMenu.show(
               context,
               controller: controller,
-              configuration: const MobileDevToolConfiguration(),
-              onOpenScreenDraw: () => screenDrawOpened = true,
-              onOpenFuzzTap: () => fuzzTapOpened = true,
+              configuration: MobileDevToolConfiguration(
+                quickActions: [
+                  MobileDevToolMenuItem(
+                    id: "draw",
+                    label: "Screen Draw",
+                    icon: Icons.gesture,
+                    onSelect: () => screenDrawOpened = true,
+                  ),
+                  MobileDevToolMenuItem(
+                    id: "fuzz",
+                    label: "Fuzz Tap",
+                    icon: Icons.smart_toy,
+                    onSelect: () => fuzzTapOpened = true,
+                  ),
+                ],
+              ),
             ),
             child: const Text("Open"),
           ),

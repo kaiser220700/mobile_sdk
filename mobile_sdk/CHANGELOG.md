@@ -2,6 +2,16 @@
 
 All notable changes to this package are documented in this file.
 
+## 1.0.0 - 2026-10-16
+
+- Apply module-based public API naming to core, app wiring, updates, Firebase and DevTool.
+
+
+- Add unprefixed UI names for use with an `as ui` import, including `Button`,
+  `TextField`, `Autocomplete`, `RefreshView`, `RefreshScope` and `Theme`.
+- Keep existing `UiKit*` names available for migration and update examples.
+- Support custom button `child` content with inherited styling and semantics.
+
 ## 0.7.0 - 2026-10-15
 
 - SDK-12: move refresh/load-more to `mobile_ui_kit` (`UiKitRefreshLoadMore`,

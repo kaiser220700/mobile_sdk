@@ -246,6 +246,7 @@ class _UiKitRefreshLoadMoreState extends State<UiKitRefreshLoadMore> {
   Future<void> _handleRefresh() async {
     try {
       await widget.onRefresh!();
+      _controller.resetNoData();
       _controller.refreshCompleted();
     } catch (_) {
       _controller.refreshFailed();

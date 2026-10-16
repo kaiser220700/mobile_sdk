@@ -1,36 +1,36 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
-  late UiKitToastQueue queue;
+  late ui.ToastQueue queue;
 
-  setUp(() => queue = UiKitToastQueue());
+  setUp(() => queue = ui.ToastQueue());
   tearDown(() => queue.dispose());
 
   Future<void> pumpToastOverlay(WidgetTester tester) => tester.pumpWidget(
     MaterialApp(
-      home: UiKitToastOverlay(
+      home: ui.ToastOverlay(
         queue: queue,
         child: const Scaffold(body: SizedBox.expand()),
       ),
     ),
   );
 
-  UiKitToastRequest notification({
+  ui.ToastRequest notification({
     VoidCallback? onTap,
     VoidCallback? onDismiss,
     Duration duration = const Duration(seconds: 4),
     String? semanticLabel,
-    UiKitToastAppearance? appearance,
-    UiKitToastDragBehavior dragBehavior = UiKitToastDragBehavior.standard,
-    UiKitToastEntrance entrance = UiKitToastEntrance.none,
+    ui.ToastAppearance? appearance,
+    ui.ToastDragBehavior dragBehavior = ui.ToastDragBehavior.standard,
+    ui.ToastEntrance entrance = ui.ToastEntrance.none,
     Duration entranceDuration = const Duration(milliseconds: 200),
-  }) => UiKitToastRequest.content(
-    type: UiKitToastType.success,
+  }) => ui.ToastRequest.content(
+    type: ui.ToastType.success,
     duration: duration,
     onDismiss: onDismiss,
-    content: UiKitToastContent(
+    content: ui.ToastContent(
       title: "New order",
       message: "Order #123 is ready",
       semanticLabel: semanticLabel,
@@ -119,7 +119,7 @@ void main() {
     tester,
   ) async {
     queue.enqueue(
-      notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+      notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
     );
     await pumpToastOverlay(tester);
     final surface = find.byKey(const ValueKey("ui-kit-toast-surface"));
@@ -139,7 +139,7 @@ void main() {
     tester,
   ) async {
     queue.enqueue(
-      notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+      notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
     );
     await pumpToastOverlay(tester);
     final surface = find.byKey(const ValueKey("ui-kit-toast-surface"));
@@ -161,7 +161,7 @@ void main() {
     tester,
   ) async {
     queue.enqueue(
-      notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+      notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
     );
     await pumpToastOverlay(tester);
     final surface = find.byKey(const ValueKey("ui-kit-toast-surface"));
@@ -179,7 +179,7 @@ void main() {
 
   testWidgets("lockDownward retains upward dismiss", (tester) async {
     queue.enqueue(
-      notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+      notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
     );
     await pumpToastOverlay(tester);
 
@@ -196,7 +196,7 @@ void main() {
     tester,
   ) async {
     queue.enqueue(
-      notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+      notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
     );
     await pumpToastOverlay(tester);
     final surface = find.byKey(const ValueKey("ui-kit-toast-surface"));
@@ -218,7 +218,7 @@ void main() {
     "lockDownward keeps horizontal drags smooth despite upward jitter",
     (tester) async {
       queue.enqueue(
-        notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+        notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
       );
       await pumpToastOverlay(tester);
       final surface = find.byKey(const ValueKey("ui-kit-toast-surface"));
@@ -242,7 +242,7 @@ void main() {
     "lockDownward retains a horizontal fling in a downward diagonal",
     (tester) async {
       queue.enqueue(
-        notification(dragBehavior: UiKitToastDragBehavior.lockDownward),
+        notification(dragBehavior: ui.ToastDragBehavior.lockDownward),
       );
       await pumpToastOverlay(tester);
 
@@ -260,7 +260,7 @@ void main() {
   testWidgets("slideFromTop enters fully opaque from above", (tester) async {
     queue.enqueue(
       notification(
-        entrance: UiKitToastEntrance.slideFromTop,
+        entrance: ui.ToastEntrance.slideFromTop,
         entranceDuration: const Duration(milliseconds: 100),
       ),
     );
@@ -275,7 +275,7 @@ void main() {
     expect(start.dy, lessThan(end.dy));
     expect(
       find.descendant(
-        of: find.byType(UiKitToastOverlay),
+        of: find.byType(ui.ToastOverlay),
         matching: find.byType(FadeTransition),
       ),
       findsNothing,
@@ -283,12 +283,12 @@ void main() {
   });
 
   testWidgets("slideFromTop respects reduced motion", (tester) async {
-    queue.enqueue(notification(entrance: UiKitToastEntrance.slideFromTop));
+    queue.enqueue(notification(entrance: ui.ToastEntrance.slideFromTop));
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
-          home: UiKitToastOverlay(
+          home: ui.ToastOverlay(
             queue: queue,
             child: const Scaffold(body: SizedBox.expand()),
           ),
@@ -307,8 +307,8 @@ void main() {
     tester,
   ) async {
     queue
-      ..enqueue(notification(entrance: UiKitToastEntrance.slideFromTop))
-      ..enqueue(notification(entrance: UiKitToastEntrance.slideFromTop));
+      ..enqueue(notification(entrance: ui.ToastEntrance.slideFromTop))
+      ..enqueue(notification(entrance: ui.ToastEntrance.slideFromTop));
     await pumpToastOverlay(tester);
 
     queue.dismissCurrent();
@@ -317,7 +317,7 @@ void main() {
     expect(find.byKey(const ValueKey("ui-kit-toast-surface")), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byType(UiKitToastOverlay),
+        of: find.byType(ui.ToastOverlay),
         matching: find.byType(FadeTransition),
       ),
       findsNothing,
@@ -333,7 +333,7 @@ void main() {
     final material = tester.widget<Material>(
       find.byKey(const ValueKey("ui-kit-toast-surface")),
     );
-    expect(material.color, UiKitTheme.successBg);
+    expect(material.color, ui.Theme.successBg);
     expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
   });
 
@@ -342,7 +342,7 @@ void main() {
   ) async {
     queue.enqueue(
       notification(
-        appearance: const UiKitToastAppearance(
+        appearance: const ui.ToastAppearance(
           backgroundColor: Colors.indigo,
           leadingIcon: Icons.notifications,
           leadingIconColor: Colors.white,
@@ -365,7 +365,7 @@ void main() {
       queue.enqueue(
         notification(
           semanticLabel: "New CarPortal notification",
-          appearance: UiKitToastAppearance(
+          appearance: ui.ToastAppearance(
             leading: Semantics(
               label: "CarPortal",
               child: ColoredBox(key: leadingKey, color: Colors.deepOrange),
@@ -405,7 +405,7 @@ void main() {
       notification(
         duration: const Duration(seconds: 1),
         onTap: () => taps += 1,
-        appearance: const UiKitToastAppearance(
+        appearance: const ui.ToastAppearance(
           leading: ColoredBox(color: Colors.deepOrange),
         ),
       ),
@@ -420,7 +420,7 @@ void main() {
     queue.enqueue(
       notification(
         duration: const Duration(seconds: 1),
-        appearance: const UiKitToastAppearance(
+        appearance: const ui.ToastAppearance(
           leading: ColoredBox(color: Colors.deepOrange),
         ),
       ),
@@ -434,8 +434,8 @@ void main() {
     tester,
   ) async {
     queue.enqueue(
-      UiKitToastRequest(
-        type: UiKitToastType.normal,
+      ui.ToastRequest(
+        type: ui.ToastType.normal,
         builder: (_) => const Text("Legacy toast"),
       ),
     );

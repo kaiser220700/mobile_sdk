@@ -1,14 +1,14 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
+import "package:mobile_devtool/mobile_devtool.dart" as dev;
 
 void main() {
   testWidgets("fades the public launcher after it becomes idle", (
     tester,
   ) async {
-    final controller = MobileDevToolController();
-    final position = MobileDevToolBubblePosition(const Offset(16, 16));
-    final idle = MobileDevToolBubbleIdle();
+    final controller = dev.Controller();
+    final position = dev.LauncherPosition(const Offset(16, 16));
+    final idle = dev.LauncherIdleState();
     addTearDown(() {
       controller.dispose();
       position.dispose();
@@ -18,7 +18,7 @@ void main() {
       MaterialApp(
         home: Stack(
           children: [
-            MobileDevToolBubble(
+            dev.Launcher(
               controller: controller,
               position: position,
               idle: idle,

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
   testWidgets("keeps button content visible while an action is loading", (
@@ -9,11 +9,11 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
-          child: UiKitButton(
+          child: ui.Button(
             label: "Save changes",
             onPressed: _noop,
             loading: true,
-            loadingBehavior: UiKitButtonLoadingBehavior.showBeforeContent,
+            loadingBehavior: ui.ButtonLoadingBehavior.showBeforeContent,
           ),
         ),
       ),
@@ -31,7 +31,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
-          child: UiKitTextField(
+          child: ui.TextField(
             controller: controller,
             label: "Code",
             inputHeight: 44,
@@ -55,13 +55,13 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
-          child: UiKitBadge(
+          child: ui.Badge(
             label: "Active",
             leadingDot: true,
             height: 28,
             horizontalPadding: 8,
             maxWidth: 120,
-            semantic: UiKitBadgeSemantic.success,
+            semantic: ui.BadgeSemantic.success,
           ),
         ),
       ),
@@ -79,18 +79,18 @@ void main() {
         home: Material(
           child: Column(
             children: [
-              UiKitKeyValue(
+              ui.KeyValue(
                 label: "Assignee",
                 value: "",
                 emptyValue: "Not assigned",
-                layout: UiKitKeyValueLayout.stacked,
+                layout: ui.KeyValueLayout.stacked,
                 leading: Icon(Icons.person_outline),
                 showDivider: true,
               ),
-              UiKitStatTile(
+              ui.StatTile(
                 label: "Overdue",
                 value: "3",
-                layout: UiKitStatTileLayout.valueFirst,
+                layout: ui.StatTileLayout.valueFirst,
                 valueColor: Colors.red,
                 showBorder: false,
               ),
@@ -114,7 +114,7 @@ void main() {
       const MaterialApp(
         home: Material(
           child: Center(
-            child: UiKitCountBadge(
+            child: ui.CountBadge(
               count: 120,
               maxCount: 99,
               height: 18,
@@ -135,20 +135,20 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
-          child: UiKitBottomNavigation(
+          child: ui.BottomNavigation(
             safeArea: false,
             tapThrottleDuration: Duration.zero,
             selectedIndex: selectedIndex,
             onSelected: (index) => selectedIndex = index,
             items: [
-              UiKitBottomNavigationItem(
+              ui.BottomNavigationItem(
                 label: "Home",
                 iconBuilder: (color) => Icon(Icons.home, color: color),
               ),
-              UiKitBottomNavigationItem(
+              ui.BottomNavigationItem(
                 label: "Inbox",
                 iconBuilder: (color) => Icon(Icons.inbox, color: color),
-                badge: UiKitCountBadge(count: 2),
+                badge: ui.CountBadge(count: 2),
               ),
             ],
           ),
@@ -165,10 +165,10 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
-          child: UiKitButton.text(
+          child: ui.Button.text(
             onPressed: _noop,
             label: "Secondary action",
-            variant: UiKitButtonVariant.outline,
+            variant: ui.ButtonVariant.outline,
             outlineBorderColor: Colors.deepPurple,
             outlineBorderWidth: 2,
           ),
@@ -196,15 +196,15 @@ void main() {
         home: Material(
           child: Align(
             alignment: Alignment.topCenter,
-            child: UiKitBottomNavigation(
+            child: ui.BottomNavigation(
               selectedIndex: 0,
               onSelected: _noopIndex,
               items: [
-                UiKitBottomNavigationItem(
+                ui.BottomNavigationItem(
                   label: "Home",
                   iconBuilder: (color) => Icon(Icons.home, color: color),
                 ),
-                UiKitBottomNavigationItem(
+                ui.BottomNavigationItem(
                   label: "Inbox",
                   iconBuilder: (color) => Icon(Icons.inbox, color: color),
                 ),
@@ -215,7 +215,7 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(find.byType(UiKitBottomNavigation)).height, 80);
+    expect(tester.getSize(find.byType(ui.BottomNavigation)).height, 80);
   });
 
   testWidgets("puts bottom padding above the bottom safe-area inset", (
@@ -228,15 +228,15 @@ void main() {
           child: Material(
             child: Align(
               alignment: Alignment.topCenter,
-              child: UiKitBottomNavigation(
+              child: ui.BottomNavigation(
                 selectedIndex: 0,
                 onSelected: _noopIndex,
                 items: [
-                  UiKitBottomNavigationItem(
+                  ui.BottomNavigationItem(
                     label: "Home",
                     iconBuilder: (color) => Icon(Icons.home, color: color),
                   ),
-                  UiKitBottomNavigationItem(
+                  ui.BottomNavigationItem(
                     label: "Inbox",
                     iconBuilder: (color) => Icon(Icons.inbox, color: color),
                   ),
@@ -248,7 +248,7 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(find.byType(UiKitBottomNavigation)).height, 104);
+    expect(tester.getSize(find.byType(ui.BottomNavigation)).height, 104);
   });
 
   testWidgets("button exposes its accessible name only once", (tester) async {
@@ -257,13 +257,13 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Material(
-            child: UiKitButton.text(onPressed: _noop, label: "Save changes"),
+            child: ui.Button.text(onPressed: _noop, label: "Save changes"),
           ),
         ),
       );
 
       expect(
-        tester.getSemantics(find.byType(UiKitButton)),
+        tester.getSemantics(find.byType(ui.Button)),
         matchesSemantics(
           label: "Save changes",
           isButton: true,
@@ -282,7 +282,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: UiKitScaffold(
+        home: ui.Scaffold(
           safeArea: false,
           child: SizedBox(key: Key("content"), height: 10),
         ),
@@ -300,7 +300,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
-          child: UiKitFilterChip(
+          child: ui.FilterChip(
             label: "All",
             trailingText: "3",
             selected: selected,

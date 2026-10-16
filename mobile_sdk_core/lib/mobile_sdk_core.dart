@@ -3,3 +3,5 @@ library;
 
 export 'src/config.dart';
 export 'src/telemetry.dart';
+
+export "src/public_api.dart";

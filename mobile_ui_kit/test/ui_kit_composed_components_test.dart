@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
   testWidgets("renders the data and form primitives", (tester) async {
@@ -10,22 +10,22 @@ void main() {
         home: Material(
           child: ListView(
             children: [
-              const UiKitBadge.textIcon(
+              const ui.Badge.textIcon(
                 label: "Active",
                 icon: Icons.check,
-                semantic: UiKitBadgeSemantic.success,
+                semantic: ui.BadgeSemantic.success,
               ),
-              UiKitSelectField(label: "Environment", onTap: () {}),
-              UiKitFilterChip(
+              ui.SelectField(label: "Environment", onTap: () {}),
+              ui.FilterChip(
                 label: "Only active",
                 onSelected: (value) => selected = value,
               ),
-              const UiKitStatTile(label: "Users", value: "12,480"),
-              const UiKitKeyValue(label: "Region", value: "Asia"),
-              const UiKitTimeline(items: [UiKitTimelineItem(title: "Created")]),
-              const UiKitStepper(
+              const ui.StatTile(label: "Users", value: "12,480"),
+              const ui.KeyValue(label: "Region", value: "Asia"),
+              const ui.Timeline(items: [ui.TimelineItem(title: "Created")]),
+              const ui.Stepper(
                 currentIndex: 0,
-                steps: [UiKitStep(title: "First")],
+                steps: [ui.Step(title: "First")],
               ),
             ],
           ),

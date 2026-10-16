@@ -8,3 +8,8 @@
 
 # FVM Version Cache
 .fvm/
+
+# Generated Flutter plugin resolution metadata
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/__pycache__/

@@ -1,7 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 import "component_catalog.dart";
 import "example_colors.dart";
@@ -48,10 +48,10 @@ class _PreviewHome extends StatefulWidget {
 }
 
 class _PreviewHomeState extends State<_PreviewHome> {
-  final _loading = UiKitLoadingController();
-  final _toastQueue = UiKitToastQueue();
-  final _overlay = UiKitOverlayController();
-  final _otp = UiKitOtpController(length: 4);
+  final _loading = ui.LoadingController();
+  final _toastQueue = ui.ToastQueue();
+  final _overlay = ui.OverlayController();
+  final _otp = ui.OtpController(length: 4);
   final _text = TextEditingController(text: "Nguyễn An");
   final _scrollController = ScrollController();
 
@@ -91,9 +91,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
         )
         .toList();
 
-    return UiKitToastOverlay(
+    return ui.ToastOverlay(
       queue: _toastQueue,
-      child: UiKitLoadingOverlay(
+      child: ui.LoadingOverlay(
         controller: _loading,
         barrierColor: Colors.black54,
         builder: (context, step) => _LoadingPreview(step: step),
@@ -251,15 +251,15 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "alert-banner",
       category: "feedback",
       html: "<div role=\"alert\">",
-      flutterWidget: "UiKitAlertBanner",
+      flutterWidget: "ui.AlertBanner",
       description: "Thông báo inline với semantic và action.",
-      builder: (context) => UiKitAlertBanner(
+      builder: (context) => ui.AlertBanner(
         title: "Profile đã được xác thực",
         description: "Bạn có thể tiếp tục sử dụng toàn bộ tính năng.",
-        semantic: UiKitAlertSemantic.success,
-        action: UiKitAlertAction(
+        semantic: ui.AlertSemantic.success,
+        action: ui.AlertAction(
           label: "Xem chi tiết",
-          onPressed: () => _showToast(UiKitToastType.normal, "Alert action"),
+          onPressed: () => _showToast(ui.ToastType.normal, "Alert action"),
         ),
       ),
     ),
@@ -267,23 +267,23 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "avatar",
       category: "foundation",
       html: "<img alt=\"...\">",
-      flutterWidget: "UiKitAvatar",
+      flutterWidget: "ui.Avatar",
       description: "Avatar initials, size, ring và status.",
       builder: (context) => const Wrap(
         spacing: 12,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          UiKitAvatar(initials: "NA", size: UiKitAvatarSize.sm),
-          UiKitAvatar(
+          ui.Avatar(initials: "NA", size: ui.AvatarSize.sm),
+          ui.Avatar(
             initials: "NA",
-            size: UiKitAvatarSize.md,
+            size: ui.AvatarSize.md,
             ring: true,
-            status: UiKitAvatarStatus.online,
+            status: ui.AvatarStatus.online,
           ),
-          UiKitAvatar(
+          ui.Avatar(
             icon: Icons.person_outline,
-            size: UiKitAvatarSize.lg,
-            shape: UiKitAvatarShape.rounded,
+            size: ui.AvatarSize.lg,
+            shape: ui.AvatarShape.rounded,
           ),
         ],
       ),
@@ -292,22 +292,22 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "badge",
       category: "feedback",
       html: "<span>...</span>",
-      flutterWidget: "UiKitBadge",
+      flutterWidget: "ui.Badge",
       description: "Label/count badge theo semantic và variant.",
       builder: (context) => const Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
-          UiKitBadge(label: "Primary", semantic: UiKitBadgeSemantic.primary),
-          UiKitBadge(
+          ui.Badge(label: "Primary", semantic: ui.BadgeSemantic.primary),
+          ui.Badge(
             label: "Success",
-            variant: UiKitBadgeVariant.solid,
-            semantic: UiKitBadgeSemantic.success,
+            variant: ui.BadgeVariant.solid,
+            semantic: ui.BadgeSemantic.success,
           ),
-          UiKitBadge(count: 128, semantic: UiKitBadgeSemantic.info),
-          UiKitBadge(
-            variant: UiKitBadgeVariant.dot,
-            semantic: UiKitBadgeSemantic.warning,
+          ui.Badge(count: 128, semantic: ui.BadgeSemantic.info),
+          ui.Badge(
+            variant: ui.BadgeVariant.dot,
+            semantic: ui.BadgeSemantic.warning,
           ),
         ],
       ),
@@ -316,25 +316,22 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "status-pill",
       category: "feedback",
       html: "<span data-status>...</span>",
-      flutterWidget: "UiKitBadge",
+      flutterWidget: "ui.Badge",
       description:
-          "Status pill dùng chung UiKitBadge, tránh thêm component trùng tên.",
+          "Status pill dùng chung ui.Badge, tránh thêm component trùng tên.",
       builder: (context) => const Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
-          UiKitBadge.text(
-            label: "Active",
-            semantic: UiKitBadgeSemantic.success,
-          ),
-          UiKitBadge.textIcon(
+          ui.Badge.text(label: "Active", semantic: ui.BadgeSemantic.success),
+          ui.Badge.textIcon(
             label: "Pending",
             icon: Icons.schedule_outlined,
-            semantic: UiKitBadgeSemantic.warning,
+            semantic: ui.BadgeSemantic.warning,
           ),
-          UiKitBadge.icon(
+          ui.Badge.icon(
             icon: Icons.verified_outlined,
-            semantic: UiKitBadgeSemantic.info,
+            semantic: ui.BadgeSemantic.info,
             semanticsLabel: "Verified",
           ),
         ],
@@ -344,23 +341,22 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "button",
       category: "actions",
       html: "<button type=\"button\">...</button>",
-      flutterWidget: "UiKitButton",
+      flutterWidget: "ui.Button",
       description: "Các variant, icon, loading và disabled.",
       builder: (context) => Wrap(
         spacing: 8,
         runSpacing: 8,
         children: [
-          UiKitButton.text(
-            onPressed: () =>
-                _showToast(UiKitToastType.success, "Button pressed"),
+          ui.Button.text(
+            onPressed: () => _showToast(ui.ToastType.success, "Button pressed"),
             label: "Primary",
           ),
-          const UiKitButton.text(onPressed: null, label: "Disabled"),
-          UiKitButton.icon(
+          const ui.Button.text(onPressed: null, label: "Disabled"),
+          ui.Button.icon(
             onPressed: () {},
             icon: Icons.add,
             semanticsLabel: "Add",
-            variant: UiKitButtonVariant.outline,
+            variant: ui.ButtonVariant.outline,
           ),
         ],
       ),
@@ -369,32 +365,32 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "card-shell",
       category: "layout",
       html: "<section>...</section>",
-      flutterWidget: "UiKitCardShell",
+      flutterWidget: "ui.CardShell",
       description: "Surface có border/shadow để app lồng nội dung.",
       builder: (context) =>
-          const UiKitCardShell(shadow: true, child: Text("CardShell content")),
+          const ui.CardShell(shadow: true, child: Text("CardShell content")),
     ),
     PreviewDefinition(
       id: "checkbox",
       category: "forms",
       html: "<input type=\"checkbox\">",
-      flutterWidget: "UiKitCheckbox",
+      flutterWidget: "ui.Checkbox",
       description: "Checked, indeterminate, error và disabled.",
       builder: (context) => Column(
         children: [
-          UiKitCheckbox(
+          ui.Checkbox(
             value: _checked,
             label: "Nhận thông báo",
             onChanged: (value) => setState(() => _checked = value),
           ),
-          UiKitCheckbox(
+          ui.Checkbox(
             value: false,
             indeterminate: _indeterminate,
             label: "Indeterminate",
             onChanged: (value) =>
                 setState(() => _indeterminate = !_indeterminate),
           ),
-          const UiKitCheckbox(value: true, label: "Disabled", disabled: true),
+          const ui.Checkbox(value: true, label: "Disabled", disabled: true),
         ],
       ),
     ),
@@ -402,21 +398,21 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "select-field",
       category: "forms",
       html: "<select>...</select>",
-      flutterWidget: "UiKitSelectField",
+      flutterWidget: "ui.SelectField",
       description: "Field chọn giá trị; host app sở hữu menu/options.",
-      builder: (context) => UiKitSelectField(
+      builder: (context) => ui.SelectField(
         label: "Environment",
         value: "Preview",
         isRequired: true,
         leading: const Icon(Icons.tune_outlined),
-        onTap: () => _showToast(UiKitToastType.normal, "Open select options"),
+        onTap: () => _showToast(ui.ToastType.normal, "Open select options"),
       ),
     ),
     PreviewDefinition(
       id: "filter-chip",
       category: "forms",
       html: "<button role=\"checkbox\">...</button>",
-      flutterWidget: "UiKitFilterChip",
+      flutterWidget: "ui.FilterChip",
       description: "Chip toggle cho filter list/table.",
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
@@ -425,13 +421,13 @@ class _PreviewHomeState extends State<_PreviewHome> {
             builder: (context, setState) => Wrap(
               spacing: 8,
               children: [
-                UiKitFilterChip(
+                ui.FilterChip(
                   label: "Active",
                   selected: selected,
                   leadingIcon: Icons.circle,
                   onSelected: (_) => setState(() => selected = !selected),
                 ),
-                const UiKitFilterChip(label: "Disabled", enabled: false),
+                const ui.FilterChip(label: "Disabled", enabled: false),
               ],
             ),
           );
@@ -442,16 +438,16 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "dialog",
       category: "feedback",
       html: "<dialog>...</dialog>",
-      flutterWidget: "UiKitDialog",
+      flutterWidget: "ui.Dialog",
       description: "Dialog action của app layer, package chỉ điều phối.",
-      builder: (context) => UiKitButton.text(
+      builder: (context) => ui.Button.text(
         onPressed: () => unawaited(
-          UiKitDialog.show(
+          ui.Dialog.show(
             context,
             title: "Xác nhận thao tác",
             description: "Dialog dùng chung từ mobile_ui_kit.",
-            semantic: UiKitDialogSemantic.info,
-            actions: [UiKitDialogAction(label: "Đóng", onPressed: () {})],
+            semantic: ui.DialogSemantic.info,
+            actions: [ui.DialogAction(label: "Đóng", onPressed: () {})],
           ),
         ),
         label: "Open dialog",
@@ -461,13 +457,13 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "divider",
       category: "layout",
       html: "<hr>",
-      flutterWidget: "UiKitDivider",
+      flutterWidget: "ui.Divider",
       description: "Divider ngang/dọc nhận màu từ theme.",
       builder: (context) => const Column(
         children: [
           Text("Above"),
           SizedBox(height: 8),
-          UiKitDivider(),
+          ui.Divider(),
           SizedBox(height: 8),
           Text("Below"),
         ],
@@ -477,21 +473,21 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "icon",
       category: "foundation",
       html: "<svg aria-hidden=\"true\">...</svg>",
-      flutterWidget: "UiKitIcon",
+      flutterWidget: "ui.Icon",
       description: "Icon size và semantic color thống nhất.",
       builder: (context) => const Wrap(
         spacing: 16,
         children: [
-          UiKitIcon(
+          ui.Icon(
             Icons.home_outlined,
-            color: UiKitIconColor.primary,
-            size: UiKitIconSize.sm,
+            color: ui.IconColor.primary,
+            size: ui.IconSize.sm,
           ),
-          UiKitIcon(Icons.check_circle_outline, color: UiKitIconColor.success),
-          UiKitIcon(
+          ui.Icon(Icons.check_circle_outline, color: ui.IconColor.success),
+          ui.Icon(
             Icons.warning_amber_outlined,
-            color: UiKitIconColor.warning,
-            size: UiKitIconSize.lg,
+            color: ui.IconColor.warning,
+            size: ui.IconSize.lg,
           ),
         ],
       ),
@@ -500,36 +496,36 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "item",
       category: "navigation",
       html: "<button class=\"item\">...</button>",
-      flutterWidget: "UiKitItem",
+      flutterWidget: "ui.Item",
       description: "Row primitive với prefix, subtitle và suffix.",
-      builder: (context) => UiKitItem(
+      builder: (context) => ui.Item(
         title: const Text("Account settings"),
         subtitle: const Text("Profile, password và bảo mật"),
-        prefix: const UiKitIcon(Icons.person_outline),
-        suffix: const UiKitIcon(Icons.chevron_right),
-        onPress: () => _showToast(UiKitToastType.normal, "Item pressed"),
+        prefix: const ui.Icon(Icons.person_outline),
+        suffix: const ui.Icon(Icons.chevron_right),
+        onPress: () => _showToast(ui.ToastType.normal, "Item pressed"),
       ),
     ),
     PreviewDefinition(
       id: "list-item",
       category: "navigation",
       html: "<li>...</li>",
-      flutterWidget: "UiKitListItem",
+      flutterWidget: "ui.ListItem",
       description: "List row có selected, leading/trailing, divider.",
       builder: (context) => Column(
         children: [
-          UiKitListItem(
+          ui.ListItem(
             title: "Selected item",
             description: "Description",
             selected: true,
-            divider: UiKitListItemDivider.inset,
-            leading: const UiKitIcon(Icons.widgets_outlined),
+            divider: ui.ListItemDivider.inset,
+            leading: const ui.Icon(Icons.widgets_outlined),
           ),
-          UiKitListItem(
+          ui.ListItem(
             title: "Disabled item",
             disabled: true,
             onTap: () {},
-            leading: const UiKitIcon(Icons.lock_outline),
+            leading: const ui.Icon(Icons.lock_outline),
           ),
         ],
       ),
@@ -538,12 +534,12 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "list-entrance",
       category: "motion",
       html: "<li data-enter>...</li>",
-      flutterWidget: "UiKitListEntrance",
+      flutterWidget: "ui.ListEntrance",
       description: "Fade + slide stagger cho list entrance.",
       builder: (context) => Column(
         children: [
           for (var i = 0; i < 3; i++)
-            UiKitListEntrance(
+            ui.ListEntrance(
               index: i,
               child: Card(
                 child: ListTile(
@@ -559,7 +555,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "timeline-motion",
       category: "motion",
       html: "<div data-motion-timeline>...</div>",
-      flutterWidget: "UiKitMotion",
+      flutterWidget: "ui.Motion",
       description:
           "Một clock chung điều phối reward landing, attention pulse và CTA nudge.",
       builder: (context) => const _TimelineMotionPreview(),
@@ -568,14 +564,14 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "accordion",
       category: "disclosure",
       html: "<details><summary>...</summary></details>",
-      flutterWidget: "UiKitAccordion",
+      flutterWidget: "ui.Accordion",
       description: "ID-based expand/collapse và disabled item.",
-      builder: (context) => UiKitAccordion(
+      builder: (context) => ui.Accordion(
         expandedIds: _expanded,
         onChanged: (value) => setState(() => _expanded = value),
-        dividerColor: Theme.of(context).extension<UiKitThemeData>()!.border,
+        dividerColor: Theme.of(context).extension<ui.ThemeData>()!.border,
         items: const [
-          UiKitAccordionItem(
+          ui.AccordionItem(
             id: "overview",
             title: Text("Overview"),
             content: Padding(
@@ -583,7 +579,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
               child: Text("Content của accordion item."),
             ),
           ),
-          UiKitAccordionItem(
+          ui.AccordionItem(
             id: "disabled",
             title: Text("Disabled"),
             content: Text("Không mở được"),
@@ -598,21 +594,21 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "loading-overlay",
       category: "feedback",
       html: "<div aria-busy=\"true\">...</div>",
-      flutterWidget: "UiKitLoadingOverlay",
+      flutterWidget: "ui.LoadingOverlay",
       description: "Nút demo spinner, success và error overlay.",
       builder: (context) => Wrap(
         spacing: 8,
         children: [
           OutlinedButton(
-            onPressed: () => unawaited(_showLoading(UiKitLoadingStep.spinner)),
+            onPressed: () => unawaited(_showLoading(ui.LoadingStep.spinner)),
             child: const Text("Spinner"),
           ),
           OutlinedButton(
-            onPressed: () => unawaited(_showLoading(UiKitLoadingStep.success)),
+            onPressed: () => unawaited(_showLoading(ui.LoadingStep.success)),
             child: const Text("Success"),
           ),
           OutlinedButton(
-            onPressed: () => unawaited(_showLoading(UiKitLoadingStep.error)),
+            onPressed: () => unawaited(_showLoading(ui.LoadingStep.error)),
             child: const Text("Error"),
           ),
         ],
@@ -622,9 +618,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "otp-field",
       category: "forms",
       html: "<input inputmode=\"numeric\" autocomplete=\"one-time-code\">",
-      flutterWidget: "UiKitOtpField",
+      flutterWidget: "ui.OtpField",
       description: "OTP controller + decoration/overlay builder.",
-      builder: (context) => UiKitOtpField(
+      builder: (context) => ui.OtpField(
         controller: _otp,
         decorationBuilder: (context, index, focused) => InputDecoration(
           contentPadding: EdgeInsets.zero,
@@ -634,7 +630,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
             borderSide: BorderSide(
               color: focused
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).extension<UiKitThemeData>()!.border,
+                  : Theme.of(context).extension<ui.ThemeData>()!.border,
               width: focused ? 2 : 1,
             ),
           ),
@@ -649,9 +645,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "anchored-overlay",
       category: "overlay",
       html: "<div popover>...</div>",
-      flutterWidget: "UiKitAnchoredOverlay",
+      flutterWidget: "ui.AnchoredOverlay",
       description: "Popover neo vào trigger và dismiss qua barrier.",
-      builder: (context) => UiKitAnchoredOverlay(
+      builder: (context) => ui.AnchoredOverlay(
         controller: _overlay,
         overlayBuilder: (context) => Material(
           elevation: 6,
@@ -672,10 +668,10 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "pressable",
       category: "interaction",
       html: "<button>...</button>",
-      flutterWidget: "UiKitPressable",
+      flutterWidget: "ui.Pressable",
       description:
           "Expose hovered/pressed/selected/disabled state cho app layer.",
-      builder: (context) => UiKitPressable(
+      builder: (context) => ui.Pressable(
         selected: _selectedIds.contains("pressable"),
         onPress: () => setState(
           () => _selectedIds.contains("pressable")
@@ -686,9 +682,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: states.contains(UiKitPressableState.selected)
+            color: states.contains(ui.PressableState.selected)
                 ? Theme.of(context).colorScheme.primaryContainer
-                : Theme.of(context).extension<UiKitThemeData>()!.surfaceMuted,
+                : Theme.of(context).extension<ui.ThemeData>()!.surfaceMuted,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(states.map((state) => state.name).join(" · ")),
@@ -699,15 +695,15 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "progress",
       category: "feedback",
       html: "<progress value=\"62\" max=\"100\">",
-      flutterWidget: "UiKitDeterminateProgress",
+      flutterWidget: "ui.DeterminateProgress",
       description: "Animated determinate progress với value 0..1.",
       builder: (context) => Column(
         children: [
-          UiKitDeterminateProgress(
+          ui.DeterminateProgress(
             value: _progress,
             height: 10,
             fillColor: Theme.of(context).colorScheme.primary,
-            trackColor: Theme.of(context).extension<UiKitThemeData>()!.border,
+            trackColor: Theme.of(context).extension<ui.ThemeData>()!.border,
             borderRadius: BorderRadius.circular(8),
             semanticsLabel: "Preview progress",
           ),
@@ -729,16 +725,16 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "radio",
       category: "forms",
       html: "<input type=\"radio\">",
-      flutterWidget: "UiKitRadio",
+      flutterWidget: "ui.Radio",
       description: "Selected, unselected và disabled radio.",
       builder: (context) => Column(
         children: [
-          UiKitRadio(
+          ui.Radio(
             value: _selectedIds.contains("radio"),
             label: const Text("Selected radio"),
             onChanged: (_) => setState(() => _selectedIds.add("radio")),
           ),
-          const UiKitRadio(
+          const ui.Radio(
             value: false,
             enabled: false,
             label: Text("Disabled radio"),
@@ -750,9 +746,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "search",
       category: "forms",
       html: "<input type=\"search\">",
-      flutterWidget: "UiKitSearch",
+      flutterWidget: "ui.Search",
       description: "Search with clear and reactive value.",
-      builder: (context) => UiKitSearch(
+      builder: (context) => ui.Search(
         value: _searchValue,
         placeholder: "Tìm component…",
         onChanged: (value) => setState(() => _searchValue = value),
@@ -763,39 +759,39 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "stat-tile",
       category: "data",
       html: "<article data-stat>...</article>",
-      flutterWidget: "UiKitStatTile",
+      flutterWidget: "ui.StatTile",
       description: "Metric tile có value, icon và trend.",
-      builder: (context) => UiKitStatTile(
+      builder: (context) => ui.StatTile(
         label: "Active users",
         value: "12,480",
         icon: Icons.people_outline,
-        trend: UiKitStatTrend.up,
+        trend: ui.StatTrend.up,
         trendLabel: "+12.4%",
         description: "vs last month",
-        onTap: () => _showToast(UiKitToastType.normal, "Stat tile pressed"),
+        onTap: () => _showToast(ui.ToastType.normal, "Stat tile pressed"),
       ),
     ),
     PreviewDefinition(
       id: "key-value",
       category: "data",
       html: "<dl><dt>...</dt><dd>...</dd></dl>",
-      flutterWidget: "UiKitKeyValue",
+      flutterWidget: "ui.KeyValue",
       description: "Metadata row cho detail/settings screen.",
       builder: (context) => Column(
         children: [
-          UiKitKeyValue(
+          ui.KeyValue(
             label: "Status",
             value: "Active",
-            valueWidget: const UiKitBadge.text(
+            valueWidget: const ui.Badge.text(
               label: "Active",
-              semantic: UiKitBadgeSemantic.success,
+              semantic: ui.BadgeSemantic.success,
             ),
           ),
-          UiKitKeyValue(
+          ui.KeyValue(
             label: "Request ID",
             value: "req_123456",
             compact: true,
-            onCopy: () => _showToast(UiKitToastType.success, "Copied"),
+            onCopy: () => _showToast(ui.ToastType.success, "Copied"),
           ),
         ],
       ),
@@ -804,7 +800,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "skeleton",
       category: "feedback",
       html: "<div aria-busy=\"true\">...</div>",
-      flutterWidget: "UiKitSkeleton",
+      flutterWidget: "ui.Skeleton",
       description: "Toggle shimmer loading ở app layer.",
       builder: (context) => Column(
         children: [
@@ -814,13 +810,13 @@ class _PreviewHomeState extends State<_PreviewHome> {
             title: const Text("Enabled"),
             onChanged: (value) => setState(() => _skeletonEnabled = value),
           ),
-          UiKitSkeleton(
+          ui.Skeleton(
             enabled: _skeletonEnabled,
             child: const ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Bone.circle(size: 42),
-              title: Bone.text(words: 3),
-              subtitle: Bone.text(words: 6),
+              leading: ui.Bone.circle(size: 42),
+              title: ui.Bone.text(words: 3),
+              subtitle: ui.Bone.text(words: 6),
             ),
           ),
         ],
@@ -830,17 +826,17 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "switch",
       category: "forms",
       html: "<input type=\"checkbox\" role=\"switch\">",
-      flutterWidget: "UiKitSwitch",
+      flutterWidget: "ui.Switch",
       description: "Boolean switch có label, sublabel và disabled.",
       builder: (context) => Column(
         children: [
-          UiKitSwitch(
+          ui.Switch(
             value: _switched,
             label: "Biometric login",
             sublabel: "Dùng Face ID hoặc vân tay.",
             onChanged: (value) => setState(() => _switched = value),
           ),
-          const UiKitSwitch(value: true, label: "Disabled", disabled: true),
+          const ui.Switch(value: true, label: "Disabled", disabled: true),
         ],
       ),
     ),
@@ -848,35 +844,35 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "tabs",
       category: "navigation",
       html: "<div role=\"tablist\">...</div>",
-      flutterWidget: "UiKitTabs",
+      flutterWidget: "ui.Tabs",
       description: "Underline/pill tabs, active và badge.",
       builder: (context) => Column(
         children: [
-          UiKitTabs(
+          ui.Tabs(
             activeId: _activeTab,
             onChanged: (value) => setState(() => _activeTab = value),
             items: const [
-              UiKitTabItem(
+              ui.TabItem(
                 id: "overview",
                 label: "Overview",
                 icon: Icons.dashboard_outlined,
               ),
-              UiKitTabItem(
+              ui.TabItem(
                 id: "activity",
                 label: "Activity",
-                badge: UiKitTabBadge(dot: true),
+                badge: ui.TabBadge(dot: true),
               ),
-              UiKitTabItem(id: "disabled", label: "Disabled", disabled: true),
+              ui.TabItem(id: "disabled", label: "Disabled", disabled: true),
             ],
           ),
           const SizedBox(height: 8),
-          UiKitTabs(
-            variant: UiKitTabsVariant.pill,
+          ui.Tabs(
+            variant: ui.TabsVariant.pill,
             activeId: _activeTab,
             onChanged: (value) => setState(() => _activeTab = value),
             items: const [
-              UiKitTabItem(id: "overview", label: "Overview"),
-              UiKitTabItem(id: "activity", label: "Activity"),
+              ui.TabItem(id: "overview", label: "Overview"),
+              ui.TabItem(id: "activity", label: "Activity"),
             ],
           ),
         ],
@@ -886,9 +882,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "text-field",
       category: "forms",
       html: "<input>...</input>",
-      flutterWidget: "UiKitTextField",
+      flutterWidget: "ui.TextField",
       description: "Text, password, helper/error và icon states.",
-      builder: (context) => UiKitTextField(
+      builder: (context) => ui.TextField(
         controller: _text,
         label: "Display name",
         placeholder: "Nhập tên hiển thị",
@@ -901,26 +897,26 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "timeline",
       category: "data",
       html: "<ol data-timeline>...</ol>",
-      flutterWidget: "UiKitTimeline",
+      flutterWidget: "ui.Timeline",
       description: "Timeline dọc với completed/current/upcoming/error.",
-      builder: (context) => const UiKitTimeline(
+      builder: (context) => const ui.Timeline(
         items: [
-          UiKitTimelineItem(
+          ui.TimelineItem(
             title: "Order created",
             time: "09:10",
-            status: UiKitTimelineStatus.completed,
+            status: ui.TimelineStatus.completed,
           ),
-          UiKitTimelineItem(
+          ui.TimelineItem(
             title: "Payment confirmed",
             description: "Waiting for fulfillment",
             time: "09:12",
-            status: UiKitTimelineStatus.current,
+            status: ui.TimelineStatus.current,
             icon: Icons.sync,
           ),
-          UiKitTimelineItem(
+          ui.TimelineItem(
             title: "Delivered",
             time: "--",
-            status: UiKitTimelineStatus.upcoming,
+            status: ui.TimelineStatus.upcoming,
             icon: Icons.local_shipping_outlined,
           ),
         ],
@@ -930,22 +926,19 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "stepper",
       category: "navigation",
       html: "<ol data-stepper>...</ol>",
-      flutterWidget: "UiKitStepper",
+      flutterWidget: "ui.Stepper",
       description: "Stepper dọc cho flow nhiều bước.",
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           var current = 1;
           return StatefulBuilder(
-            builder: (context, setState) => UiKitStepper(
+            builder: (context, setState) => ui.Stepper(
               currentIndex: current,
               onStepTapped: (index) => setState(() => current = index),
               steps: const [
-                UiKitStep(title: "Account", subtitle: "Basic information"),
-                UiKitStep(
-                  title: "Preferences",
-                  subtitle: "Choose your options",
-                ),
-                UiKitStep(title: "Complete", subtitle: "Review and submit"),
+                ui.Step(title: "Account", subtitle: "Basic information"),
+                ui.Step(title: "Preferences", subtitle: "Choose your options"),
+                ui.Step(title: "Complete", subtitle: "Review and submit"),
               ],
             ),
           );
@@ -956,9 +949,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "title",
       category: "typography",
       html: "<h2>...</h2>",
-      flutterWidget: "UiKitTitle",
+      flutterWidget: "ui.Title",
       description: "Heading + description theo size token.",
-      builder: (context) => const UiKitTitle(
+      builder: (context) => const ui.Title(
         text: "Account overview",
         description: "Title component của UI Kit",
         isRequired: true,
@@ -968,12 +961,12 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "toast-overlay",
       category: "feedback",
       html: "<div role=\"status\">...</div>",
-      flutterWidget: "UiKitToastOverlay",
+      flutterWidget: "ui.ToastOverlay",
       description: "Queue toast; visual builder thuộc app layer.",
       builder: (context) => Wrap(
         spacing: 8,
         children: [
-          for (final type in UiKitToastType.values)
+          for (final type in ui.ToastType.values)
             OutlinedButton(
               onPressed: () => _showToast(type, "Toast ${type.name}"),
               child: Text(type.name),
@@ -985,9 +978,9 @@ class _PreviewHomeState extends State<_PreviewHome> {
       id: "tooltip",
       category: "overlay",
       html: "<div role=\"tooltip\">...</div>",
-      flutterWidget: "UiKitTooltip",
+      flutterWidget: "ui.Tooltip",
       description: "Long-press trigger, tự dismiss theo duration.",
-      builder: (context) => UiKitTooltip(
+      builder: (context) => ui.Tooltip(
         tipBuilder: (context) => const Text("Long-press để xem tooltip"),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.inverseSurface,
@@ -1002,17 +995,17 @@ class _PreviewHomeState extends State<_PreviewHome> {
     ),
   ];
 
-  Future<void> _showLoading(UiKitLoadingStep step) async {
-    if (step == UiKitLoadingStep.spinner) _loading.showSpinner();
-    if (step == UiKitLoadingStep.success) _loading.showSuccess();
-    if (step == UiKitLoadingStep.error) _loading.showError();
+  Future<void> _showLoading(ui.LoadingStep step) async {
+    if (step == ui.LoadingStep.spinner) _loading.showSpinner();
+    if (step == ui.LoadingStep.success) _loading.showSuccess();
+    if (step == ui.LoadingStep.error) _loading.showError();
     await Future<void>.delayed(const Duration(milliseconds: 900));
     if (mounted) _loading.hide();
   }
 
-  void _showToast(UiKitToastType type, String message) {
+  void _showToast(ui.ToastType type, String message) {
     _toastQueue.enqueue(
-      UiKitToastRequest(
+      ui.ToastRequest(
         type: type,
         builder: (context) => _Toast(type: type, message: message),
       ),
@@ -1055,35 +1048,35 @@ class _TimelineMotionPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
-    return UiKitMotion(
+    return ui.Motion(
       duration: const Duration(milliseconds: 2400),
       loop: true,
-      builder: (BuildContext context, UiKitMotionFrame frame, Widget? child) {
+      builder: (BuildContext context, ui.MotionFrame frame, Widget? child) {
         final double landingScale = frame.valueAt(const [
-          UiKitMotionKeyframe(0, .82),
-          UiKitMotionKeyframe(.2, 1.08, Curves.easeOutBack),
-          UiKitMotionKeyframe(.32, 1),
-          UiKitMotionKeyframe(1, 1),
+          ui.MotionKeyframe(0, .82),
+          ui.MotionKeyframe(.2, 1.08, Curves.easeOutBack),
+          ui.MotionKeyframe(.32, 1),
+          ui.MotionKeyframe(1, 1),
         ]);
         final double landingOpacity = frame.valueAt(const [
-          UiKitMotionKeyframe(0, 0),
-          UiKitMotionKeyframe(.16, 1, Curves.easeOut),
-          UiKitMotionKeyframe(1, 1),
+          ui.MotionKeyframe(0, 0),
+          ui.MotionKeyframe(.16, 1, Curves.easeOut),
+          ui.MotionKeyframe(1, 1),
         ]);
         final double pulseScale = frame.valueAt(const [
-          UiKitMotionKeyframe(0, 1),
-          UiKitMotionKeyframe(.54, 1),
-          UiKitMotionKeyframe(.68, 1.05, Curves.easeOut),
-          UiKitMotionKeyframe(.82, 1, Curves.easeIn),
-          UiKitMotionKeyframe(1, 1),
+          ui.MotionKeyframe(0, 1),
+          ui.MotionKeyframe(.54, 1),
+          ui.MotionKeyframe(.68, 1.05, Curves.easeOut),
+          ui.MotionKeyframe(.82, 1, Curves.easeIn),
+          ui.MotionKeyframe(1, 1),
         ]);
         final double nudge = frame.valueAt(const [
-          UiKitMotionKeyframe(0, 0),
-          UiKitMotionKeyframe(.74, 0),
-          UiKitMotionKeyframe(.8, 6, Curves.easeOut),
-          UiKitMotionKeyframe(.86, -3, Curves.easeInOut),
-          UiKitMotionKeyframe(.92, 0, Curves.easeOut),
-          UiKitMotionKeyframe(1, 0),
+          ui.MotionKeyframe(0, 0),
+          ui.MotionKeyframe(.74, 0),
+          ui.MotionKeyframe(.8, 6, Curves.easeOut),
+          ui.MotionKeyframe(.86, -3, Curves.easeInOut),
+          ui.MotionKeyframe(.92, 0, Curves.easeOut),
+          ui.MotionKeyframe(1, 0),
         ]);
 
         return Column(
@@ -1310,11 +1303,11 @@ class _TokenPicker extends StatelessWidget {
 
 class _LoadingPreview extends StatelessWidget {
   const _LoadingPreview({required this.step});
-  final UiKitLoadingStep step;
+  final ui.LoadingStep step;
 
   @override
   Widget build(BuildContext context) {
-    final success = step == UiKitLoadingStep.success;
+    final success = step == ui.LoadingStep.success;
     return Center(
       child: Card(
         child: Padding(
@@ -1328,7 +1321,7 @@ class _LoadingPreview extends StatelessWidget {
                       color: Colors.green,
                       size: 42,
                     )
-                  : step == UiKitLoadingStep.error
+                  : step == ui.LoadingStep.error
                   ? const Icon(Icons.error, color: Colors.red, size: 42)
                   : const CircularProgressIndicator(),
               const SizedBox(height: 12),
@@ -1343,16 +1336,16 @@ class _LoadingPreview extends StatelessWidget {
 
 class _Toast extends StatelessWidget {
   const _Toast({required this.type, required this.message});
-  final UiKitToastType type;
+  final ui.ToastType type;
   final String message;
 
   @override
   Widget build(BuildContext context) {
     final color = switch (type) {
-      UiKitToastType.normal => Theme.of(context).colorScheme.inverseSurface,
-      UiKitToastType.warning => Colors.orange.shade800,
-      UiKitToastType.success => Colors.green.shade700,
-      UiKitToastType.error => Theme.of(context).colorScheme.error,
+      ui.ToastType.normal => Theme.of(context).colorScheme.inverseSurface,
+      ui.ToastType.warning => Colors.orange.shade800,
+      ui.ToastType.success => Colors.green.shade700,
+      ui.ToastType.error => Theme.of(context).colorScheme.error,
     };
     return SafeArea(
       child: Card(

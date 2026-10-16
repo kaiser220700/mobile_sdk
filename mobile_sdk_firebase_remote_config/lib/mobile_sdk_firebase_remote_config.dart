@@ -3,6 +3,7 @@ library;
 
 export 'package:mobile_sdk_core/mobile_sdk_core.dart'
     show
+        ConfigSchema,
         ConfigKey,
         ConfigSnapshot,
         ConfigSource,
@@ -10,3 +11,5 @@ export 'package:mobile_sdk_core/mobile_sdk_core.dart'
         InMemoryConfigSource,
         MobileRemoteConfigSchema;
 export 'src/remote_config.dart';
+
+export "src/public_api.dart";

@@ -27,6 +27,7 @@ class UiKitButton extends StatelessWidget {
   const UiKitButton({
     required this.onPressed,
     this.label,
+    this.child,
     this.variant = UiKitButtonVariant.primary,
     this.size = UiKitButtonSize.md,
     this.iconLeft,
@@ -50,9 +51,10 @@ class UiKitButton extends StatelessWidget {
     this.semanticsLabel,
     super.key,
   }) : assert(
-         label != null || semanticsLabel != null,
+         label != null || child != null || semanticsLabel != null,
          "Icon-only buttons need semanticsLabel.",
        ),
+       assert(label == null || child == null, "Use either label or child."),
        assert(outlineBorderWidth > 0, "outlineBorderWidth must be positive."),
        assert(height == null || height > 0),
        assert(minWidth == null || minWidth > 0),
@@ -108,6 +110,10 @@ class UiKitButton extends StatelessWidget {
 
   final VoidCallback? onPressed;
   final String? label;
+
+  /// Custom content, styled with the button foreground and typography.
+  /// Use either [child] or [label].
+  final Widget? child;
   final UiKitButtonVariant variant;
   final UiKitButtonSize size;
   final IconData? iconLeft;
@@ -259,13 +265,22 @@ class UiKitButton extends StatelessWidget {
       children: [
         if (iconLeft != null)
           Icon(iconLeft, size: _iconSize, color: colors.foreground),
-        if (iconLeft != null && label != null) SizedBox(width: theme.spacingSm),
+        if (iconLeft != null && (label != null || child != null))
+          SizedBox(width: theme.spacingSm),
+        if (child != null)
+          IconTheme.merge(
+            data: IconThemeData(size: _iconSize, color: colors.foreground),
+            child: DefaultTextStyle(
+              style: _textStyle(theme).copyWith(color: colors.foreground),
+              child: child!,
+            ),
+          ),
         if (label != null)
           Text(
             label!,
             style: _textStyle(theme).copyWith(color: colors.foreground),
           ),
-        if (iconRight != null && label != null)
+        if (iconRight != null && (label != null || child != null))
           SizedBox(width: theme.spacingSm),
         if (iconRight != null)
           Icon(iconRight, size: _iconSize, color: colors.foreground),
@@ -291,9 +306,9 @@ class UiKitButton extends StatelessWidget {
       tapThrottleDuration:
           tapThrottleDuration ?? const Duration(milliseconds: 300),
       semanticsLabel: semanticsLabel ?? label,
-      // The pressable supplies the complete accessible name. Leaving the
-      // label/icon subtree exposed would announce the button name twice.
-      excludeSemantics: true,
+      // Label-based buttons have a complete accessible name here. Custom
+      // children retain their semantics unless the host provides an override.
+      excludeSemantics: semanticsLabel != null || child == null,
       builder: (context, states, child) => ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: minWidth ?? (size == UiKitButtonSize.sm ? 40 : 44),

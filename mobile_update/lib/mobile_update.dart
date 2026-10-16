@@ -4,3 +4,5 @@ library;
 export "src/mobile_update_checker.dart";
 export "src/mobile_update_config.dart";
 export "src/mobile_update_policy.dart";
+
+export "src/public_api.dart";

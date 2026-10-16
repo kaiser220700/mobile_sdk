@@ -79,3 +79,5 @@ while IFS= read -r package; do
     echo "==> $package: test skipped (no test directory)"
   fi
 done <<< "$PACKAGES"
+
+python3 "$ROOT_DIR/tool/verify_boundaries.py"

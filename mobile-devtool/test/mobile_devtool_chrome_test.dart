@@ -1,12 +1,51 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
+import "package:mobile_devtool/mobile_devtool.dart" as dev;
 
 void main() {
+  testWidgets("deferred overlay attachment can be cancelled before its frame", (
+    tester,
+  ) async {
+    final navigator = GlobalKey<NavigatorState>();
+    final entry = dev.ToolsOverlay.attach(
+      navigatorKey: navigator,
+      builder: (_) => const Text("Deferred tools"),
+    );
+    entry.remove();
+    entry.dispose();
+    await tester.pumpWidget(
+      MaterialApp(navigatorKey: navigator, home: const SizedBox()),
+    );
+    await tester.pump();
+    expect(find.text("Deferred tools"), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets("attached overlay is removed and disposed by its owner", (
+    tester,
+  ) async {
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(navigatorKey: navigator, home: const SizedBox()),
+    );
+    final entry = dev.ToolsOverlay.attach(
+      navigatorKey: navigator,
+      builder: (_) => const Text("Mounted tools"),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.text("Mounted tools"), findsOneWidget);
+    entry.remove();
+    entry.dispose();
+    await tester.pump();
+    expect(find.text("Mounted tools"), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets("uses the host theme builder for SDK-owned chrome", (
     tester,
   ) async {
-    final controller = MobileDevToolController();
+    final controller = dev.Controller();
     final hostTheme = ThemeData(
       colorScheme: const ColorScheme.light(
         primary: Color(0xFF0F766E),
@@ -20,12 +59,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MobileDevToolChrome(
+          body: dev.ToolsOverlay(
             controller: controller,
             showLauncher: false,
-            configuration: MobileDevToolConfiguration(
-              themeBuilder: (_) => hostTheme,
-            ),
+            configuration: dev.Configuration(themeBuilder: (_) => hostTheme),
           ),
         ),
       ),
@@ -39,7 +76,7 @@ void main() {
   testWidgets("uses the host theme colors for the launcher bubble", (
     tester,
   ) async {
-    final controller = MobileDevToolController();
+    final controller = dev.Controller();
     final hostTheme = ThemeData(
       colorScheme: const ColorScheme.light(
         primary: Color(0xFF0F766E),
@@ -52,11 +89,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MobileDevToolChrome(
+          body: dev.ToolsOverlay(
             controller: controller,
-            configuration: MobileDevToolConfiguration(
-              themeBuilder: (_) => hostTheme,
-            ),
+            configuration: dev.Configuration(themeBuilder: (_) => hostTheme),
           ),
         ),
       ),
@@ -77,15 +112,15 @@ void main() {
   testWidgets("forwards explicit bubble colors from the configuration", (
     tester,
   ) async {
-    final controller = MobileDevToolController();
+    final controller = dev.Controller();
     addTearDown(controller.dispose);
 
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MobileDevToolChrome(
+          body: dev.ToolsOverlay(
             controller: controller,
-            configuration: const MobileDevToolConfiguration(
+            configuration: const dev.Configuration(
               bubbleBackgroundColor: Colors.blue,
               bubbleForegroundColor: Colors.white,
               bubbleBorderColor: Colors.red,
@@ -107,12 +142,12 @@ void main() {
   testWidgets("keeps the legacy bubble colors without host configuration", (
     tester,
   ) async {
-    final controller = MobileDevToolController();
+    final controller = dev.Controller();
     addTearDown(controller.dispose);
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: MobileDevToolChrome(controller: controller)),
+        home: Scaffold(body: dev.ToolsOverlay(controller: controller)),
       ),
     );
 

@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 /// Five knobs used by the preview to demonstrate app-level theming.
 ///
-/// The legacy [UiKitColorsContract] is implemented as well so the example is
+/// The legacy [ui.ColorsContract] is implemented as well so the example is
 /// a useful adapter reference for an app that still uses the granular
-/// contracts. Runtime widgets consume [theme] through [UiKitThemeData].
-class ExampleColors implements UiKitColorsContract {
+/// contracts. Runtime widgets consume [theme] through [ui.ThemeData].
+class ExampleColors implements ui.ColorsContract {
   const ExampleColors({
     this.primary = const Color(0xFF176B87),
     this.surface = Colors.white,
@@ -35,7 +35,7 @@ class ExampleColors implements UiKitColorsContract {
     error: error ?? this.error,
   );
 
-  UiKitThemeData get theme => UiKitThemeData.fromDefaults(
+  ui.ThemeData get theme => ui.ThemeData.fromDefaults(
     primary: primary,
     primaryBg: _tint(primary, .88),
     surface: surface,
@@ -57,7 +57,7 @@ class ExampleColors implements UiKitColorsContract {
   static Color _tint(Color color, double amount) =>
       Color.lerp(color, Colors.white, amount)!;
 
-  // Granular adapter surface. These contracts predate UiKitThemeData and
+  // Granular adapter surface. These contracts predate ui.ThemeData and
   // are intentionally kept here as a small, copyable migration example.
   static final _button = _ExampleButtonColors();
   static final _radio = _ExampleRadioColors();
@@ -74,111 +74,111 @@ class ExampleColors implements UiKitColorsContract {
   static final _appBar = _ExampleAppBarColors();
 
   @override
-  UiKitButtonColors get button => _button;
+  ui.ButtonColors get button => _button;
   @override
-  UiKitRadioColors get radio => _radio;
+  ui.RadioColors get radio => _radio;
   @override
-  UiKitTabsColors get tabs => _tabs;
+  ui.TabsColors get tabs => _tabs;
   @override
-  UiKitAccordionColors get accordion => _accordion;
+  ui.AccordionColors get accordion => _accordion;
   @override
-  UiKitProgressColors get progress => _progress;
+  ui.ProgressColors get progress => _progress;
   @override
-  UiKitDividerColors get divider => _divider;
+  ui.DividerColors get divider => _divider;
   @override
-  UiKitTooltipColors get tooltip => _tooltip;
+  ui.TooltipColors get tooltip => _tooltip;
   @override
-  UiKitPopoverColors get popover => _popover;
+  ui.PopoverColors get popover => _popover;
   @override
-  UiKitMenuColors get menu => _menu;
+  ui.MenuColors get menu => _menu;
   @override
-  UiKitPickerColors get picker => _picker;
+  ui.PickerColors get picker => _picker;
   @override
-  UiKitOtpColors get otp => _otp;
+  ui.OtpColors get otp => _otp;
   @override
-  UiKitIconCircleButtonColors get iconCircleButton => _iconCircleButton;
+  ui.IconCircleButtonColors get iconCircleButton => _iconCircleButton;
   @override
-  UiKitAppBarColors get appBar => _appBar;
+  ui.AppBarColors get appBar => _appBar;
 }
 
-// The runtime package currently reads UiKitThemeData. Returning a neutral
+// The runtime package currently reads ui.ThemeData. Returning a neutral
 // palette from the legacy adapter keeps this example focused on the five
 // globally editable tokens without pretending that every old contract is a
 // separate source of truth.
-class _ExampleButtonColors implements UiKitButtonColors {
+class _ExampleButtonColors implements ui.ButtonColors {
   const _ExampleButtonColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleRadioColors implements UiKitRadioColors {
+class _ExampleRadioColors implements ui.RadioColors {
   const _ExampleRadioColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleTabsColors implements UiKitTabsColors {
+class _ExampleTabsColors implements ui.TabsColors {
   const _ExampleTabsColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleAccordionColors implements UiKitAccordionColors {
+class _ExampleAccordionColors implements ui.AccordionColors {
   const _ExampleAccordionColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleProgressColors implements UiKitProgressColors {
+class _ExampleProgressColors implements ui.ProgressColors {
   const _ExampleProgressColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleDividerColors implements UiKitDividerColors {
+class _ExampleDividerColors implements ui.DividerColors {
   const _ExampleDividerColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleTooltipColors implements UiKitTooltipColors {
+class _ExampleTooltipColors implements ui.TooltipColors {
   const _ExampleTooltipColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExamplePopoverColors implements UiKitPopoverColors {
+class _ExamplePopoverColors implements ui.PopoverColors {
   const _ExamplePopoverColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleMenuColors implements UiKitMenuColors {
+class _ExampleMenuColors implements ui.MenuColors {
   const _ExampleMenuColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExamplePickerColors implements UiKitPickerColors {
+class _ExamplePickerColors implements ui.PickerColors {
   const _ExamplePickerColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleOtpColors implements UiKitOtpColors {
+class _ExampleOtpColors implements ui.OtpColors {
   const _ExampleOtpColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleIconCircleButtonColors implements UiKitIconCircleButtonColors {
+class _ExampleIconCircleButtonColors implements ui.IconCircleButtonColors {
   const _ExampleIconCircleButtonColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }
 
-class _ExampleAppBarColors implements UiKitAppBarColors {
+class _ExampleAppBarColors implements ui.AppBarColors {
   const _ExampleAppBarColors();
   @override
-  dynamic noSuchMethod(Invocation invocation) => UiKitTheme.primary;
+  dynamic noSuchMethod(Invocation invocation) => ui.Theme.primary;
 }

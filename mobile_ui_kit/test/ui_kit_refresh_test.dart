@@ -2,21 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' hide RefreshIndicator;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_ui_kit/mobile_ui_kit.dart';
+import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
 void main() {
   testWidgets('refresh and pagination preserve controller state transitions', (
     tester,
   ) async {
-    final controller = RefreshController();
+    final controller = ui.RefreshController();
     final refresh = Completer<void>();
     var hasMore = true;
     var refreshCalls = 0;
     var pageCalls = 0;
     await tester.pumpWidget(
       MaterialApp(
-        home: UiKitRefreshConfiguration(
-          child: UiKitRefreshLoadMore(
+        home: ui.RefreshScope(
+          child: ui.RefreshView(
             controller: controller,
             enableLoadMore: true,
             onRefresh: () {
@@ -32,23 +32,27 @@ void main() {
         ),
       ),
     );
-    final refresher = tester.widget<SmartRefresher>(
-      find.byType(SmartRefresher),
+    final refresher = tester.widget<ui.SmartRefresher>(
+      find.byType(ui.SmartRefresher),
     );
     refresher.onRefresh!();
     await tester.pump();
     expect(refreshCalls, 1);
     refresh.complete();
     await tester.pump();
-    expect(controller.headerStatus, RefreshStatus.completed);
+    expect(controller.headerStatus, ui.RefreshStatus.completed);
     refresher.onLoading!();
     await tester.pump();
-    expect(controller.footerStatus, LoadStatus.idle);
+    expect(controller.footerStatus, ui.LoadStatus.idle);
     hasMore = false;
     refresher.onLoading!();
     await tester.pump();
-    expect(controller.footerStatus, LoadStatus.noMore);
+    expect(controller.footerStatus, ui.LoadStatus.noMore);
     expect(pageCalls, 2);
+    refresher.onRefresh!();
+    await tester.pump();
+    expect(controller.footerStatus, ui.LoadStatus.idle);
+    expect(refreshCalls, 2);
     await tester.pumpWidget(const SizedBox.shrink());
     controller.dispose();
   });
@@ -56,14 +60,14 @@ void main() {
   testWidgets('refresh and load more can both be disabled', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: UiKitRefreshLoadMore(
+        home: ui.RefreshView(
           enableRefresh: false,
           child: ListView(children: const [Text('Task')]),
         ),
       ),
     );
-    final refresher = tester.widget<SmartRefresher>(
-      find.byType(SmartRefresher),
+    final refresher = tester.widget<ui.SmartRefresher>(
+      find.byType(ui.SmartRefresher),
     );
     expect(refresher.enablePullDown, isFalse);
     expect(refresher.enablePullUp, isFalse);

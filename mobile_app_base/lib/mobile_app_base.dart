@@ -3,3 +3,5 @@ library;
 
 export "src/app_config.dart";
 export "src/mobile_app_shell.dart";
+
+export "src/public_api.dart";

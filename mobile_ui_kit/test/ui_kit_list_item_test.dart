@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
   testWidgets("uses one line and ellipsis by default", (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: UiKitListItem(title: "Title", description: "Description"),
+        home: ui.ListItem(title: "Title", description: "Description"),
       ),
     );
 
@@ -22,7 +22,7 @@ void main() {
   testWidgets("uses the configured description max lines", (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: UiKitListItem(
+        home: ui.ListItem(
           title: "Title",
           description: "Description",
           descriptionMaxLines: 3,
@@ -39,7 +39,7 @@ void main() {
   testWidgets("clips unbounded description text", (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: UiKitListItem(
+        home: ui.ListItem(
           title: "Title",
           description: "Description",
           descriptionMaxLines: null,

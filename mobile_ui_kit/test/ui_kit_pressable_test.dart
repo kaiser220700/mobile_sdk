@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_ui_kit/mobile_ui_kit.dart";
+import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 void main() {
   testWidgets("throttles repeated taps by default", (tester) async {
     var tapCount = 0;
     await tester.pumpWidget(
       MaterialApp(
-        home: UiKitPressable(
+        home: ui.Pressable(
           onPress: () => tapCount++,
           builder: (context, states, child) => const Text("Tap"),
         ),
@@ -30,7 +30,7 @@ void main() {
     var tapCount = 0;
     await tester.pumpWidget(
       MaterialApp(
-        home: UiKitPressable(
+        home: ui.Pressable(
           onPress: () => tapCount++,
           tapThrottleDuration: Duration.zero,
           builder: (context, states, child) => const Text("Tap"),

@@ -1,15 +1,18 @@
 import "dart:async";
 
+import "developer_tools.dart";
+
 import "package:flutter/material.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
-import "package:mobile_sdk/mobile_sdk.dart";
+import "package:mobile_devtool/mobile_devtool.dart" as dev;
+import "package:mobile_sdk/mobile_sdk.dart" as sdk;
+import "package:mobile_sdk/mobile_sdk.dart" as ui;
 
 void main() => runApp(const MobileSdkExampleApp());
 
 class MobileSdkExampleApp extends StatefulWidget {
-  const MobileSdkExampleApp({super.key, this.config = AppConfig.demo});
+  const MobileSdkExampleApp({super.key, this.config = sdk.AppConfig.demo});
 
-  final AppConfig config;
+  final sdk.AppConfig config;
 
   @override
   State<MobileSdkExampleApp> createState() => _MobileSdkExampleAppState();
@@ -17,7 +20,7 @@ class MobileSdkExampleApp extends StatefulWidget {
 
 class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  late final MobileDevToolController _devToolController;
+  late final dev.Controller _devToolController;
   OverlayEntry? _devToolEntry;
   bool _mockData = false;
 
@@ -25,19 +28,19 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
   void initState() {
     super.initState();
     _devToolController = widget.config.developerToolsEnabled
-        ? MobileDevToolController()
-        : MobileDevToolController.disabled();
+        ? dev.Controller()
+        : dev.Controller.disabled();
 
     if (widget.config.developerToolsEnabled) {
-      _devToolEntry = MobileDevToolChrome.attach(
+      _devToolEntry = dev.ToolsOverlay.attach(
         navigatorKey: _navigatorKey,
-        builder: (context) => MobileDevToolChrome(
+        builder: (context) => DeveloperTools(
           controller: _devToolController,
           navigatorKey: _navigatorKey,
-          configuration: MobileDevToolConfiguration(
+          configuration: dev.Configuration(
             title: widget.config.appName,
             featureFlags: [
-              MobileDevToolFeatureFlag(
+              dev.FeatureFlag(
                 id: "mock-data",
                 label: "Mock data",
                 description: "Bật dữ liệu giả lập trong app demo.",
@@ -46,7 +49,7 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
               ),
             ],
             panels: [
-              MobileDevToolPanel(
+              dev.Panel(
                 id: "sdk-summary",
                 label: "SDK summary",
                 icon: Icons.inventory_2_outlined,
@@ -54,7 +57,7 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
               ),
             ],
             hostActions: [
-              MobileDevToolHostAction(
+              dev.HostAction(
                 label: "Trace: host action",
                 icon: Icons.bolt_outlined,
                 onPressed: () => _devToolController.recordTrace(
@@ -71,20 +74,21 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
   @override
   void dispose() {
     _devToolEntry?.remove();
+    _devToolEntry?.dispose();
     _devToolController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MobileAppShell(
+    return sdk.AppShell(
       config: widget.config,
       navigatorKey: _navigatorKey,
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF176B87),
         useMaterial3: true,
         extensions: const [
-          UiKitThemeData.fromDefaults(
+          ui.ThemeData.fromDefaults(
             primary: Color(0xFF176B87),
             primaryBg: Color(0xFFE3F4F8),
             focusRing: Color(0xFF72C7D8),
@@ -99,7 +103,7 @@ class _MobileSdkExampleAppState extends State<MobileSdkExampleApp> {
 class _SdkHomePage extends StatefulWidget {
   const _SdkHomePage({required this.controller, required this.mockData});
 
-  final MobileDevToolController controller;
+  final dev.Controller controller;
   final bool mockData;
 
   @override
@@ -107,10 +111,10 @@ class _SdkHomePage extends StatefulWidget {
 }
 
 class _SdkHomePageState extends State<_SdkHomePage> {
-  final _loadingController = UiKitLoadingController();
-  final _toastQueue = UiKitToastQueue();
-  final _popoverController = UiKitOverlayController();
-  final _otpController = UiKitOtpController(length: 4);
+  final _loadingController = ui.LoadingController();
+  final _toastQueue = ui.ToastQueue();
+  final _popoverController = ui.OverlayController();
+  final _otpController = ui.OtpController(length: 4);
   final _textController = TextEditingController();
   final _passwordController = TextEditingController(text: "secret");
 
@@ -123,8 +127,8 @@ class _SdkHomePageState extends State<_SdkHomePage> {
   double _progress = .62;
   String _searchValue = "";
   String _activeTab = "overview";
-  MobileUpdateCheckResult? _updateResult;
-  MobileUpdateDecision? _updateDecision;
+  sdk.UpdateCheckResult? _updateResult;
+  sdk.UpdateDecision? _updateDecision;
 
   @override
   void dispose() {
@@ -137,24 +141,24 @@ class _SdkHomePageState extends State<_SdkHomePage> {
     super.dispose();
   }
 
-  void _showToast(UiKitToastType type, String message) {
+  void _showToast(ui.ToastType type, String message) {
     _toastQueue.enqueue(
-      UiKitToastRequest(
+      ui.ToastRequest(
         type: type,
         builder: (context) => _ToastCard(type: type, message: message),
       ),
     );
   }
 
-  Future<void> _showLoading(UiKitLoadingStep step) async {
-    if (step == UiKitLoadingStep.spinner) {
+  Future<void> _showLoading(ui.LoadingStep step) async {
+    if (step == ui.LoadingStep.spinner) {
       _loadingController.showSpinner();
       await Future<void>.delayed(const Duration(milliseconds: 700));
       if (!mounted) return;
     }
-    if (step == UiKitLoadingStep.success) {
+    if (step == ui.LoadingStep.success) {
       _loadingController.showSuccess();
-    } else if (step == UiKitLoadingStep.error) {
+    } else if (step == ui.LoadingStep.error) {
       _loadingController.showError();
     }
     await Future<void>.delayed(const Duration(milliseconds: 900));
@@ -162,7 +166,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
   }
 
   Future<void> _checkUpdate() async {
-    final checker = MobileUpdateChecker(
+    final checker = sdk.UpdateChecker(
       configSource: _DemoConfigSource(),
       loadCurrentVersion: () async => "1.4.0",
     );
@@ -179,12 +183,12 @@ class _SdkHomePageState extends State<_SdkHomePage> {
     }
   }
 
-  Future<void> _showUpdateDialog(MobileUpdateCheckResult result) async {
+  Future<void> _showUpdateDialog(sdk.UpdateCheckResult result) async {
     final decision = result.decision;
     if (!decision.shouldPrompt) return;
 
     final forced = decision.isForced;
-    await UiKitDialog.show(
+    await ui.Dialog.show(
       context,
       title: forced ? "Cần cập nhật ứng dụng" : "Có phiên bản mới",
       description: forced
@@ -192,26 +196,22 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 "Hãy cập nhật lên ${result.config.latestVersion} để tiếp tục."
           : "Đã có phiên bản ${result.config.latestVersion}. "
                 "Bạn có muốn cập nhật ngay không?",
-      semantic: forced
-          ? UiKitDialogSemantic.error
-          : UiKitDialogSemantic.warning,
+      semantic: forced ? ui.DialogSemantic.error : ui.DialogSemantic.warning,
       icon: forced ? Icons.system_update_alt : Icons.system_update_outlined,
       dismissible: !forced,
       actions: [
-        UiKitDialogAction(
+        ui.DialogAction(
           label: "Cập nhật ngay",
-          variant: forced
-              ? UiKitButtonVariant.danger
-              : UiKitButtonVariant.primary,
+          variant: forced ? ui.ButtonVariant.danger : ui.ButtonVariant.primary,
           onPressed: () => _showToast(
-            UiKitToastType.success,
+            ui.ToastType.success,
             "Mở store: ${result.config.storeUrl}",
           ),
         ),
         if (!forced)
-          UiKitDialogAction(
+          ui.DialogAction(
             label: "Để sau",
-            variant: UiKitButtonVariant.ghost,
+            variant: ui.ButtonVariant.ghost,
             onPressed: () {},
           ),
       ],
@@ -281,9 +281,9 @@ class _SdkHomePageState extends State<_SdkHomePage> {
     final theme = Theme.of(context);
     final surface = theme.colorScheme.surfaceContainerHighest;
 
-    return UiKitToastOverlay(
+    return ui.ToastOverlay(
       queue: _toastQueue,
-      child: UiKitLoadingOverlay(
+      child: ui.LoadingOverlay(
         controller: _loadingController,
         barrierColor: Colors.black54,
         builder: (context, step) => _LoadingCard(step: step),
@@ -370,20 +370,20 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const UiKitTitle(
+              const ui.Title(
                 text: "Account overview",
                 description: "Title, avatar, badge, icon và card shell.",
-                headingSize: UiKitTitleHeadingSize.lg,
+                headingSize: ui.TitleHeadingSize.lg,
                 bottomSpacing: 12,
               ),
-              UiKitCardShell(
+              ui.CardShell(
                 shadow: true,
                 child: Row(
                   children: [
-                    const UiKitAvatar(
+                    const ui.Avatar(
                       initials: "NA",
-                      size: UiKitAvatarSize.lg,
-                      status: UiKitAvatarStatus.online,
+                      size: ui.AvatarSize.lg,
+                      status: ui.AvatarStatus.online,
                       ring: true,
                       semanticsLabel: "Nguyễn An đang online",
                     ),
@@ -401,9 +401,9 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                         ],
                       ),
                     ),
-                    const UiKitIcon(
+                    const ui.Icon(
                       Icons.verified_outlined,
-                      color: UiKitIconColor.success,
+                      color: ui.IconColor.success,
                     ),
                   ],
                 ),
@@ -413,32 +413,32 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  UiKitBadge(
+                  ui.Badge(
                     label: "Primary",
-                    semantic: UiKitBadgeSemantic.primary,
+                    semantic: ui.BadgeSemantic.primary,
                   ),
-                  UiKitBadge(
+                  ui.Badge(
                     label: "Success",
-                    variant: UiKitBadgeVariant.solid,
-                    semantic: UiKitBadgeSemantic.success,
+                    variant: ui.BadgeVariant.solid,
+                    semantic: ui.BadgeSemantic.success,
                   ),
-                  UiKitBadge(count: 128, semantic: UiKitBadgeSemantic.info),
-                  UiKitBadge(
-                    variant: UiKitBadgeVariant.dot,
-                    semantic: UiKitBadgeSemantic.warning,
+                  ui.Badge(count: 128, semantic: ui.BadgeSemantic.info),
+                  ui.Badge(
+                    variant: ui.BadgeVariant.dot,
+                    semantic: ui.BadgeSemantic.warning,
                     semanticsLabel: "Có cảnh báo mới",
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              UiKitAlertBanner(
+              ui.AlertBanner(
                 title: "Profile đã được xác thực",
                 description: "Bạn có thể tiếp tục sử dụng toàn bộ tính năng.",
-                semantic: UiKitAlertSemantic.success,
-                action: UiKitAlertAction(
+                semantic: ui.AlertSemantic.success,
+                action: ui.AlertAction(
                   label: "Xem chi tiết",
                   onPressed: () =>
-                      _showToast(UiKitToastType.normal, "Đã chọn xem chi tiết"),
+                      _showToast(ui.ToastType.normal, "Đã chọn xem chi tiết"),
                 ),
               ),
             ],
@@ -453,25 +453,25 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  UiKitButton.text(
+                  ui.Button.text(
                     onPressed: () => _showToast(
-                      UiKitToastType.success,
+                      ui.ToastType.success,
                       "Primary button pressed",
                     ),
                     label: "Primary",
                   ),
-                  UiKitButton.text(
+                  ui.Button.text(
                     onPressed: () {},
                     label: "Outline",
-                    variant: UiKitButtonVariant.outline,
+                    variant: ui.ButtonVariant.outline,
                   ),
-                  UiKitButton.icon(
+                  ui.Button.icon(
                     onPressed: () {},
                     icon: Icons.add,
                     semanticsLabel: "Add item",
-                    variant: UiKitButtonVariant.ghost,
+                    variant: ui.ButtonVariant.ghost,
                   ),
-                  const UiKitButton.text(
+                  const ui.Button.text(
                     onPressed: null,
                     label: "Disabled",
                     disabled: true,
@@ -479,21 +479,21 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ],
               ),
               const SizedBox(height: 16),
-              UiKitCheckbox(
+              ui.Checkbox(
                 value: _checked,
                 label: "Nhận thông báo từ app",
                 description: "Có thể thay đổi trong phần cài đặt.",
                 onChanged: (value) => setState(() => _checked = value),
               ),
               const SizedBox(height: 4),
-              UiKitSwitch(
+              ui.Switch(
                 value: _switched,
                 label: "Biometric login",
                 sublabel: "Dùng Face ID hoặc vân tay khi đăng nhập.",
                 onChanged: (value) => setState(() => _switched = value),
               ),
               const SizedBox(height: 16),
-              UiKitTextField(
+              ui.TextField(
                 controller: _textController,
                 label: "Display name",
                 placeholder: "Nhập tên hiển thị",
@@ -502,11 +502,11 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 helperText: "Tối đa 40 ký tự.",
               ),
               const SizedBox(height: 12),
-              UiKitTextField(
+              ui.TextField(
                 controller: _passwordController,
                 label: "Password",
-                type: UiKitTextFieldType.password,
-                variant: UiKitTextFieldVariant.success,
+                type: ui.TextFieldType.password,
+                variant: ui.TextFieldVariant.success,
                 iconLeft: Icons.lock_outline,
                 showPasswordLabel: "Hiện mật khẩu",
                 hidePasswordLabel: "Ẩn mật khẩu",
@@ -518,7 +518,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           title: "Search / Tabs / List",
           child: Column(
             children: [
-              UiKitSearch(
+              ui.Search(
                 value: _searchValue,
                 placeholder: "Tìm trong SDK...",
                 semanticsLabel: "Tìm kiếm package",
@@ -526,90 +526,86 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 onClear: () => setState(() => _searchValue = ""),
               ),
               const SizedBox(height: 16),
-              UiKitTabs(
+              ui.Tabs(
                 activeId: _activeTab,
                 onChanged: (value) => setState(() => _activeTab = value),
                 items: const [
-                  UiKitTabItem(
+                  ui.TabItem(
                     id: "overview",
                     label: "Overview",
                     icon: Icons.dashboard_outlined,
-                    badge: UiKitTabBadge(count: 3),
+                    badge: ui.TabBadge(count: 3),
                   ),
-                  UiKitTabItem(
+                  ui.TabItem(
                     id: "activity",
                     label: "Activity",
                     icon: Icons.history,
-                    badge: UiKitTabBadge(dot: true),
+                    badge: ui.TabBadge(dot: true),
                   ),
-                  UiKitTabItem(
-                    id: "disabled",
-                    label: "Disabled",
-                    disabled: true,
-                  ),
+                  ui.TabItem(id: "disabled", label: "Disabled", disabled: true),
                 ],
               ),
-              UiKitListItem(
+              ui.ListItem(
                 title: _searchValue.isEmpty
                     ? "mobile_ui_kit"
                     : "Kết quả: $_searchValue",
                 description: "Reusable headless components",
-                leading: const UiKitIcon(
+                leading: const ui.Icon(
                   Icons.widgets_outlined,
-                  color: UiKitIconColor.primary,
+                  color: ui.IconColor.primary,
                 ),
                 selected: _activeTab == "overview",
-                divider: UiKitListItemDivider.inset,
+                divider: ui.ListItemDivider.inset,
                 onTap: () =>
-                    _showToast(UiKitToastType.normal, "UiKitListItem pressed"),
+                    _showToast(ui.ToastType.normal, "ui.ListItem pressed"),
               ),
-              UiKitListItem(
+              ui.ListItem(
                 title: "mobile_devtool",
                 description: "Network, trace và host panels",
-                leading: const UiKitIcon(
+                leading: const ui.Icon(
                   Icons.build_outlined,
-                  color: UiKitIconColor.info,
+                  color: ui.IconColor.info,
                 ),
-                divider: UiKitListItemDivider.full,
+                divider: ui.ListItemDivider.full,
                 onTap: () =>
-                    _showToast(UiKitToastType.normal, "UiKitListItem pressed"),
+                    _showToast(ui.ToastType.normal, "ui.ListItem pressed"),
               ),
             ],
           ),
         ),
         _Section(
           title: "Dialog",
-          child: UiKitButton.text(
+          child: ui.Button.text(
             onPressed: () {
               unawaited(
-                UiKitDialog.show(
+                ui.Dialog.show(
                   context,
                   title: "Xác nhận thao tác",
                   description: "Đây là dialog dùng chung từ mobile_ui_kit.",
-                  semantic: UiKitDialogSemantic.info,
+                  semantic: ui.DialogSemantic.info,
                   actions: [
-                    UiKitDialogAction(
+                    ui.DialogAction(
                       label: "Tiếp tục",
-                      variant: UiKitButtonVariant.primary,
+                      variant: ui.ButtonVariant.primary,
                       onPressed: () {},
                     ),
-                    UiKitDialogAction(
+                    ui.DialogAction(
                       label: "Hủy",
-                      variant: UiKitButtonVariant.ghost,
+                      variant: ui.ButtonVariant.ghost,
                       onPressed: () {},
                     ),
                   ],
                 ),
               );
             },
-            label: "Preview UiKitDialog",
+            label: "Preview ui.Dialog",
           ),
         ),
         _Section(
           title: "Pressable states / Item",
           child: Column(
             children: [
-              UiKitPressable(
+              ui.Pressable(
                 selected: _selected,
                 onPress: () => setState(() => _selected = !_selected),
                 builder: (context, states, child) => AnimatedContainer(
@@ -618,8 +614,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color:
-                        states.contains(UiKitPressableState.pressed) ||
-                            _selected
+                        states.contains(ui.PressableState.pressed) || _selected
                         ? colors.primaryContainer
                         : surface,
                     borderRadius: BorderRadius.circular(12),
@@ -630,7 +625,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
               ),
               const SizedBox(height: 8),
-              UiKitPressable(
+              ui.Pressable(
                 onPress: () {},
                 builder: (context, states, child) => DecoratedBox(
                   decoration: BoxDecoration(
@@ -650,7 +645,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
               ),
               const SizedBox(height: 8),
-              UiKitPressable(
+              ui.Pressable(
                 builder: (context, states, child) => DecoratedBox(
                   decoration: BoxDecoration(
                     color: colors.surfaceContainerHighest,
@@ -669,8 +664,8 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
               ),
               const SizedBox(height: 8),
-              UiKitItem(
-                title: const Text("UiKitItem title"),
+              ui.Item(
+                title: const Text("ui.Item title"),
                 subtitle: const Text("Row có prefix và suffix"),
                 prefix: CircleAvatar(
                   radius: 18,
@@ -679,11 +674,11 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
                 suffix: const Icon(Icons.chevron_right),
                 onPress: () =>
-                    _showToast(UiKitToastType.normal, "UiKitItem pressed"),
+                    _showToast(ui.ToastType.normal, "ui.Item pressed"),
               ),
-              UiKitItem(
+              ui.Item(
                 title: Text(
-                  "UiKitItem disabled",
+                  "ui.Item disabled",
                   style: TextStyle(
                     color: colors.onSurface.withValues(alpha: .45),
                   ),
@@ -708,32 +703,32 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              UiKitRadio(
+              ui.Radio(
                 value: _selected,
                 selectedColor: colors.primary,
                 borderColor: colors.outline,
-                label: const Text("UiKitRadio selected"),
+                label: const Text("ui.Radio selected"),
                 onChanged: (value) => setState(() => _selected = value),
               ),
               const SizedBox(height: 12),
-              UiKitRadio(
+              ui.Radio(
                 value: !_selected,
                 selectedColor: colors.primary,
                 borderColor: colors.outline,
-                label: const Text("UiKitRadio unchecked"),
+                label: const Text("ui.Radio unchecked"),
                 onChanged: (value) => setState(() => _selected = !value),
               ),
               const SizedBox(height: 12),
-              UiKitRadio(
+              ui.Radio(
                 value: false,
                 enabled: false,
                 selectedColor: colors.primary,
                 borderColor: colors.outline,
                 disabledColor: colors.onSurface.withValues(alpha: .3),
-                label: const Text("UiKitRadio disabled"),
+                label: const Text("ui.Radio disabled"),
               ),
               const SizedBox(height: 16),
-              UiKitDeterminateProgress(
+              ui.DeterminateProgress(
                 value: _progress,
                 height: 10,
                 trackColor: colors.surfaceContainerHighest,
@@ -743,7 +738,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
               ),
               Row(
                 children: [
-                  const Text("UiKitDeterminateProgress"),
+                  const Text("ui.DeterminateProgress"),
                   const Spacer(),
                   IconButton(
                     onPressed: () => setState(
@@ -753,7 +748,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                   ),
                 ],
               ),
-              UiKitDivider(color: colors.outlineVariant),
+              ui.Divider(color: colors.outlineVariant),
               const SizedBox(height: 12),
               SizedBox(
                 height: 32,
@@ -761,14 +756,14 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                   children: [
                     const Text("Vertical"),
                     const SizedBox(width: 12),
-                    UiKitDivider(
+                    ui.Divider(
                       axis: Axis.vertical,
                       color: colors.outlineVariant,
                       thickness: 2,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      "UiKitDivider axis=vertical",
+                      "ui.Divider axis=vertical",
                       style: theme.textTheme.bodySmall,
                     ),
                   ],
@@ -781,14 +776,14 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           title: "Accordion / Tooltip",
           child: Column(
             children: [
-              UiKitAccordion(
+              ui.Accordion(
                 expandedIds: _expandedIds,
                 onChanged: (value) => setState(() => _expandedIds = value),
                 dividerColor: colors.outlineVariant,
                 items: [
-                  const UiKitAccordionItem(
+                  const ui.AccordionItem(
                     id: "behavior",
-                    title: Text("UiKitAccordion behavior"),
+                    title: Text("ui.Accordion behavior"),
                     content: Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 12),
                       child: Text(
@@ -796,7 +791,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                       ),
                     ),
                   ),
-                  UiKitAccordionItem(
+                  ui.AccordionItem(
                     id: "disabled",
                     title: const Text("Disabled item"),
                     content: const Text("Không thể mở"),
@@ -807,7 +802,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                     Icon(expanded ? Icons.expand_less : Icons.expand_more),
               ),
               const SizedBox(height: 12),
-              UiKitTooltip(
+              ui.Tooltip(
                 tipBuilder: (context) =>
                     const Text("Tooltip xuất hiện khi long-press"),
                 decoration: BoxDecoration(
@@ -829,7 +824,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              UiKitAnchoredOverlay(
+              ui.AnchoredOverlay(
                 controller: _popoverController,
                 barrierDismissible: true,
                 overlayBuilder: (context) => Material(
@@ -850,7 +845,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
               ),
               const SizedBox(height: 16),
-              UiKitOtpField(
+              ui.OtpField(
                 controller: _otpController,
                 decorationBuilder: (context, index, hasFocus) =>
                     InputDecoration(
@@ -867,7 +862,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                     ),
                 textStyle: theme.textTheme.titleLarge,
                 onCompleted: (value) =>
-                    _showToast(UiKitToastType.success, "OTP hoàn tất: $value"),
+                    _showToast(ui.ToastType.success, "OTP hoàn tất: $value"),
               ),
             ],
           ),
@@ -880,20 +875,19 @@ class _SdkHomePageState extends State<_SdkHomePage> {
             children: [
               OutlinedButton(
                 onPressed: () =>
-                    unawaited(_showLoading(UiKitLoadingStep.spinner)),
+                    unawaited(_showLoading(ui.LoadingStep.spinner)),
                 child: const Text("Spinner"),
               ),
               OutlinedButton(
                 onPressed: () =>
-                    unawaited(_showLoading(UiKitLoadingStep.success)),
+                    unawaited(_showLoading(ui.LoadingStep.success)),
                 child: const Text("Success"),
               ),
               OutlinedButton(
-                onPressed: () =>
-                    unawaited(_showLoading(UiKitLoadingStep.error)),
+                onPressed: () => unawaited(_showLoading(ui.LoadingStep.error)),
                 child: const Text("Error"),
               ),
-              for (final type in UiKitToastType.values)
+              for (final type in ui.ToastType.values)
                 OutlinedButton(
                   onPressed: () => _showToast(type, "Toast ${type.name}"),
                   child: Text(type.name),
@@ -908,27 +902,27 @@ class _SdkHomePageState extends State<_SdkHomePage> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _skeletonEnabled,
-                title: const Text("UiKitSkeleton enabled"),
+                title: const Text("ui.Skeleton enabled"),
                 onChanged: (value) => setState(() => _skeletonEnabled = value),
               ),
-              UiKitSkeleton(
+              ui.Skeleton(
                 enabled: _skeletonEnabled,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Bone.circle(size: 42),
-                  title: Bone.text(words: 3),
-                  subtitle: Bone.text(words: 6),
+                  leading: ui.Bone.circle(size: 42),
+                  title: ui.Bone.text(words: 3),
+                  subtitle: ui.Bone.text(words: 6),
                 ),
               ),
               const SizedBox(height: 8),
               for (var index = 0; index < 3; index++)
-                UiKitListEntrance(
+                ui.ListEntrance(
                   index: index,
                   child: Card(
                     child: ListTile(
                       leading: CircleAvatar(child: Text("${index + 1}")),
                       title: Text("Animated item ${index + 1}"),
-                      subtitle: const Text("UiKitListEntrance fade + slide"),
+                      subtitle: const Text("ui.ListEntrance fade + slide"),
                     ),
                   ),
                 ),
@@ -982,7 +976,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                MobileDevToolJsonFormatter.format(const {
+                dev.JsonFormatter.format(const {
                   "sdk": "mobile",
                   "packages": 3,
                   "enabled": true,
@@ -990,14 +984,11 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 style: const TextStyle(fontFamily: "monospace"),
               ),
               const SizedBox(height: 12),
-              MobileDevToolKvTable(
+              dev.KeyValueTable(
                 rows: [
-                  const MobileDevToolKvRow(
-                    label: "environment",
-                    value: "example",
-                  ),
-                  const MobileDevToolKvRow(label: "ui_kit", value: "enabled"),
-                  MobileDevToolKvRow(
+                  const dev.KeyValueRow(label: "environment", value: "example"),
+                  const dev.KeyValueRow(label: "ui_kit", value: "enabled"),
+                  dev.KeyValueRow(
                     label: "mock_data",
                     value: "${widget.mockData}",
                   ),
@@ -1012,7 +1003,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
             padding: EdgeInsets.all(16),
             child: Text(
               "Trong app thật, controller được tạo một lần ở composition root và "
-              "dùng MobileDevToolController.disabled() cho production.",
+              "dùng dev.Controller.disabled() cho production.",
             ),
           ),
         ),
@@ -1042,7 +1033,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
               FilledButton.icon(
                 onPressed: _checkUpdate,
                 icon: const Icon(Icons.refresh),
-                label: const Text("Run MobileUpdateChecker"),
+                label: const Text("Run sdk.UpdateChecker"),
               ),
               if (decision != null) ...[
                 const SizedBox(height: 16),
@@ -1064,15 +1055,15 @@ class _SdkHomePageState extends State<_SdkHomePage> {
                 ),
                 if (decision.shouldPrompt) ...[
                   const SizedBox(height: 12),
-                  UiKitButton.text(
+                  ui.Button.text(
                     onPressed: () =>
                         unawaited(_showUpdateDialog(_updateResult!)),
                     label: decision.isForced
                         ? "Preview force update dialog"
                         : "Preview soft update dialog",
                     variant: decision.isForced
-                        ? UiKitButtonVariant.danger
-                        : UiKitButtonVariant.outline,
+                        ? ui.ButtonVariant.danger
+                        : ui.ButtonVariant.outline,
                     fullWidth: true,
                   ),
                 ],
@@ -1084,7 +1075,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
           title: "What the host owns",
           child: Text(
             "Remote config adapter, app version adapter và store launcher remain "
-            "in the host app. Dialog preview bên trên dùng UiKitDialog; app thật "
+            "in the host app. Dialog preview bên trên dùng ui.Dialog; app thật "
             "có thể thay bằng màn hình/localized copy riêng. mobile_update chỉ "
             "trả về none, soft hoặc force.",
           ),
@@ -1095,11 +1086,11 @@ class _SdkHomePageState extends State<_SdkHomePage> {
 
   Future<void> _simulateNetwork() async {
     final id = widget.controller.startNetwork(
-      const MobileDevToolNetworkRequest(
+      const dev.NetworkRequest(
         label: "GetSdkCatalog",
         endpoint: "/v1/sdk/catalog",
         method: "GET",
-        kind: MobileDevToolNetworkKind.rest,
+        kind: dev.NetworkKind.rest,
         request: {"source": "example"},
       ),
     );
@@ -1118,7 +1109,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
 
   Future<void> _simulateFailure() async {
     final id = widget.controller.startNetwork(
-      const MobileDevToolNetworkRequest(
+      const dev.NetworkRequest(
         label: "UploadDiagnostics",
         endpoint: "/v1/diagnostics",
         method: "POST",
@@ -1134,11 +1125,11 @@ class _SdkHomePageState extends State<_SdkHomePage> {
   }
 }
 
-class _DemoConfigSource implements MobileUpdateConfigSource {
+class _DemoConfigSource implements sdk.UpdateConfigSource {
   @override
-  Future<MobileUpdateConfig> fetch() async {
+  Future<sdk.UpdateConfig> fetch() async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
-    return const MobileUpdateConfig(
+    return const sdk.UpdateConfig(
       enabled: true,
       minVersion: "2.0.0",
       latestVersion: "1.5.0",
@@ -1194,7 +1185,6 @@ class _UiKitCoverageCard extends StatelessWidget {
     "AlertBanner",
     "Avatar",
     "Badge",
-    "StatusPill (UiKitBadge)",
     "Button",
     "CardShell",
     "Checkbox",
@@ -1206,7 +1196,7 @@ class _UiKitCoverageCard extends StatelessWidget {
     "Item",
     "ListItem",
     "Radio",
-    "Progress",
+    "DeterminateProgress",
     "StatTile",
     "KeyValue",
     "Timeline",
@@ -1257,15 +1247,15 @@ class _UiKitCoverageCard extends StatelessWidget {
                       size: 16,
                       color: colors.primary,
                     ),
-                    label: Text("UiKit$name"),
+                    label: Text("ui.$name"),
                     visualDensity: VisualDensity.compact,
                   ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              "API behavior: UiKitLoadingController, UiKitToastQueue, "
-              "UiKitOverlayController, UiKitOtpController và các enum/state "
+              "API behavior: ui.LoadingController, ui.ToastQueue, "
+              "ui.OverlayController, ui.OtpController và các enum/state "
               "được dùng trực tiếp trong các section bên dưới.",
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -1334,12 +1324,12 @@ class _Section extends StatelessWidget {
 class _LoadingCard extends StatelessWidget {
   const _LoadingCard({required this.step});
 
-  final UiKitLoadingStep step;
+  final ui.LoadingStep step;
 
   @override
   Widget build(BuildContext context) {
-    final isSpinner = step == UiKitLoadingStep.spinner;
-    final isSuccess = step == UiKitLoadingStep.success;
+    final isSpinner = step == ui.LoadingStep.spinner;
+    final isSuccess = step == ui.LoadingStep.success;
     return Center(
       child: Card(
         child: Padding(
@@ -1373,16 +1363,16 @@ class _LoadingCard extends StatelessWidget {
 class _ToastCard extends StatelessWidget {
   const _ToastCard({required this.type, required this.message});
 
-  final UiKitToastType type;
+  final ui.ToastType type;
   final String message;
 
   @override
   Widget build(BuildContext context) {
     final color = switch (type) {
-      UiKitToastType.normal => Theme.of(context).colorScheme.inverseSurface,
-      UiKitToastType.warning => Colors.orange.shade800,
-      UiKitToastType.success => Colors.green.shade700,
-      UiKitToastType.error => Theme.of(context).colorScheme.error,
+      ui.ToastType.normal => Theme.of(context).colorScheme.inverseSurface,
+      ui.ToastType.warning => Colors.orange.shade800,
+      ui.ToastType.success => Colors.green.shade700,
+      ui.ToastType.error => Theme.of(context).colorScheme.error,
     };
     return SafeArea(
       child: Card(

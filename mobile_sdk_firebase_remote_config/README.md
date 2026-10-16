@@ -1,25 +1,39 @@
 # mobile_sdk_firebase_remote_config
 
+## Public API naming (1.0.0)
+
+Import with `as remote` and use the concise names documented in the
+[SDK API naming guide](../docs/sdk-api-naming.md). Existing names remain
+available for migration; runtime behavior and constructor parameters are unchanged.
+
+```dart
+import 'package:mobile_sdk_firebase_remote_config/mobile_sdk_firebase_remote_config.dart' as remote;
+```
+
 Typed Remote Config adapter. The host app initializes Firebase and passes its
 `FirebaseApp`; this package owns no project identifiers or native config files.
 
 ```dart
-final schema = MobileRemoteConfigSchema([
-  ConfigKey.bool('maintenance_enabled', defaultValue: false),
-  ConfigKey.int('refresh_seconds', defaultValue: 60, min: 15, max: 3600),
+import 'package:firebase_core/firebase_core.dart';
+import 'package:mobile_sdk_firebase_core/mobile_sdk_firebase_core.dart' as firebase;
+import 'package:mobile_sdk_firebase_remote_config/mobile_sdk_firebase_remote_config.dart' as remote;
+
+final schema = remote.ConfigSchema([
+  remote.ConfigKey.bool('maintenance_enabled', defaultValue: false),
+  remote.ConfigKey.int('refresh_seconds', defaultValue: 60, min: 15, max: 3600),
 ]);
-final source = MobileRemoteConfigSource(
+final source = remote.Source(
   schema: schema,
-  settings: const MobileRemoteConfigSettings(
+  settings: const remote.Settings(
     fetchTimeout: Duration(seconds: 10),
     minimumFetchInterval: Duration(hours: 1),
   ),
-  transport: FirebaseRemoteConfigTransport(Firebase.app()),
+  transport: remote.FirebaseTransport(Firebase.app()),
 );
-final runtime = await MobileFirebase.initialize(
+final runtime = await firebase.Bootstrap.initialize(
   app: Firebase.app(),
-  modules: {MobileFirebaseModule.remoteConfig},
-  privacy: const MobileFirebasePrivacy(),
+  modules: {firebase.Module.remoteConfig},
+  privacy: const firebase.Privacy(),
   adapters: [source],
 );
 final snapshot = await source.load();

@@ -1,0 +1,18 @@
+name: mobile_sdk_production_example
+description: Production-only SDK consumer without developer tools or Firebase.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: ">=3.12.2 <4.0.0"
+  flutter: ">=3.44.6"
+dependencies:
+  flutter:
+    sdk: flutter
+  mobile_sdk:
+    path: ../mobile_sdk
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true

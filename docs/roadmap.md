@@ -1,17 +1,18 @@
 # Roadmap Mobile SDK
 
-> Trạng thái: đề xuất · Điểm xuất phát: workspace `0.3.0` · Mục tiêu gần nhất:
-> phát hành `1.0.0` nhỏ gọn và ổn định.
+> Trạng thái: chuẩn bị bản Git 1.0.0; phạm vi và bằng chứng hiện hành ở
+> [release-1.0.0.md](release-1.0.0.md). Các mốc dưới đây là lịch sử kế hoạch.
 
 ## 1. Ý nghĩa của 1.0.0
 
 `1.0.0` là cam kết ổn định cho các capability đang có, không phải mốc phải hoàn
 thành mọi ý tưởng của một mobile platform. App host có thể dùng SDK mà biết API
-nào được hỗ trợ và các bản `1.x` không phá vỡ API đó nếu không có deprecation
-trước.
+nào được hỗ trợ và các bản `1.x` không phá vỡ API đã công khai. Việc bỏ API, dù đã
+deprecate trước, cần major version mới.
 
 Phạm vi hiện có gồm `mobile_sdk_core`, `mobile_app_base`, `mobile_ui_kit`,
-`mobile_devtool`, `mobile_update`, và Firebase core/Remote Config ở dạng opt-in.
+`mobile_devtool`, `mobile_update`, và Firebase core/Remote Config ở dạng opt-in. Fuzz/Screen Draw là package
+experimental 0.1.0 độc lập, không nằm trong cam kết stable 1.x.
 `mobile_sdk` tiếp tục là entry point không kéo Firebase/native plugin.
 
 ## 2. Phạm vi phát hành 1.0.0
@@ -33,13 +34,13 @@ Phạm vi hiện có gồm `mobile_sdk_core`, `mobile_app_base`, `mobile_ui_kit`
 
 Chỉ cần đạt các điều kiện sau trước khi phát hành:
 
-- [ ] Toàn bộ package ở `1.0.0`, changelog có release note và breaking change rõ ràng.
-- [ ] Public API được chốt; không export nhầm implementation nội bộ.
-- [ ] `dart`/`flutter analyze` và test của mọi package đang có chạy xanh.
-- [ ] Example hoặc quickstart kiểm chứng được luồng import/tích hợp cơ bản.
-- [ ] `mobile_sdk` core-only không kéo Firebase; Remote Config vẫn là opt-in.
-- [ ] Update policy không force update khi không có store URL hợp lệ.
-- [ ] Có tag release và hướng dẫn rollback ngắn.
+- [x] Các package stable ở `1.0.0`; hai công cụ experimental ở `0.1.0`, changelog có release note và breaking change rõ ràng.
+- [x] Public API được chốt; không export nhầm implementation nội bộ.
+- [x] `dart`/`flutter analyze` và test của mọi package đang có chạy xanh.
+- [x] Example hoặc quickstart kiểm chứng được luồng import/tích hợp cơ bản.
+- [x] `mobile_sdk` core-only không kéo Firebase; Remote Config vẫn là opt-in.
+- [x] Update policy không force update khi không có store URL hợp lệ.
+- [ ] Publish tag Git `v1.0.0` sau merge; hướng dẫn rollback đã có trong migration.
 
 ## 4. Các bản trước 1.0.0
 
@@ -89,7 +90,7 @@ tài liệu và đường rollback.
 
 ## 6. Quyết định còn mở
 
-- Phân phối qua Git/path như hiện tại hay registry nội bộ/pub.dev?
-- Flutter/Dart và Android/iOS minimum versions chính thức là gì?
+- Đã chốt cho bản này: Git/tag; pub.dev là công việc publish riêng.
+- Flutter tối thiểu 3.44.6 / Dart 3.12.2; native Firebase opt-in tuân theo minimum của plugin tương ứng.
 - Những public API nào cần gắn experimental thay vì cam kết stable ngay?
 - Có app host nào phù hợp để thử `1.0.0-rc.1` trước release chính thức?

@@ -1,22 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_sdk_firebase_remote_config/mobile_sdk_firebase_remote_config.dart';
+import "package:mobile_sdk_firebase_remote_config/mobile_sdk_firebase_remote_config.dart"
+    as remote;
 
 void main() {
   test(
     'keeps last good snapshot when fetch fails or config is invalid',
     () async {
-      final enabled = ConfigKey.bool('enabled', defaultValue: false);
-      final interval = ConfigKey.int(
+      final enabled = remote.ConfigKey.bool('enabled', defaultValue: false);
+      final interval = remote.ConfigKey.int(
         'interval',
         defaultValue: 60,
         min: 15,
         max: 3600,
       );
-      final transport = InMemoryRemoteConfigTransport();
+      final transport = remote.InMemoryTransport();
       final statuses = <String>[];
-      final source = MobileRemoteConfigSource(
-        schema: MobileRemoteConfigSchema([enabled, interval]),
-        settings: const MobileRemoteConfigSettings(
+      final source = remote.Source(
+        schema: remote.ConfigSchema([enabled, interval]),
+        settings: const remote.Settings(
           fetchTimeout: Duration(seconds: 1),
           minimumFetchInterval: Duration.zero,
         ),
@@ -38,13 +39,13 @@ void main() {
   );
 
   test('allows retrying initialization after transport setup fails', () async {
-    final transport = InMemoryRemoteConfigTransport()..failConfigure = true;
+    final transport = remote.InMemoryTransport()..failConfigure = true;
     final statuses = <String>[];
-    final source = MobileRemoteConfigSource(
-      schema: MobileRemoteConfigSchema([
-        ConfigKey.bool('enabled', defaultValue: false),
+    final source = remote.Source(
+      schema: remote.ConfigSchema([
+        remote.ConfigKey.bool('enabled', defaultValue: false),
       ]),
-      settings: const MobileRemoteConfigSettings(
+      settings: const remote.Settings(
         fetchTimeout: Duration(seconds: 1),
         minimumFetchInterval: Duration.zero,
       ),
@@ -58,7 +59,7 @@ void main() {
 
     transport.failConfigure = false;
     await source.start();
-    await expectLater(source.load(), completion(isA<ConfigSnapshot>()));
+    await expectLater(source.load(), completion(isA<remote.ConfigSnapshot>()));
     await source.dispose();
   });
 }

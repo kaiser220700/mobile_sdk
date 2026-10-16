@@ -12,6 +12,23 @@ details are maintained beside each package:
 - [`mobile_ui_kit`](mobile_ui_kit/CHANGELOG.md)
 - [`mobile_update`](mobile_update/CHANGELOG.md)
 
+## 1.0.0 - 2026-10-16
+
+- Stabilize production API naming; compatibility names remain supported in 1.x.
+- Extract opt-in Fuzz Tap and Screen Draw as independently versioned 0.1.0 tools.
+- Hosts register optional tool actions and compose overlays outside DevTool.
+- Add production-only integration coverage and dependency boundary checks.
+- Restore pagination after refreshing a previously exhausted list.
+- Distribution remains Git-based; pub.dev publication stays disabled.
+
+- Apply module-based public API naming to core, app wiring, updates, Firebase and DevTool.
+
+
+- Add unprefixed UI names for use with an `as ui` import, including `Button`,
+  `TextField`, `Autocomplete`, `RefreshView`, `RefreshScope` and `Theme`.
+- Keep existing `UiKit*` names available for migration and update examples.
+- Support custom button `child` content with inherited styling and semantics.
+
 ## 0.7.0 - 2026-10-15
 
 - SDK-12: move refresh/load-more to `mobile_ui_kit` (`UiKitRefreshLoadMore`,

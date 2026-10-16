@@ -1,344 +1,48 @@
 # mobile_devtool
 
-> Phạm vi publish của package gồm developer tooling được export từ
-> `lib/mobile_devtool.dart`, bao gồm Network, Trace, launcher và Chrome.
-
-Flutter SDK dùng chung cho developer tooling trong các mobile experience —
-"Reusable Flutter SDK for non-production mobile developer tools" (xem
-docstring `lib/mobile_devtool.dart`). Package cung cấp overlay, controller và
-model độc lập với business domain: bubble launcher kéo-thả, tool sheet mở thẳng
-chức năng đầu tiên và có menu đổi chức năng, network/trace/fuzz-tap log panel, feature-flag panel generic, annotation
-("Screen Draw") tool, fuzz-tap crash hunter dựa trên Semantics tree, JSON
-formatter, KV table, và provider observer nhẹ cho Riverpod.
-
-**Chỉ bật ở non-production build** (dev/sit/uat) — dùng
-`MobileDevToolController.disabled()` làm binding cho flavor `prod` để mọi lệnh
-ghi log bị bỏ qua mà business code không cần tự branch theo flavor; SDK không
-có logic tự tắt ở prod, đó là trách nhiệm của app host qua wiring flavor.
-
-## Cài đặt
-
-Thêm dependency dạng path (trong cùng repo, giống app host) hoặc git:
-
-```yaml
-dependencies:
-  mobile_devtool:
-    path: ../mobile-devtool
-    # hoặc: git: { url: <repo-url>, path: mobile-devtool, ref: <tag/commit> }
-```
-
-Dependency thật của package (`mobile-devtool/pubspec.yaml`):
-
-| Package | Vai trò |
-|---|---|
-| `flutter` (SDK) | Widget framework |
-| `lucide_icons_flutter: ^3.1.15` | Icon bubble launcher + shape picker |
-| `pull_to_refresh_flutter3: ^2.0.2` | Pull-to-refresh và load-more indicators |
-| `flutter_test`, `flutter_lints` (dev) | Test + lint nội bộ package |
-
-Yêu cầu: Dart `>=3.12.0 <4.0.0`, Flutter `>=3.44.0`.
-
-## Danh mục export (`lib/mobile_devtool.dart`)
-
-| Nhóm | Export | Mô tả |
-|---|---|---|
-| **Chrome / mount** | `MobileDevToolChrome` | Chrome tổng hợp (bubble + root menu + Screen Draw overlay + Fuzz Tap overlay), mount qua `MobileDevToolChrome.attach(navigatorKey, builder)` như 1 `OverlayEntry` thật — không bọc widget tree của host. |
-| | `MobileDevToolOverlay` | Cách mount cũ, bọc `child` bằng `Stack` — dùng khi host đã quen compose overlay kiểu này (vd trong `MaterialApp.builder`). |
-| | `MobileDevToolBubble` | Nút launcher tròn kéo-thả, tự mờ dần khi không tương tác, tap để mở tool sheet. |
-| | `MobileDevToolConfiguration` | Cấu hình chrome: `title`, `hostActions`, `panels`, `menuItems`, `hiddenMenuItemIds`, `featureFlags`, `accentColor`, `themeBuilder`. |
-| | `MobileDevToolRootMenu` | Bottom-sheet mở thẳng Network; Screen Draw và Fuzz Tap là quick actions trên header, các tool còn lại đổi qua menu header; `Dev Tool Info` hiển thị phạm vi publish và roadmap. |
-| | `MobileDevToolTheme` | Hằng số màu/bo góc/shadow nội bộ chrome — mặc định nền trắng, chữ đen; `accentColor` có thể đổi màu nhấn. |
-| | `MobileDevToolFacade` (`MobileDevTool`) | Facade tĩnh `MobileDevTool.trace()/startNetwork()/completeNetwork()/failNetwork()` cho call site không có DI — cần `attachInstance(controller)` trước. |
-| **Controller / model dữ liệu** | `MobileDevToolController` | `ChangeNotifier` giữ network + trace log (giới hạn `maxEntries`), có `.disabled()` cho prod; export kèm `MobileDevToolNetworkRequest/Entry`, `MobileDevToolNetworkKind/Status`, `MobileDevToolTraceEntry`, và `entry.toCurl(...)`. |
-| | `MobileDevToolUiState` | Các `ValueNotifier`/`ChangeNotifier` nhẹ dùng chung trong UI: `MobileDevToolNetworkSearch`, `MobileDevToolNetworkStatusFilter<T>`, `MobileDevToolRevealState`, `MobileDevToolScrollDelta`, `MobileDevToolBubblePosition`, `MobileDevToolBubbleIdle`. |
-| | `MobileDevToolProviderObserver` | Theo dõi vòng đời Riverpod provider (add/dispose/update) không subscribe state — host forward từ `ProviderObserver` của mình, đọc `liveProviders` (`ValueNotifier`). |
-| **Network / Trace panel** | `MobileDevToolNetworkLogPanel` | Danh sách network log, filter theo `kind`/status, copy cURL qua `curlBuilder`; `statusFilterStyle` đổi màu nhóm All/OK/Err/Pend theo host. |
-| | `MobileDevToolTraceLogPanel` | Danh sách trace log dạng text, double-tap để copy. |
-| **Feature flag** | `MobileDevToolFeatureFlagPanel` | Danh sách toggle generic cho `MobileDevToolFeatureFlag` do host đăng ký — thay app tự viết enum/preview-hub riêng. |
-| **Fuzz Tap (crash hunter)** | `MobileDevToolFuzzTapOverlay` | Overlay toàn màn hình có nền mờ 25%, panel trạng thái + report luôn mở, không tự đóng khi phiên dừng. |
-| | `MobileDevToolFuzzTapOverlayState` (`Active`) | State hiển thị overlay Fuzz Tap. |
-| | `MobileDevToolFuzzPresetSheet` (`showMobileDevToolFuzzPresetSheet`) | Bottom-sheet 3 bước: chọn preset hoặc tuỳ chỉnh tick interval/thời lượng → xem trước → "Chạy". |
-| | `MobileDevToolFuzzRunPreset` | 3 preset dựng sẵn (Nhẹ/Chuẩn/...) khai báo tick interval + session duration. |
-| | `MobileDevToolFuzzTapRunner` | Engine: mỗi tick quét Semantics tree tìm widget bấm được, thỉnh thoảng cuộn ngẫu nhiên, gọi 1 target ngẫu nhiên qua `SemanticsOwner.performAction` — không hit-test/gesture thật nên không thay thế Patrol/`integration_test`; tự dừng khi có lỗi network mới hoặc hết target liên tiếp. |
-| | `MobileDevToolFuzzRunLog` / `MobileDevToolFuzzRunLogPanel` | Lịch sử phiên chạy Fuzz Tap, nhóm theo session. |
-| | `MobileDevToolExcludeFromFuzzTap` | Bọc subtree UI của chính dev tool để runner không tự bấm nút "Dừng" của nó. |
-| **Screen Draw (annotation)** | `MobileDevToolAnnotationTool` | `ChangeNotifier` state vẽ chú thích (hình chữ nhật/tròn/mũi tên/đường/tooltip), lọc theo route hiện tại, theo dõi scroll offset. |
-| | `MobileDevToolAnnotationOverlay` | Overlay toàn màn hình: toolbar kéo-thả (thu gọn/mở rộng) + canvas vẽ. |
-| | `MobileDevToolAnnotationCanvas` | `CustomPaint` vẽ các annotation hiện có + đang thao tác. |
-| | `MobileDevToolShapeButton` | Nút chọn hình trong toolbar Screen Draw. |
-| **Hiển thị dữ liệu chung** | `MobileDevToolJsonFormatter` | `.format(value, {omitGraphQLTypeNames})` pretty-print JSON (tự parse chuỗi JSON) + `.formatGraphQLDocument()` lược bỏ dòng `__typename`. |
-| | `MobileDevToolKvTable` / `MobileDevToolKvRow` | Bảng 2 cột key–value, tap để copy giá trị. |
-| | `MobileDevToolExpandablePanel` | Panel thu gọn/mở rộng đơn giản có tiêu đề. |
-| | `MobileDevToolExpandableSecretText` | Text ẩn/hiện dạng monospace cho giá trị nhạy cảm (token, key...), double-tap copy. |
-| **Refresh / load more** | `MobileDevToolRefreshConfiguration` | App-level wrapper cho cấu hình `pull_to_refresh_flutter3`, gồm `headerBuilder`, `footerBuilder`, spring và trigger distances. |
-| | `MobileDevToolRefreshLoadMore` | Wrapper độc lập cho scrollable: bật/tắt refresh và load more riêng, dùng indicator có sẵn hoặc custom builder/shimmer. |
-| **Cấu hình đăng ký từ host** | `MobileDevToolMenu`, `MobileDevToolMenuItem`, `MobileDevToolPanel`, `MobileDevToolFeatureFlag`, `MobileDevToolHostAction` | `MobileDevToolMenu.resolve` áp dụng `MobileDevToolConfiguration` lên menu do host sở hữu, không vẽ UI; vì vậy host giữ launcher, sheet surface và theme của mình. `MobileDevToolBuiltInIds` cho phép ẩn hoặc thay thế tool built-in. |
-| **Chi tiết vẽ (thường không cần import trực tiếp)** | `MobileDevToolDragTapDetector` | Gesture detector phân biệt tap/drag dùng cho bubble + toolbar kéo-thả. |
-
-## Tích hợp
-
-```yaml
-dependencies:
-  mobile_devtool:
-    path: ../mobile-devtool
-```
-
-Ví dụ cấu hình ở app level và dùng widget tích hợp:
+Non-production network/trace logging, a draggable launcher, tool menu, host
+actions and custom panels. Version 1.0.0 does not depend on Fuzz or Screen Draw.
 
 ```dart
-MobileDevToolRefreshConfiguration(
-  headerBuilder: () => const MaterialClassicHeader(),
-  footerBuilder: () => const ClassicFooter(),
-  child: MaterialApp(home: const HomePage()),
-)
+import 'package:mobile_devtool/mobile_devtool.dart' as dev;
 
-MobileDevToolRefreshLoadMore(
-  enableRefresh: true,
-  enableLoadMore: true,
-  onRefresh: () async => reloadFirstPage(),
-  onLoadMore: () async => fetchNextPage(), // true còn trang, false hết dữ liệu
-  loadMoreShimmerBuilder: (context) => const MyListShimmer(),
-  child: ListView.builder(itemBuilder: buildItem),
-)
+final logs = dev.Controller();
+logs.recordTrace('Host initialized');
+// Dispose logs with its owner.
 ```
 
-`header`/`footer` của widget nhận trực tiếp các indicator của thư viện như
-`MaterialClassicHeader`, `ClassicFooter`, `CustomHeader`, `CustomFooter`.
-Nếu cần đọc trạng thái để tự vẽ, dùng `refreshBuilder` hoặc `loadMoreBuilder`;
-`loadMoreShimmerBuilder` chỉ thay nội dung khi footer ở trạng thái loading.
+Mount `dev.ToolsOverlay` in a root OverlayEntry using its `attach` helper, or
+compose it in a full-screen Stack. The host owns the OverlayEntry lifecycle and
+controller disposal. `Configuration` controls appearance, `menuItems` / `panels`
+register screens, and `quickActions` registers header actions with `onSelect`.
+Quick actions whose IDs are in `hiddenMenuItemIds` are omitted.
 
-Hai cách mount, cùng chrome bên dưới (`MobileDevToolChrome`):
+`dev.Recorder` is an optional static recording facade. Call `attachInstance`
+once at the composition root and `detachInstance` before disposing that
+controller. Prefer injected `dev.Controller` where the host already has DI.
 
-**1. `MobileDevToolChrome.attach` (khuyến nghị)** — chèn thẳng vào `Overlay` của
-`Navigator`, không wrap widget tree của host:
+## Optional tools
 
-```dart
-final controller = MobileDevToolController();
-final navigatorKey = GlobalKey<NavigatorState>();
+Fuzz Tap and Screen Draw are independent experimental packages. The DevTool
+shell no longer creates or mounts them. See
+[working example composition](../example/lib/developer_tools.dart) and
+[1.0.0 migration](../docs/migration-1.0.0.md). Tools, route/scroll signals,
+overlay visibility and disposal belong to host composition.
 
-// gọi 1 lần, ví dụ trong State.initState() của widget gốc app
-final entry = MobileDevToolChrome.attach(
-  navigatorKey: navigatorKey,
-  builder: (context) => MobileDevToolChrome(
-    controller: controller,
-    configuration: MobileDevToolConfiguration(title: "My app developer tools"),
-    navigatorKey: navigatorKey,
-  ),
-);
-// và entry.remove() trong State.dispose()
-```
+Only the exports in `lib/mobile_devtool.dart` are public. Internal implementation
+files such as the root menu/theme/info widgets are not an integration API.
+Existing public MobileDevTool names remain compatibility aliases/types in 1.x;
+see [the name mapping](../docs/sdk-api-naming.md).
 
-`builder` được gọi lại mỗi lần `Overlay` rebuild — bọc nó bằng `Consumer`/
-`ConsumerWidget` (nếu host dùng Riverpod) để `configuration` (panels/feature
-flags) luôn phản ánh state mới nhất mà không cần tự gọi
-`OverlayEntry.markNeedsBuild()`.
+## Production boundary
 
-**2. `MobileDevToolOverlay` (wrap widget tree)** — cách cũ, vẫn giữ cho host
-nào đã quen compose overlay kiểu này (ví dụ trong `MaterialApp.builder`):
+Production integrations requiring no DevTool source/dependency must omit this
+package, its imports, wrappers and assets entirely. A disabled controller only
+disables logging; it does not remove a dependency.
 
-```dart
-MobileDevToolOverlay(
-  enabled: !kReleaseMode,
-  controller: controller,
-  configuration: MobileDevToolConfiguration(
-    title: "My app developer tools",
-    hostActions: [
-      MobileDevToolHostAction(label: "App-specific tools", onPressed: openAppTools),
-    ],
-  ),
-  child: const AppRoot(),
-)
-```
+Refresh/load-more belongs to `mobile_ui_kit` (`ui.RefreshView`,
+`ui.RefreshScope`), also re-exported by `mobile_sdk`. The deprecated DevTool
+refresh names are retained only for migration.
 
-`MobileDevToolController` giữ tối đa 200 request mặc định để tránh tăng bộ nhớ
-không giới hạn. Có thể cấu hình bằng `MobileDevToolController(maxEntries: 500)`
-và cần gọi `controller.dispose()` khi host không còn dùng controller. Dùng
-`MobileDevToolController.disabled()` cho build production — mọi lệnh ghi log
-bị bỏ qua, business code không cần tự branch theo flavor.
-
-App ghi network/trace log qua controller, không cần phụ thuộc vào UI:
-
-```dart
-final id = controller.startNetwork(
-  MobileDevToolNetworkRequest(label: "Load profile", method: "GET", endpoint: url),
-);
-controller.completeNetwork(id, response: payload, statusCode: 200);
-```
-
-Mỗi entry tự export được cURL để copy/replay:
-
-```dart
-final curl = entry.toCurl(graphQlUrl: F.graphQLUrl, restBaseUrl: F.apiUrl, bearerToken: token);
-```
-
-SDK không sở hữu auth, router, storage hoặc design system của app host. Tool
-đặc thù app được giữ ở app host và được đăng ký qua `hostActions`, hoặc — cho
-màn hình đầy đủ — qua `MobileDevToolConfiguration.panels`:
-
-```dart
-MobileDevToolConfiguration(
-  panels: [
-    MobileDevToolPanel(
-      id: "auth-tool",
-      label: "Auth Tool",
-      icon: Icons.lock_outline,
-      builder: (context) => const AuthToolSheet(), // widget của app, dùng AppButton/ViewModel riêng
-    ),
-  ],
-  featureFlags: [
-    MobileDevToolFeatureFlag(
-      id: "home-list-mock",
-      label: "Home List Mock",
-      getter: () => ref.read(homeListMockEnabledProvider),
-      setter: (value) => ref.read(homeListMockEnabledProvider.notifier).set(value),
-    ),
-  ],
-)
-```
-
-Với tool cần custom thứ tự hoặc thay thế/ẩn built-in, dùng
-`MobileDevToolConfiguration.menuItems`. Đây là API tổng quát hơn `panels` và
-`hostActions`; hai API cũ vẫn được giữ để tương thích:
-
-```dart
-MobileDevToolConfiguration(
-  menuItems: [
-    MobileDevToolMenuItem(
-      id: "account-tool",
-      label: "Account",
-      icon: Icons.account_circle_outlined,
-      order: 80,
-      builder: (context) => const AccountToolPanel(),
-    ),
-    MobileDevToolMenuItem(
-      id: "storage-tool",
-      label: "Storage",
-      icon: Icons.storage_outlined,
-      order: 90,
-      builder: (context) => const StorageToolPanel(),
-    ),
-    // Override the built-in Network screen.
-    MobileDevToolMenuItem(
-      id: MobileDevToolBuiltInIds.network,
-      label: "My Network",
-      builder: (context) => const MyNetworkPanel(),
-    ),
-  ],
-  hiddenMenuItemIds: {MobileDevToolBuiltInIds.trace},
-)
-```
-
-Host có root menu riêng không cần chuyển sang `MobileDevToolChrome`: truyền các
-mục gốc của host vào `MobileDevToolMenu.resolve`, rồi tự vẽ danh sách kết quả.
-Ví dụ dưới đây chỉ thay menu; bubble, bottom sheet và theme vẫn hoàn toàn do
-host sở hữu:
-
-```dart
-final rootMenu = MobileDevToolMenu.resolve(
-  items: [
-    MobileDevToolMenuItem(id: "network", label: "Network", onSelect: openNetwork),
-    MobileDevToolMenuItem(id: "toast", label: "Toast", onSelect: openToast),
-    MobileDevToolMenuItem(id: "loading", label: "Loading", onSelect: openLoading),
-    MobileDevToolMenuItem(id: "splash", label: "Splash", onSelect: openSplash),
-    MobileDevToolMenuItem(id: "push", label: "Push", onSelect: openPush),
-  ],
-  configuration: MobileDevToolConfiguration(
-    hiddenMenuItemIds: {"toast", "loading", "splash", "push"},
-    menuItems: [
-      MobileDevToolMenuItem(
-        id: "debug",
-        label: "Debug",
-        onSelect: () => router.pushNamed("/debug"),
-      ),
-    ],
-  ),
-);
-```
-
-`hiddenMenuItemIds` luôn thắng; một `menuItems` trùng `id` sẽ thay mục gốc và
-mục khai báo cuối cùng thắng khi trùng nhau.
-
-Mặc định chrome và root sheet vẫn dùng theme sáng của SDK. Host muốn giữ theme
-của mình khi dùng `MobileDevToolChrome` chỉ cần khai báo `themeBuilder`; không
-cần sao chép launcher hay root sheet:
-
-```dart
-MobileDevToolConfiguration(
-  themeBuilder: (context) => Theme.of(context),
-  // menuItems, hiddenMenuItemIds, panels...
-)
-```
-
-`themeBuilder` cũng có thể trả về một `ThemeData` đã `copyWith` để chỉ đổi
-developer tooling.
-
-`AccountToolPanel` và `StorageToolPanel` nên do app host sở hữu để kết nối
-đúng auth/session service hoặc secure storage. SDK chỉ host và hiển thị widget;
-không tự đọc, lưu hoặc log token/credential.
-
-Cách này giữ dependency-inversion: nội dung panel vẫn do app tự viết (vì nó
-cần domain model/design-system riêng), nhưng cách nó được host/hiển thị hoàn
-toàn do SDK điều phối — app không tự quản lý bubble hay sheet-stepping.
-
-Điều này tránh package dependency ngược vào business domain của từng app.
-
-## Trạng thái migrate (2026-09-10) — hoàn tất
-
-Toàn bộ cơ chế generic của dev tool đã chuyển hẳn vào package này; app host
-(`node_mobile_app`) không còn file dev tool nội bộ nào ngoài panel nghiệp vụ.
-SDK sở hữu: `MobileDevToolController` (network/trace log + `toCurl()` +
-`.disabled()` cho prod), JSON formatter, KV table, expandable panel/secret
-text, annotation tool + canvas + overlay toolbar (Semantics-based, dùng
-`ExcludeFromFuzzTap` để loại UI của chính nó), fuzz-tap engine (detect widget
-bấm được qua Semantics tree, không còn phụ thuộc runtime type của bất kỳ
-widget app nào), `MobileDevToolRootMenu` (bottom-sheet mở thẳng chức năng đầu
-tiên, quick actions Screen Draw/Fuzz Tap trên header và menu đổi chức năng),
-`MobileDevToolBubble` (launcher kéo-thả), và `MobileDevToolChrome` (bubble +
-root menu + Screen Draw overlay + Fuzz Tap overlay gộp vào 1 chrome duy nhất —
-mount qua `MobileDevToolChrome.attach` như 1 `Overlay` entry thật, thay vì 2
-lớp `MobileDevToolOverlay(child: DevToolOverlay(...))` lồng nhau trong widget
-tree như bản đầu tiên). Root menu có thêm `Dev Tool Info` để phân biệt các
-tool đã publish (`Network`, `Trace`) với các tool đang phát triển/preview nội
-bộ (`Fuzz Tap`, `Fuzz Tap Log`, `Screen Draw`, `Feature Flags`).
-
-Cách dùng cuối cùng ở app host (`lib/app/app.dart`) — `MobileDevToolChrome.attach`
-gọi 1 lần trong `_AppState.initState()`, `builder` bọc bằng `Consumer` để
-panels/feature-flags/controller luôn theo state mới nhất:
-
-```dart
-_devToolEntry = MobileDevToolChrome.attach(
-  navigatorKey: router.navigatorKey,
-  builder: (context) => Consumer(
-    builder: (context, ref, _) => MobileDevToolChrome(
-      controller: ref.watch(mobileDevToolControllerProvider), // .disabled() ở prod
-      configuration: MobileDevToolConfiguration(
-        panels: appDevToolPanels(context, ref),           // sheet nghiệp vụ đầy đủ
-        featureFlags: appDevToolFeatureFlags(context, ref), // toggle đơn giản
-        hostActions: appDevToolHostActions(ref),            // hành động không có nội dung sheet
-      ),
-      navigatorKey: router.navigatorKey,
-      currentRouteKey: ref.watch(devToolRouteKeyProvider),   // Screen Draw/Fuzz Tap scope theo route
-      scrollDelta: ref.watch(devToolScrollDeltaProvider),    // Screen Draw canvas theo kịp nội dung cuộn
-    ),
-  ),
-);
-// và _devToolEntry?.remove() trong _AppState.dispose()
-```
-
-`MaterialApp.builder` không còn wrap `child` bằng `Stack`/`MobileDevToolOverlay`
-nữa — chỉ giữ 1 `NotificationListener<ScrollNotification>` mỏng để bơm
-`devToolScrollDeltaProvider`, vì overlay giờ nằm ngoài widget subtree của
-trang nên không tự thấy `ScrollNotification` của nó.
-
-3 hàm `appDevToolPanels`/`appDevToolFeatureFlags`/`appDevToolHostActions` nằm ở
-`lib/core/dev_tool/app_dev_tool_panels.dart` của app host — đây là nơi DUY
-NHẤT app còn "biết" về business logic của dev tool (auth, storage, KYC, mock
-data...); SDK không import ngược bất kỳ thứ gì từ app.
-
-## SDK-12 migration
-
-Refresh/load-more now lives in `mobile_ui_kit`. Use `UiKitRefreshLoadMore`,
-`UiKitRefreshConfiguration`, `UiKitRefreshContentBuilder` and
-`UiKitLoadMoreContentBuilder` from that package or `mobile_sdk` in production.
-The old names remain deprecated aliases. See
-[production migration](../mobile_sdk/README.md#production-without-devtool-sdk-12-070).
+Distribution remains Git-based (`publish_to: none`). Minimum supported SDK:
+Flutter 3.44.6 / Dart 3.12.2.

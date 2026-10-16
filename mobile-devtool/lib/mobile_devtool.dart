@@ -1,13 +1,12 @@
 /// Reusable Flutter SDK for non-production mobile developer tooling.
 ///
-/// The repository contains additional source-only devtool experiments, but
-/// the public package surface exports the network/trace tooling and the
-/// deprecated refresh/load-more aliases. Production primitives live in mobile_ui_kit.
+/// Public logging, launcher and menu APIs. Optional Fuzz Tap and Screen Draw
+/// live in independent packages and are composed by the host.
+/// Deprecated refresh aliases remain for migration; production primitives
+/// live in mobile_ui_kit.
 library;
 
-// Keep the package's public surface explicit. The remaining source files are
-// intentionally not exported and are excluded from the published archive via
-// `.pubignore`.
+// Keep implementation details out of the public barrel.
 export "src/mobile_devtool_controller.dart"
     show
         MobileDevToolController,
@@ -68,3 +67,5 @@ export "package:mobile_ui_kit/mobile_ui_kit.dart"
         SmartRefresher,
         WaterDropHeader,
         WaterDropMaterialHeader;
+
+export "src/public_api.dart";

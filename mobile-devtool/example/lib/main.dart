@@ -4,18 +4,20 @@
 
 import "dart:async";
 
+import "developer_tools.dart";
+
 import "package:flutter/material.dart";
 import "package:mobile_app_base/mobile_app_base.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
+import "package:mobile_devtool/mobile_devtool.dart" as dev;
 
 /// Standalone preview app for the `mobile_devtool` package — mounts the SDK
 /// chrome (bubble + tool sheet) over a tiny demo screen so every built-in tool
 /// can be poked at without depending on the real `node_mobile_app` host.
 ///
 /// This mirrors how a real app would wire the SDK: a single
-/// [MobileDevToolController] created once at the composition root,
-/// `MobileDevToolChrome.attach` inserted into the root `Navigator`'s
-/// `Overlay`, and `MobileDevToolConfiguration.menuItems`/`featureFlags` supplying
+/// [dev.Controller] created once at the composition root,
+/// `dev.ToolsOverlay.attach` inserted into the root `Navigator`'s
+/// `Overlay`, and `dev.Configuration.menuItems`/`featureFlags` supplying
 /// host-specific content the SDK does not know about.
 void main() => runApp(const MobileDevToolExampleApp());
 
@@ -34,9 +36,9 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
 
   // A single controller for the whole app lifetime — the shared app config
   // selects the disabled controller for `prod`.
-  late final MobileDevToolController _controller;
+  late final dev.Controller _controller;
 
-  // Toggle values backing the demo `MobileDevToolFeatureFlag`s below — a real
+  // Toggle values backing the demo `dev.FeatureFlag`s below — a real
   // host would read/write these from its own state management (Riverpod...).
   bool _mockHomeList = false;
   bool _verboseLogging = true;
@@ -47,23 +49,23 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
   void initState() {
     super.initState();
     _controller = widget.config.developerToolsEnabled
-        ? MobileDevToolController()
-        : MobileDevToolController.disabled();
+        ? dev.Controller()
+        : dev.Controller.disabled();
 
     // Mounted once at the composition root, exactly like the real app host
     // does in `main.dart`. `builder` is re-invoked on every `Overlay`
     // rebuild, so `setState` on this widget (e.g. toggling a feature flag)
     // is picked up automatically without calling `markNeedsBuild()` by hand.
     if (widget.config.developerToolsEnabled) {
-      _devToolEntry = MobileDevToolChrome.attach(
+      _devToolEntry = dev.ToolsOverlay.attach(
         navigatorKey: _navigatorKey,
-        builder: (context) => MobileDevToolChrome(
+        builder: (context) => DeveloperTools(
           controller: _controller,
           navigatorKey: _navigatorKey,
-          configuration: MobileDevToolConfiguration(
+          configuration: dev.Configuration(
             title: widget.config.appName,
             panels: [
-              MobileDevToolPanel(
+              dev.Panel(
                 id: "sample-panel",
                 label: "Sample host panel",
                 icon: Icons.widgets_outlined,
@@ -71,14 +73,14 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
               ),
             ],
             menuItems: [
-              MobileDevToolMenuItem(
+              dev.MenuItem(
                 id: "account-tool",
                 label: "Account",
                 icon: Icons.account_circle_outlined,
                 order: 80,
                 builder: (context) => const _AccountToolPanel(),
               ),
-              MobileDevToolMenuItem(
+              dev.MenuItem(
                 id: "storage-tool",
                 label: "Storage",
                 icon: Icons.storage_outlined,
@@ -87,14 +89,14 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
               ),
             ],
             featureFlags: [
-              MobileDevToolFeatureFlag(
+              dev.FeatureFlag(
                 id: "mock-home-list",
                 label: "Mock Home List",
                 description: "Bật để danh sách trang chủ dùng dữ liệu giả lập.",
                 getter: () => _mockHomeList,
                 setter: (value) => setState(() => _mockHomeList = value),
               ),
-              MobileDevToolFeatureFlag(
+              dev.FeatureFlag(
                 id: "verbose-logging",
                 label: "Verbose Logging",
                 description: "Bật để ghi thêm trace log chi tiết.",
@@ -103,7 +105,7 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
               ),
             ],
             hostActions: [
-              MobileDevToolHostAction(
+              dev.HostAction(
                 label: "Trace: Ping",
                 icon: Icons.bolt_outlined,
                 onPressed: () => _controller.recordTrace(
@@ -120,6 +122,7 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
   @override
   void dispose() {
     _devToolEntry?.remove();
+    _devToolEntry?.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -135,7 +138,7 @@ class _MobileDevToolExampleAppState extends State<MobileDevToolExampleApp> {
   }
 }
 
-/// Demo panel registered by the "host" app via `MobileDevToolConfiguration
+/// Demo panel registered by the "host" app via `dev.Configuration
 /// .panels` — the SDK only decides when/how to present it, the content is
 /// entirely app-owned.
 class _SampleHostPanel extends StatelessWidget {
@@ -147,7 +150,7 @@ class _SampleHostPanel extends StatelessWidget {
       padding: EdgeInsets.all(16),
       child: Text(
         "Đây là 1 panel do app host tự đăng ký qua "
-        "MobileDevToolConfiguration.panels — nội dung, widget và state đều "
+        "dev.Configuration.panels — nội dung, widget và state đều "
         "do app quyết định, SDK chỉ điều phối cách hiển thị (tool sheet có "
         "menu đổi chức năng và close chung).",
       ),
@@ -171,11 +174,11 @@ class _AccountToolPanel extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
-        MobileDevToolKvTable(
+        dev.KeyValueTable(
           rows: const [
-            MobileDevToolKvRow(label: "user_id", value: "user-42"),
-            MobileDevToolKvRow(label: "role", value: "admin"),
-            MobileDevToolKvRow(label: "session", value: "active"),
+            dev.KeyValueRow(label: "user_id", value: "user-42"),
+            dev.KeyValueRow(label: "role", value: "admin"),
+            dev.KeyValueRow(label: "session", value: "active"),
           ],
         ),
         const SizedBox(height: 12),
@@ -214,10 +217,10 @@ class _StorageToolPanelState extends State<_StorageToolPanel> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
-        MobileDevToolKvTable(
+        dev.KeyValueTable(
           rows: [
             for (final entry in _values.entries)
-              MobileDevToolKvRow(label: entry.key, value: entry.value),
+              dev.KeyValueRow(label: entry.key, value: entry.value),
           ],
         ),
         const SizedBox(height: 12),
@@ -234,7 +237,7 @@ class _StorageToolPanelState extends State<_StorageToolPanel> {
 class _HomePage extends StatefulWidget {
   const _HomePage({required this.controller});
 
-  final MobileDevToolController controller;
+  final dev.Controller controller;
 
   @override
   State<_HomePage> createState() => _HomePageState();
@@ -256,11 +259,11 @@ class _HomePageState extends State<_HomePage> {
   Future<void> _simulateGraphQlCall() async {
     setState(() => _loading = true);
     final id = widget.controller.startNetwork(
-      const MobileDevToolNetworkRequest(
+      const dev.NetworkRequest(
         label: "GetUserProfile",
         endpoint: "GetUserProfile",
         method: "POST",
-        kind: MobileDevToolNetworkKind.graphql,
+        kind: dev.NetworkKind.graphql,
         request: {
           "variables": {"userId": "user-42"},
         },
@@ -284,7 +287,7 @@ class _HomePageState extends State<_HomePage> {
   /// also has an example entry to show.
   Future<void> _simulateFailingRestCall() async {
     final id = widget.controller.startNetwork(
-      const MobileDevToolNetworkRequest(
+      const dev.NetworkRequest(
         label: "UploadAvatar",
         endpoint: "/v1/users/user-42/avatar",
         method: "POST",
@@ -351,7 +354,7 @@ class _HomePageState extends State<_HomePage> {
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
-                MobileDevToolJsonFormatter.format(
+                dev.JsonFormatter.format(
                   _sampleJson,
                   omitGraphQLTypeNames: true,
                 ),
@@ -362,11 +365,11 @@ class _HomePageState extends State<_HomePage> {
           const SizedBox(height: 24),
           const Text("KV Table", style: TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
-          const MobileDevToolKvTable(
+          const dev.KeyValueTable(
             rows: [
-              MobileDevToolKvRow(label: "userId", value: "user-42"),
-              MobileDevToolKvRow(label: "env", value: "dev"),
-              MobileDevToolKvRow(label: "token", value: null),
+              dev.KeyValueRow(label: "userId", value: "user-42"),
+              dev.KeyValueRow(label: "env", value: "dev"),
+              dev.KeyValueRow(label: "token", value: null),
             ],
           ),
           const SizedBox(height: 80),

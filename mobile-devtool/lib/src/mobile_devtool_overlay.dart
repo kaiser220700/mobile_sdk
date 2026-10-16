@@ -79,8 +79,6 @@ class _MobileDevToolOverlayState extends State<MobileDevToolOverlay> {
           configuration: widget.configuration,
           navigatorKey: widget.navigatorKey,
           showLauncher: widget.showLauncher,
-          currentRouteKey: widget.currentRouteKey,
-          scrollDelta: _scrollDelta,
         ),
       ],
     );

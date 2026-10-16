@@ -3,8 +3,6 @@ import "package:flutter/material.dart";
 import "mobile_devtool_configuration.dart";
 import "mobile_devtool_controller.dart";
 import "mobile_devtool_feature_flag_panel.dart";
-import "mobile_devtool_fuzz_run_log.dart";
-import "mobile_devtool_fuzz_run_log_panel.dart";
 import "mobile_devtool_network_log_panel.dart";
 import "mobile_devtool_info_panel.dart";
 import "mobile_devtool_menu.dart";
@@ -20,25 +18,16 @@ class MobileDevToolRootMenu extends StatefulWidget {
   const MobileDevToolRootMenu({
     required this.controller,
     required this.configuration,
-    this.fuzzRunLog,
-    this.onOpenScreenDraw,
-    this.onOpenFuzzTap,
     super.key,
   });
 
   final MobileDevToolController controller;
   final MobileDevToolConfiguration configuration;
-  final MobileDevToolFuzzRunLog? fuzzRunLog;
-  final VoidCallback? onOpenScreenDraw;
-  final VoidCallback? onOpenFuzzTap;
 
   static Future<void> show(
     BuildContext context, {
     required MobileDevToolController controller,
     required MobileDevToolConfiguration configuration,
-    MobileDevToolFuzzRunLog? fuzzRunLog,
-    VoidCallback? onOpenScreenDraw,
-    VoidCallback? onOpenFuzzTap,
   }) => showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -47,9 +36,6 @@ class MobileDevToolRootMenu extends StatefulWidget {
     builder: (context) => MobileDevToolRootMenu(
       controller: controller,
       configuration: configuration,
-      fuzzRunLog: fuzzRunLog,
-      onOpenScreenDraw: onOpenScreenDraw,
-      onOpenFuzzTap: onOpenFuzzTap,
     ),
   );
 
@@ -62,143 +48,74 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
 
   MobileDevToolMenuItem get _current => _pageStack.last;
 
-  List<MobileDevToolMenuItem> get _entries =>
-      MobileDevToolMenu.resolve(
-            configuration: widget.configuration,
-            items: [
-              MobileDevToolMenuItem(
-                id: MobileDevToolBuiltInIds.network,
-                label: "Network",
-                icon: Icons.hub_outlined,
-                order: 10,
-                builder: (_) => MobileDevToolNetworkLogPanel(
-                  controller: widget.controller,
-                  onOpenDetail: _openNetworkDetail,
-                ),
-              ),
-              MobileDevToolMenuItem(
-                id: MobileDevToolBuiltInIds.trace,
-                label: "Trace",
-                icon: Icons.bug_report_outlined,
-                order: 20,
-                builder: (_) =>
-                    MobileDevToolTraceLogPanel(controller: widget.controller),
-              ),
-              if (widget.fuzzRunLog case final log?)
-                MobileDevToolMenuItem(
-                  id: MobileDevToolBuiltInIds.fuzzTapLog,
-                  label: "Fuzz Tap Log",
-                  icon: Icons.receipt_long_outlined,
-                  order: 30,
-                  builder: (_) => MobileDevToolFuzzRunLogPanel(log: log),
-                ),
-              if (widget.onOpenScreenDraw case final onOpen?)
-                MobileDevToolMenuItem(
-                  id: MobileDevToolBuiltInIds.screenDraw,
-                  label: "Screen Draw",
-                  icon: Icons.gesture,
-                  order: 40,
-                  builder: (_) => const SizedBox.shrink(),
-                  onSelect: onOpen,
-                ),
-              if (widget.onOpenFuzzTap case final onOpen?)
-                MobileDevToolMenuItem(
-                  id: MobileDevToolBuiltInIds.fuzzTap,
-                  label: "Fuzz Tap",
-                  icon: Icons.smart_toy_outlined,
-                  order: 50,
-                  builder: (_) => const SizedBox.shrink(),
-                  onSelect: onOpen,
-                ),
-              if (widget.configuration.featureFlags.isNotEmpty)
-                MobileDevToolMenuItem(
-                  id: MobileDevToolBuiltInIds.featureFlags,
-                  label: "Feature Flags",
-                  icon: Icons.flag_outlined,
-                  order: 60,
-                  builder: (_) => MobileDevToolFeatureFlagPanel(
-                    flags: widget.configuration.featureFlags,
-                  ),
-                ),
-              MobileDevToolMenuItem(
-                id: MobileDevToolBuiltInIds.devToolInfo,
-                label: "Dev Tool Info",
-                icon: Icons.info_outline,
-                // Keep the default Network entry (including a host override)
-                // as the initial page when its order falls back to 100.
-                order: 100,
-                builder: (_) => const MobileDevToolInfoPanel(),
-              ),
-              for (final panel in widget.configuration.panels)
-                MobileDevToolMenuItem(
-                  id: panel.id,
-                  label: panel.label,
-                  icon: panel.icon,
-                  order: 200,
-                  builder: panel.builder,
-                ),
-              for (final action in widget.configuration.hostActions)
-                MobileDevToolMenuItem(
-                  id: "host-action:${action.label}",
-                  label: action.label,
-                  icon: action.icon,
-                  order: 300,
-                  onSelect: action.onPressed,
-                ),
-            ],
-          )
-          .where(
-            (entry) =>
-                entry.id != MobileDevToolBuiltInIds.screenDraw ||
-                entry.onSelect == null,
-          )
-          .where(
-            (entry) =>
-                entry.id != MobileDevToolBuiltInIds.fuzzTap ||
-                entry.onSelect == null,
-          )
-          .toList();
-
-  MobileDevToolMenuItem? _quickAction({
-    required String id,
-    required String label,
-    required IconData icon,
-    required VoidCallback? onSelect,
-  }) {
-    if (onSelect == null) return null;
-    final entries = MobileDevToolMenu.resolve(
-      configuration: widget.configuration,
-      items: [
-        MobileDevToolMenuItem(
-          id: id,
-          label: label,
-          icon: icon,
-          onSelect: onSelect,
+  List<MobileDevToolMenuItem> get _entries => MobileDevToolMenu.resolve(
+    configuration: widget.configuration,
+    items: [
+      MobileDevToolMenuItem(
+        id: MobileDevToolBuiltInIds.network,
+        label: "Network",
+        icon: Icons.hub_outlined,
+        order: 10,
+        builder: (_) => MobileDevToolNetworkLogPanel(
+          controller: widget.controller,
+          onOpenDetail: _openNetworkDetail,
         ),
-      ],
-    );
-    if (entries.length != 1 || entries.single.onSelect == null) return null;
-    return entries.single;
-  }
+      ),
+      MobileDevToolMenuItem(
+        id: MobileDevToolBuiltInIds.trace,
+        label: "Trace",
+        icon: Icons.bug_report_outlined,
+        order: 20,
+        builder: (_) =>
+            MobileDevToolTraceLogPanel(controller: widget.controller),
+      ),
+      if (widget.configuration.featureFlags.isNotEmpty)
+        MobileDevToolMenuItem(
+          id: MobileDevToolBuiltInIds.featureFlags,
+          label: "Feature Flags",
+          icon: Icons.flag_outlined,
+          order: 60,
+          builder: (_) => MobileDevToolFeatureFlagPanel(
+            flags: widget.configuration.featureFlags,
+          ),
+        ),
+      MobileDevToolMenuItem(
+        id: MobileDevToolBuiltInIds.devToolInfo,
+        label: "Dev Tool Info",
+        icon: Icons.info_outline,
+        // Keep the default Network entry (including a host override)
+        // as the initial page when its order falls back to 100.
+        order: 100,
+        builder: (_) => const MobileDevToolInfoPanel(),
+      ),
+      for (final panel in widget.configuration.panels)
+        MobileDevToolMenuItem(
+          id: panel.id,
+          label: panel.label,
+          icon: panel.icon,
+          order: 200,
+          builder: panel.builder,
+        ),
+      for (final action in widget.configuration.hostActions)
+        MobileDevToolMenuItem(
+          id: "host-action:${action.label}",
+          label: action.label,
+          icon: action.icon,
+          order: 300,
+          onSelect: action.onPressed,
+        ),
+    ],
+  ).toList();
 
-  List<MobileDevToolMenuItem> get _quickActions => [
-    if (_quickAction(
-          id: MobileDevToolBuiltInIds.screenDraw,
-          label: "Screen Draw",
-          icon: Icons.gesture,
-          onSelect: widget.onOpenScreenDraw,
-        )
-        case final action?)
-      action,
-    if (_quickAction(
-          id: MobileDevToolBuiltInIds.fuzzTap,
-          label: "Fuzz Tap",
-          icon: Icons.smart_toy_outlined,
-          onSelect: widget.onOpenFuzzTap,
-        )
-        case final action?)
-      action,
-  ];
+  List<MobileDevToolMenuItem> get _quickActions => widget
+      .configuration
+      .quickActions
+      .where(
+        (entry) =>
+            entry.onSelect != null &&
+            !widget.configuration.hiddenMenuItemIds.contains(entry.id),
+      )
+      .toList();
 
   @override
   void initState() {

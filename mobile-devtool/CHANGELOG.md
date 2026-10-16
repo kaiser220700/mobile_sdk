@@ -2,6 +2,17 @@
 
 All notable changes to this package are documented in this file.
 
+## 1.0.0 - 2026-10-16
+
+- Safely cancel deferred overlay attachment when its host is disposed early.
+
+- Breaking: move Screen Draw/Fuzz Tap lifecycle out of ToolsOverlay. Hosts
+  register generic quickActions/panels and compose the independent tools.
+- Remove currentRouteKey/scrollDelta from the overlay constructor; forward
+  these optional signals to host-owned tool controllers instead.
+
+- Add concise public names with module import aliases; keep existing names for migration.
+
 ## 0.7.0 - 2026-10-15
 
 - SDK-12: move refresh/load-more to `mobile_ui_kit` (`UiKitRefreshLoadMore`,

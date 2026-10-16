@@ -35,6 +35,12 @@ for package in "${packages[@]:1}"; do
     fail "$package is $version; expected $shared_version."
 done
 
+for experimental in mobile_fuzz mobile_screen_draw; do
+  version="$(version_for "$experimental")"
+  [[ "$version" =~ ^0\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]] ||
+    fail "$experimental must remain independently versioned 0.x; found $version."
+done
+
 stable_version='^[0-9]+\.[0-9]+\.[0-9]+$'
 development_version='^[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$'
 

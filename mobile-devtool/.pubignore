@@ -1,4 +1,4 @@
-# The package published to pub.dev contains only the network/trace SDK surface.
+# Archive exclusions; public API is defined by lib/mobile_devtool.dart.
 example/
 test/
 android/

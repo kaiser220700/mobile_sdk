@@ -8,6 +8,10 @@ environment:
   flutter: ">=3.44.0"
 
 dependencies:
+  mobile_fuzz:
+    path: ../mobile_fuzz
+  mobile_screen_draw:
+    path: ../mobile_screen_draw
   flutter:
     sdk: flutter
   mobile_devtool:

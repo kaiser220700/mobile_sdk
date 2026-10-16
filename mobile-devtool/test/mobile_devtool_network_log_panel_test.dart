@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:mobile_devtool/mobile_devtool.dart";
+import "package:mobile_devtool/mobile_devtool.dart" as dev;
 
 void main() {
   testWidgets("uses the host status-filter style", (tester) async {
-    final controller = MobileDevToolController();
+    final controller = dev.Controller();
     addTearDown(controller.dispose);
-    const style = MobileDevToolNetworkStatusFilterStyle(
+    const style = dev.NetworkStatusFilterStyle(
       selectedGradient: LinearGradient(colors: [Colors.blue, Colors.indigo]),
       selectedForegroundColor: Colors.white,
       unselectedBackgroundColor: Color(0xFFE4ECF4),
@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: MobileDevToolNetworkLogPanel(
+          body: dev.NetworkLogPanel(
             controller: controller,
             statusFilterStyle: style,
           ),

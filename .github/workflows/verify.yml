@@ -12,11 +12,17 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter: ["3.44.6", "3.47.4"]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.47.4"
+          flutter-version: ${{ matrix.flutter }}
           cache: true
       - name: Format, analyze, and test every package
         run: ./tool/verify_workspace.sh
+      - name: Build production-only Android consumer
+        working-directory: production_example
+        run: flutter build apk --release
