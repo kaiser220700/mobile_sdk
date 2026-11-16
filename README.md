@@ -1,7 +1,16 @@
 # Shared Flutter libraries
 
-Kế hoạch mở rộng cho Android (Kotlin/Jetpack Compose) và iOS (Swift/SwiftUI),
-với từng mốc thử nghiệm và phát hành: [PLAN native SDK](docs/PLAN-native-sdk.md).
+Copyright © 2026 KAISER. All rights reserved. Dự án độc quyền, chỉ sử dụng trong
+các dự án được KAISER cho phép bằng văn bản. Xem [LICENSE](LICENSE),
+[COPYRIGHT](COPYRIGHT.md) và [source usage policy](docs/source-usage-policy.md).
+
+[ROADMAP hiện hành](docs/roadmap.md) theo dõi snapshot/version từng package Flutter
+và các mốc mở rộng native. Chi tiết Android (Kotlin/Jetpack Compose) và iOS
+(Swift/SwiftUI) nằm trong [PLAN native SDK](docs/PLAN-native-sdk.md).
+
+Đợt 0.7.x trên `release/0.7.0` chốt theo kiểm tra trong repo và build web;
+pilot app bên ngoài được bỏ qua theo yêu cầu chủ sở hữu. Package vẫn giữ stage
+hiện có. Xem phạm vi và bằng chứng tại [báo cáo 0.7.x](docs/validation-0.7.x.md).
 
 ## Package portal & UI showcase
 
@@ -42,8 +51,11 @@ App tiêu thụ SDK vẫn sở hữu cấu hình native và Firebase nếu có.
 ---
 
 A monorepo of independently chosen Flutter packages. Distribution remains
-Git-based; pub.dev publication is disabled. There is no workspace-wide 1.0.0
-release: each package earns its own version and stability contract.
+GitHub-only; publication to pub.dev or another package registry is out of scope.
+`publish_to: none` stays in every package. Apps use authorized Git access and pin
+a commit revision; package tags are optional labels within GitHub. There is no
+workspace-wide 1.0.0 release: each package earns its own version and stability
+contract.
 
 ## Choose a package by responsibility
 

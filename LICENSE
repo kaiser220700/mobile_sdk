@@ -1,0 +1,45 @@
+PROPRIETARY SOFTWARE — ALL RIGHTS RESERVED
+
+Copyright (c) 2026 KAISER. All rights reserved.
+
+KAISER is the pseudonym used by the individual owner of this project.
+
+Scope
+
+This notice applies to the original code, documentation, and assets in this
+repository to the extent that KAISER holds the relevant rights. Third-party
+materials and dependencies remain subject to their respective licenses and
+copyright notices.
+
+No general license
+
+This repository is not offered under an open-source license. Access to the
+repository, receipt of a copy, or the ability to clone it does not by itself
+grant permission to use the SDK in a project or to redistribute it.
+
+Except as permitted by applicable law, the GitHub Terms of Service, an existing
+valid license, or a separate written authorization from KAISER, no permission
+is granted to use, reproduce, modify, extract, distribute, sublicense, sell,
+publish, or otherwise reuse the covered materials, in whole or in part.
+
+Authorized projects
+
+Permission must be obtained from KAISER in writing and must identify the
+authorized project and permitted uses. Permission for one project does not
+extend to other projects, organizations, or recipients. Integrating the SDK
+into an application, distributing a compiled application containing it, or
+providing copies to contractors must be covered by that authorization.
+
+Authorization to use the SDK does not imply permission to publish its source,
+redistribute the SDK as a standalone product, or upload it to a package
+registry. Any additional permission must be stated expressly in writing.
+
+Preservation of rights and notices
+
+Do not remove copyright, license, or attribution notices from authorized
+copies. This notice does not override rights already granted under another
+valid license, mandatory legal exceptions, GitHub's applicable platform
+terms, or the licenses governing third-party materials.
+
+Unless a separate written agreement provides otherwise, the covered materials
+are provided "AS IS", without warranties, to the extent permitted by law.

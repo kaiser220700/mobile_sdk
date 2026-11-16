@@ -1,8 +1,42 @@
 # PLAN mở rộng Mobile SDK cho Android và iOS native
 
-Ngày lập: 2026-11-16. Trạng thái: kế hoạch triển khai tăng dần; chưa có implementation native được xác nhận bởi kế hoạch này.
+Ngày lập/cập nhật: 2026-11-16. Trạng thái: đã lập kế hoạch; P0 chưa triển khai,
+P1–P6 chưa bắt đầu. Repo chưa có module, artifact hay bộ test native theo PLAN.
 
 Mục tiêu là để app Flutter, Android native và iOS native chọn từng capability của SDK. Mỗi nền tảng được phát triển, kiểm thử và phát hành theo phạm vi đã chứng minh; không cần hoàn thành toàn bộ SDK cùng lúc.
+
+## Liên kết với ROADMAP hiện hành
+
+[ROADMAP tổng thể](roadmap.md) theo dõi hai nhánh công việc: F0–F3 cho package
+Flutter và P0–P6 cho native. Tài liệu này giữ checklist kỹ thuật và điều kiện
+nghiệm thu của P0–P6; khi trạng thái thay đổi phải cập nhật cả bảng tổng quan
+trong ROADMAP và bằng chứng ở cuối PLAN.
+
+- Baseline Flutter hiện có là Flutter 3.50.0 / Dart 3.14.0; các kiểm tra của
+  [snapshot Flutter](flutter-3.50-migration.md) không chứng minh đã hỗ trợ native.
+- Branch hiện tại `release/0.7.0` là nơi gom thay đổi. Nó không đặt version cho
+  artifact Kotlin/Swift và không phải cam kết hoàn thành native trong `0.7.0`.
+- F0 xử lý branch/release policy, F1 ghi nhận việc bỏ qua pilot app Flutter
+  cho đợt 0.7.x theo yêu cầu chủ sở hữu và F2 chốt snapshot GitHub. Quyết định
+  bỏ qua này không đánh dấu native đã được kiểm chứng và không thay các điều
+  kiện nghiệm thu P0–P6 dưới đây. Native không chặn việc chốt snapshot Flutter.
+- Có thể chuẩn bị đặc tả/fixture P0 độc lập với đợt Flutter. P1/P2 chỉ bắt
+  đầu sau khi contract/toolchain liên quan đã được chốt; pilot và điều kiện
+  nâng maturity vẫn phải có bằng chứng riêng theo nền tảng.
+
+| Mốc | Trạng thái tại ngày cập nhật | Điều kiện bắt đầu |
+| --- | --- | --- |
+| P0 | Chưa triển khai; mới có PLAN | Kiểm kê update Dart, chuẩn bị fixture/ADR và ghi các lựa chọn toolchain/pilot |
+| P1 | Chưa bắt đầu | Contract và fixture P0; toolchain Android và cách đóng gói thử đã chốt |
+| P2 | Chưa bắt đầu | Contract P0 và kết quả thử P1; toolchain iOS và cách resolve SwiftPM đã chốt |
+| P3 | Dự kiến | Có phản hồi update pilot và nhu cầu cho capability core được chọn |
+| P4 | Dự kiến | Host cần adapter; contract core liên quan đã có |
+| P5 | Dự kiến | Có phạm vi UI pilot, token/state contract và toolchain UI; không bắt buộc chờ P4 |
+| P6 | Dự kiến | Có consumer và người duy trì tool; tách khỏi production |
+
+Các điều kiện hoàn thành cụ thể nằm ở từng mốc bên dưới. Chưa chốt host pilot,
+người phụ trách, minimum OS/toolchain hoặc artifact coordinates. Những mục này
+được quyết định và ghi lại ở P0; không điền tên/version giả để coi là đã xong.
 
 ## 1. Hướng công nghệ
 
@@ -16,7 +50,7 @@ Mục tiêu là để app Flutter, Android native và iOS native chọn từng c
 | Bất đồng bộ | Future / Stream | Coroutines; Flow cho nguồn thay đổi | async/await; AsyncSequence cho nguồn thay đổi khi cần |
 | Tích hợp vào app UI cũ | Theo app Flutter | ComposeView trong Activity/Fragment dùng Views | UIHostingController trong app UIKit |
 | Adapter dịch vụ | Adapter Flutter/Dart hiện có | Adapter Kotlin gọi SDK Android của provider | Adapter Swift gọi SDK Apple của provider |
-| Phân phối | Giữ cơ chế Git hiện có | Gradle/Maven: JAR cho logic JVM, AAR cho module Android/UI | Swift Package Manager cho source package |
+| Phân phối | GitHub revision/tag được phép truy cập | Source qua GitHub; Maven local chỉ để kiểm tra JAR/AAR | Swift Package Manager qua GitHub revision |
 
 Jetpack Compose là toolkit native UI được Android khuyến nghị và có API Kotlin; vì vậy đây là hướng UI chính cho Android trong kế hoạch này. Kotlin là ngôn ngữ cho cả logic và UI, còn Compose chỉ nằm ở lớp UI. [Android Compose](https://developer.android.com/compose).
 
@@ -98,7 +132,11 @@ Quan hệ dependency dự kiến:
 
 **Lưu ý SwiftPM:** package qua URL Git cần manifest ở root của repo phân phối. Product riêng trong cùng manifest không đủ để bảo đảm resolver không tải dependency provider. Base package phải giữ manifest không có Firebase; khi đến mốc adapter, thử nghiệm package phân phối riêng cho provider (có thể mirror từ monorepo). Kiểm tra bằng consumer sạch trước khi chốt. Một manifest có thể cung cấp nhiều product core/update/UI với version theo release của package SwiftPM; không hứa version product độc lập trong cùng manifest.
 
-Android dùng Maven publication kèm metadata để consumer nhận dependency đúng; thử bằng repository local trước khi mở registry nội bộ. [Android library publication](https://developer.android.com/build/publish-library/upload-library).
+Phân phối native cũng chỉ qua GitHub, không có kế hoạch mở hosted registry.
+Android host có thể lấy source theo revision và tích hợp module bằng Gradle.
+Khi kiểm tra artifact JAR/AAR, dùng Maven local cùng metadata để kiểm chứng
+đóng gói và dependency; đây là bước kiểm tra trên máy/CI, không đưa SDK lên
+registry bên ngoài. [Android library publication](https://developer.android.com/build/publish-library/upload-library).
 
 ## 4. Lộ trình theo mốc nhỏ
 
@@ -126,7 +164,7 @@ Phạm vi: module Kotlin/JVM cho config update, parser, quyết định `none/so
 - [ ] Chạy cùng fixture update với Dart; đối chiếu mọi kết quả thuộc contract.
 - [ ] Unit test checker: config disabled không gọi version loader; lỗi loader và cancellation có hành vi được mô tả.
 - [ ] Sample Android tối thiểu hiển thị kết quả bằng UI của host và tự xử lý mở store.
-- [ ] Publish vào Maven local, rồi một consumer sạch resolve bằng coordinates và build release; kiểm tra dependency graph và chạy smoke test bản release.
+- [ ] Tạo artifact trong Maven local, rồi một consumer sạch resolve bằng coordinates và build release; kiểm tra dependency graph và chạy smoke test bản release. Kiểm chứng thêm cách host lấy source/module từ GitHub revision; không đẩy lên hosted registry.
 - [ ] Đo phần tăng kích thước/build time so với sample nền, ghi số liệu thay vì đặt mục tiêu tùy ý.
 
 Điều kiện hoàn thành: contract test xanh, sample chạy được trên emulator, consumer dùng artifact thay vì chỉ project dependency. Trạng thái tối đa lúc này là Android experimental.
@@ -244,7 +282,11 @@ Release ghi rõ version package/artifact, revision, contract version, OS/toolcha
 
 - Android version theo artifact; P0 chốt quy tắc phối hợp version giữa các module có dependency.
 - iOS base SwiftPM version theo package. Nếu dùng tag riêng như `native-ios/v…`, phải xác minh khả năng resolve tag/range; trước đó pin revision. Chưa hứa cú pháp version range hoạt động với tag tùy ý.
-- Chưa công bố tag, đẩy registry hoặc tạo repo phân phối adapter trong bước lập PLAN này. Các mốc triển khai chuẩn bị artifact và hướng dẫn consumer trước khi có thao tác phát hành.
+- Phân phối chỉ qua GitHub revision/tag; hosted registry không nằm trong PLAN.
+  Không bắt buộc tạo tag hoặc GitHub Release để dùng source. Chưa công bố tag
+  hoặc tạo repo phân phối adapter trong bước lập PLAN này; mọi quyền dùng source
+  phải theo [LICENSE](../LICENSE), [source usage policy](source-usage-policy.md)
+  của KAISER và license của dependency tương ứng.
 - Rollback bằng artifact version/Git revision đã kiểm chứng. Giữ nguyên artifact/tag cũ; thay đổi config contract phải nêu khả năng đọc của bản SDK trước. Với update, có kịch bản tắt policy bằng config và kiểm tra tình huống offline/cache để tránh khóa app.
 
 ## 7. Cách cập nhật PLAN sau mỗi đợt
@@ -254,5 +296,7 @@ Sau một đợt nhỏ, cập nhật checkbox và thêm bản ghi ở bảng dư
 | Ngày | Mốc/capability | Nền tảng | Kết quả và bằng chứng | Việc tiếp theo |
 | --- | --- | --- | --- | --- |
 | 2026-11-16 | Lập PLAN | Android/iOS | Đã xác định hướng công nghệ, scope và điều kiện kiểm thử; chưa chạy test native | P0: review update contract, chọn pilot và chốt toolchain |
+| 2026-11-16 | Đồng bộ ROADMAP | Flutter/Android/iOS | Tách F0–F3 và P0–P6; ghi rõ trạng thái chưa triển khai native và version độc lập | Flutter: F0/F1; native: bắt đầu đặc tả/fixture P0 |
+| 2026-11-16 | Chốt phạm vi 0.7.x | Flutter | Chủ sở hữu bỏ qua pilot app thật cho snapshot GitHub-only; không thay điều kiện nghiệm thu native | Flutter: kiểm tra trong repo/chốt F2; native: P0 chưa triển khai |
 
 Đợt làm tiếp theo chỉ cần thực hiện P0 cho update: đặc tả hành vi, fixture dùng chung, Dart contract test và ADR/toolchain. Sau khi có bằng chứng mới quyết định bắt đầu implementation Kotlin ở P1; không mở đồng thời toàn bộ core, UI và adapter.

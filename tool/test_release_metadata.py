@@ -39,6 +39,25 @@ class ReleaseMetadataTest(unittest.TestCase):
         self.assertTrue(metadata.validate(self.root, "widgets/v1.0.0"))
         self.assertTrue(metadata.validate(self.root, "updates/v0.8.0-dev.0"))
 
+    def test_legacy_integration_branch_accepts_independent_versions(self):
+        self.assertEqual(metadata.validate(self.root, "release/0.7.0"), [])
+        # Only this existing integration branch is allowed, not arbitrary
+        # workspace release branches or new global release tags.
+        for ref in ["release/0.8.0", "release/1.0.0", "v0.7.0"]:
+            self.assertTrue(metadata.validate(self.root, ref), ref)
+
+    def test_integration_branch_still_checks_every_package(self):
+        (self.root / "fuzz/pubspec.yaml").write_text("name: fuzz\nversion: 1.0.0\n")
+        (self.root / "updates/CHANGELOG.md").write_text("No version notes\n")
+        errors = metadata.validate(self.root, "release/0.7.0")
+        self.assertTrue(any("experimental" in error for error in errors))
+        self.assertTrue(any("updates: add a dated" in error for error in errors))
+
+    def test_integration_exception_does_not_relax_package_release_notes(self):
+        self.assertEqual(metadata.validate(self.root, "release/0.7.0"), [])
+        self.assertTrue(metadata.validate(self.root, "release/updates/0.8.0-dev.0"))
+        self.assertTrue(metadata.validate(self.root, "release/widgets/1.0.0"))
+
     def test_wrong_name_or_stage_does_not_pass(self):
         (self.root / "fuzz/pubspec.yaml").write_text("name: something_else\nversion: 1.0.0\n")
         errors = metadata.validate(self.root, "main")

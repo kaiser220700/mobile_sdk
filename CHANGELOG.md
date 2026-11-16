@@ -14,6 +14,17 @@ details are maintained beside each package:
 
 ## Unreleased
 
+- Close the 0.7.x GitHub-only integration work on release/0.7.0 without
+  changing package versions or moving the existing v0.7.0 tag.
+- Accept release/0.7.0 as an explicit integration branch while retaining all
+  package metadata checks; run workspace/portal CI on develop and release branches.
+- Record the owner's waiver of external-app pilot testing for this snapshot;
+  package maturity remains development/candidate/experimental, not stable.
+- Add KAISER proprietary copyright and source-usage policy; exclude package
+  registry publication from the Flutter/native roadmap.
+- Add the package portal and real Flutter Web component showcase; remove unused
+  native demo runners and replace the demo APK build with a web artifact.
+
 - Restore mobile_app_base on Flutter 3.50 so the compatibility umbrella, SDK
   showcase and DevTool example resolve their local dependencies again.
 

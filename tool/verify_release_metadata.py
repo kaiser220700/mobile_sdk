@@ -12,6 +12,10 @@ VERSION = re.compile(
 )
 GROUPS = {"app-library", "service-adapter", "developer-tool", "compatibility"}
 STAGES = {"development", "experimental", "candidate", "stable"}
+# This existing branch collects GitHub-only work across independently versioned
+# packages. It still runs every catalog/version/changelog check; it does
+# not select a single package release or authorize a workspace-wide tag.
+INTEGRATION_BRANCHES = {"release/0.7.0"}
 
 
 def validate(root, ref):
@@ -76,7 +80,7 @@ def validate(root, ref):
         if not heading and (not match[4] or not re.search(r"^## Unreleased\s*$", changelog, re.M)):
             errors.append(f"{name}: add a dated {value} changelog heading or Unreleased for development.")
     target = None
-    if ref.startswith("release/"):
+    if ref.startswith("release/") and ref not in INTEGRATION_BRANCHES:
         parts = ref.split("/")
         if len(parts) != 3:
             errors.append("Use release/<package>/<version>; workspace-wide release versions are retired.")
