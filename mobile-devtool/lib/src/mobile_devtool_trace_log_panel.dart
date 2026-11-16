@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "mobile_devtool_clipboard.dart";
 import "mobile_devtool_controller.dart";

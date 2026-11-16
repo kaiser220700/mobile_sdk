@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:mobile_devtool/src/mobile_devtool_configuration.dart";
 import "package:mobile_devtool/src/mobile_devtool_controller.dart";

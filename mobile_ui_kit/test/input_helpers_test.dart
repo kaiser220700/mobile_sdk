@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
@@ -30,9 +30,8 @@ void main() {
       expect(formatter.formatEditUpdate(edit('12'), edit('')), edit(''));
       expect(formatter.formatEditUpdate(edit('12'), edit('a')), edit('12'));
       expect(
-        ui.DecimalInputFormatter(
-          decimalDigits: 0,
-        ).formatEditUpdate(edit('1'), edit('1.')),
+        ui.DecimalInputFormatter(decimalDigits: 0)
+            .formatEditUpdate(edit('1'), edit('1.')),
         edit('1'),
       );
     },

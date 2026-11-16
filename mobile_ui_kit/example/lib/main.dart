@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 import "component_catalog.dart";
@@ -62,6 +62,12 @@ class _PreviewHomeState extends State<_PreviewHome> {
   bool _indeterminate = false;
   bool _switched = true;
   bool _skeletonEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _query = Uri.base.queryParameters["component"] ?? "";
+  }
 
   @override
   void dispose() {
@@ -156,7 +162,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
           ),
           const SizedBox(height: 8),
           Text(
-            "$visibleCount / ${_definitions(context).length} components · map: preview/component_map.json",
+            "$visibleCount / ${_definitions(context).length} components",
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -561,8 +567,7 @@ class _PreviewHomeState extends State<_PreviewHome> {
       category: "motion",
       html: "<div data-motion-timeline>...</div>",
       flutterWidget: "ui.Motion",
-      description:
-          "Một clock chung điều phối reward landing, attention pulse và CTA nudge.",
+      description: "Một clock chung điều phối reward landing, attention pulse và CTA nudge.",
       builder: (context) => const _TimelineMotionPreview(),
     ),
     PreviewDefinition(

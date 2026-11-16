@@ -6,7 +6,7 @@ import "dart:async";
 
 import "developer_tools.dart";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:mobile_app_base/mobile_app_base.dart";
 import "package:mobile_devtool/mobile_devtool.dart" as dev;
 
@@ -267,8 +267,7 @@ class _HomePageState extends State<_HomePage> {
         request: {
           "variables": {"userId": "user-42"},
         },
-        document:
-            "query GetUserProfile(\$userId: ID!) { user(id: \$userId) { id name } }",
+        document: "query GetUserProfile(\$userId: ID!) { user(id: \$userId) { id name } }",
       ),
     );
     widget.controller.recordTrace("GetUserProfile started");

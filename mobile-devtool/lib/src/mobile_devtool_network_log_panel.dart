@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "mobile_devtool_clipboard.dart";
 import "mobile_devtool_controller.dart";
@@ -10,12 +10,14 @@ import "mobile_devtool_toast.dart";
 
 /// Builds the cURL command for [entry] — the host supplies real base URLs and
 /// a currently-valid bearer token; the SDK never knows either.
-typedef MobileDevToolCurlBuilder =
-    String Function(MobileDevToolNetworkEntry entry);
+typedef MobileDevToolCurlBuilder = String Function(
+  MobileDevToolNetworkEntry entry,
+);
 
 /// Opens the detail page for a network entry in the host tool sheet.
-typedef MobileDevToolNetworkDetailOpener =
-    void Function(MobileDevToolNetworkEntry entry);
+typedef MobileDevToolNetworkDetailOpener = void Function(
+  MobileDevToolNetworkEntry entry,
+);
 
 /// Visual configuration for the All/OK/Err/Pend network-status filters.
 ///

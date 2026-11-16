@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Package overview, dependencies and interactive Flutter UI showcase for the Mobile SDK workspace."
+    />
+    <meta name="theme-color" content="#f8f9fc" />
+    <title>Mobile SDK · Workspace</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Đến nội dung</a>
+    <aside class="sidebar">
+      <a class="brand" href="#overview"
+        ><span class="brand-mark">m<span>·</span></span
+        ><span>Mobile SDK<small>DEVELOPER WORKSPACE</small></span></a
+      >
+      <div class="workspace-label">
+        <span class="status-dot"></span> Shared libraries
+        <span class="mono">/</span>
+      </div>
+      <p class="nav-label">WORKSPACE</p>
+      <nav aria-label="Điều hướng chính" id="navigation"></nav>
+      <div class="sidebar-note">
+        <span class="small-cube">◇</span
+        ><strong>Small packages.<br />One place to explore.</strong>
+        <p>Thư viện độc lập, dùng đúng phần app cần.</p>
+      </div>
+      <div class="sidebar-footer">
+        <span class="status-dot"></span> Repository data
+        <span class="local-label">LOCAL</span>
+      </div>
+    </aside>
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <span class="muted">Workspace</span><span class="breadcrumb">/</span
+          ><span id="breadcrumb">Tổng quan</span>
+        </div>
+        <div class="top-actions">
+          <span class="repo-label">mobile_sdk</span
+          ><button
+            id="refresh"
+            class="icon-button"
+            aria-label="Làm mới dữ liệu"
+            title="Làm mới dữ liệu"
+          >
+            ↻
+          </button>
+        </div>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="loading-state">Đang đọc package trong repository…</div>
+      </main>
+      <footer class="page-footer">
+        <span
+          >Mobile SDK
+          <span class="muted">/ Shared Flutter libraries</span></span
+        ><span id="sync-time"></span>
+      </footer>
+    </div>
+    <dialog id="package-dialog" aria-labelledby="detail-title">
+      <div id="package-detail"></div>
+    </dialog>
+    <div id="notification" role="status" aria-live="polite"></div>
+    <noscript>Vui lòng bật JavaScript để xem package và showcase.</noscript>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:skeletonizer/skeletonizer.dart";
 
 import "package:mobile_ui_kit/src/pressable/ui_kit_pressable.dart";

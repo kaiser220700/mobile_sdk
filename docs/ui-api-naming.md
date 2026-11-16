@@ -4,7 +4,7 @@ The package remains `mobile_ui_kit`. Import its public barrel with `as ui` and
 use component names without a `UiKit`, `Mobile` or `Sdk` prefix:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
 ui.Button(onPressed: save, child: const Text('Save'));

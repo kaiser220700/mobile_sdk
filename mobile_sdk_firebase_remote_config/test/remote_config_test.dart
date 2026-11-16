@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import "package:mobile_sdk_firebase_remote_config/mobile_sdk_firebase_remote_config.dart"
     as remote;
@@ -34,20 +35,17 @@ void main() {
     expect(transport.disposeCalls, 1);
   });
 
-  test(
-    'concurrent loads share fetch and late completion cannot emit after dispose',
-    () async {
-      final transport = _GatedTransport()..configureGate.complete();
-      final source = _source(transport);
-      await source.start();
-      final first = source.load();
-      final second = source.load();
-      expect(transport.fetchCalls, 1);
-      await source.dispose();
-      transport.fetchGate.complete();
-      await Future.wait([first, second]);
-    },
-  );
+  test('concurrent loads share fetch and late completion cannot emit after dispose', () async {
+    final transport = _GatedTransport()..configureGate.complete();
+    final source = _source(transport);
+    await source.start();
+    final first = source.load();
+    final second = source.load();
+    expect(transport.fetchCalls, 1);
+    await source.dispose();
+    transport.fetchGate.complete();
+    await Future.wait([first, second]);
+  });
 
   test(
     'keeps last good snapshot when fetch fails or config is invalid',

@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Chrome-only visual constants for the SDK's default monochrome theme.
 /// Host-provided accent color still overrides the accent at

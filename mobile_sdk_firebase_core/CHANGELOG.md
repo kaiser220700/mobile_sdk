@@ -4,6 +4,8 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Flutter 3.50 / Dart 3.14.
+
 - Dispose all adapters even if one cleanup fails; concurrent disposal callers
   await the same cleanup and receive the original failure.
 

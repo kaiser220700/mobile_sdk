@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 import 'package:mobile_sdk_production_example/main.dart';
 
 void main() {
   test('production dependency graph excludes developer tools and Firebase', () {
-    final config =
-        jsonDecode(File('.dart_tool/package_config.json').readAsStringSync())
-            as Map;
+    final config = jsonDecode(
+      File('.dart_tool/package_config.json').readAsStringSync(),
+    ) as Map;
     final names = (config['packages'] as List).map((p) => (p as Map)['name']);
     for (final forbidden in [
       'mobile_sdk',

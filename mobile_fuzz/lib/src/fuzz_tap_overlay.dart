@@ -1,6 +1,6 @@
 import "dart:ui";
 
-import "package:flutter/material.dart" hide Step;
+import "package:material_ui/material_ui.dart" hide Step;
 import "package:flutter/services.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 
@@ -493,12 +493,12 @@ class _FuzzTerminalDialog extends StatelessWidget {
                             child: FilledButton(
                               onPressed: onRerun,
                               style: FilledButton.styleFrom(
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimary,
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary,
+                                foregroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimary,
                                 minimumSize: const Size.fromHeight(44),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),

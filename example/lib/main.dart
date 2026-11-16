@@ -2,7 +2,7 @@ import "dart:async";
 
 import "developer_tools.dart";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:mobile_devtool/mobile_devtool.dart" as dev;
 import "package:mobile_sdk/mobile_sdk.dart" as sdk;
 import "package:mobile_sdk/mobile_sdk.dart" as ui;
@@ -337,8 +337,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
         _PackageCard(
           icon: Icons.build_outlined,
           title: "DevTool",
-          description:
-              "Network log, trace, feature flag và host panel trong bubble overlay.",
+          description: "Network log, trace, feature flag và host panel trong bubble overlay.",
           color: colors.secondaryContainer,
           onTap: () => setState(() => _section = _SdkSection.devTool),
         ),
@@ -361,8 +360,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
       children: [
         const _SectionIntro(
           title: "mobile_ui_kit",
-          description:
-              "Headless interaction primitives: app quyết định style, SDK quản lý behavior.",
+          description: "Headless interaction primitives: app quyết định style, SDK quản lý behavior.",
         ),
         const _UiKitCoverageCard(),
         _Section(
@@ -940,8 +938,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
       children: [
         const _SectionIntro(
           title: "mobile_devtool",
-          description:
-              "Bubble ở góc màn hình mở Network, Trace, Feature Flags và các built-in tools.",
+          description: "Bubble ở góc màn hình mở Network, Trace, Feature Flags và các built-in tools.",
         ),
         _Section(
           title: "Generate sample logs",
@@ -1018,8 +1015,7 @@ class _SdkHomePageState extends State<_SdkHomePage> {
       children: [
         const _SectionIntro(
           title: "mobile_update",
-          description:
-              "Framework-agnostic helper: host cung cấp config source, version loader và UI prompt.",
+          description: "Framework-agnostic helper: host cung cấp config source, version loader và UI prompt.",
         ),
         _Section(
           title: "Policy check",
@@ -1263,9 +1259,8 @@ class _UiKitCoverageCard extends StatelessWidget {
             Text(
               "Các component còn lại trong roadmap: Menu, Picker, "
               "IconCircleButton và AppBar.",
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.onSurfaceVariant),
             ),
           ],
         ),

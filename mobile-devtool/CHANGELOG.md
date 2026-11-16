@@ -4,6 +4,9 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Flutter 3.50 / Dart 3.14 and use standalone `material_ui`
+  types. Hosts must migrate Material imports and theme values together.
+
 - Safely cancel deferred overlay attachment when its host is disposed early.
 
 - Breaking: move Screen Draw/Fuzz Tap lifecycle out of ToolsOverlay. Hosts

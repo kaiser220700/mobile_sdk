@@ -1,23 +1,25 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:flutter/services.dart";
 
 import "package:mobile_ui_kit/src/otp/ui_kit_otp_controller.dart";
 
 /// Widget đè lên trên 1 ô [TextField] để vẽ trạng thái hiển thị tuỳ ý
 /// (VD dot mask) — app-layer cung cấp qua [UiKitOtpField.overlayBuilder].
-typedef UiKitOtpOverlayBuilder =
-    Widget? Function(
-      BuildContext context,
-      int index,
-      String value,
-      bool hasFocus,
-    );
+typedef UiKitOtpOverlayBuilder = Widget? Function(
+  BuildContext context,
+  int index,
+  String value,
+  bool hasFocus,
+);
 
 /// App-layer style 1 ô input qua `InputDecoration` chuẩn Material — thay vì
 /// ép 1 kiểu visual cố định, package chỉ cung cấp state (`hasFocus`) để app
 /// quyết định border/màu theo state (focus/error/success...).
-typedef UiKitOtpDecorationBuilder =
-    InputDecoration Function(BuildContext context, int index, bool hasFocus);
+typedef UiKitOtpDecorationBuilder = InputDecoration Function(
+  BuildContext context,
+  int index,
+  bool hasFocus,
+);
 
 /// OTP field headless — thay `FOtpField`. Tự quản auto-advance, backspace
 /// nhảy ô trước, paste/autofill đổ nguyên mã vào ô đầu, keyboard number-pad,

@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Overview of the SDK dev tools and their current package status.
 class MobileDevToolInfoPanel extends StatelessWidget {
@@ -98,10 +98,8 @@ class _SectionHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(color: color, fontWeight: FontWeight.w700),
           ),
         ],
       ),

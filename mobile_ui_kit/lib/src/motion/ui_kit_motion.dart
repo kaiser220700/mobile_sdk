@@ -47,12 +47,11 @@ class UiKitMotionFrame {
 }
 
 /// Builds a host-owned visual effect from a timeline [UiKitMotionFrame].
-typedef UiKitMotionBuilder =
-    Widget Function(
-      BuildContext context,
-      UiKitMotionFrame frame,
-      Widget? child,
-    );
+typedef UiKitMotionBuilder = Widget Function(
+  BuildContext context,
+  UiKitMotionFrame frame,
+  Widget? child,
+);
 
 /// A dependency-free timeline host for custom product motion.
 ///

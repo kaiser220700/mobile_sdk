@@ -14,6 +14,13 @@ details are maintained beside each package:
 
 ## Unreleased
 
+- Restore mobile_app_base on Flutter 3.50 so the compatibility umbrella, SDK
+  showcase and DevTool example resolve their local dependencies again.
+
+- Upgrade the workspace to Flutter 3.50.0 / Dart 3.14.0, including FVM and CI.
+- Migrate UI packages and demos to standalone Material types; bridge legacy
+  refresh indicator theme/localization access. See docs/flutter-3.50-migration.md.
+
 - Organize packages into application libraries, service adapters and developer tools.
 - Keep package paths and umbrella exports; recommend direct dependencies by default.
 - Replace workspace-wide version alignment with independent package release checks.

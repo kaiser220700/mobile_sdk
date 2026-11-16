@@ -45,4 +45,6 @@ Refresh/load-more belongs to `mobile_ui_kit` (`ui.RefreshView`,
 refresh names are retained only for migration.
 
 Distribution remains Git-based (`publish_to: none`). Minimum supported SDK:
-Flutter 3.44.6 / Dart 3.12.2.
+Flutter 3.50.0 / Dart 3.14.0.
+UI consumers use `package:material_ui/material_ui.dart`; see the
+[workspace migration guide](../docs/flutter-3.50-migration.md).

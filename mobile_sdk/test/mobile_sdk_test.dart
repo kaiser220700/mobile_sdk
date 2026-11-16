@@ -26,9 +26,9 @@ void main() {
   });
 
   test("production entry point keeps DevTool and Firebase opt-in", () {
-    final config =
-        jsonDecode(File(".dart_tool/package_config.json").readAsStringSync())
-            as Map<String, dynamic>;
+    final config = jsonDecode(
+      File(".dart_tool/package_config.json").readAsStringSync(),
+    ) as Map<String, dynamic>;
     final packages = (config["packages"] as List).map(
       (package) => (package as Map)["name"],
     );

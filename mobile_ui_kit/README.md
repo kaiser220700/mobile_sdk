@@ -235,7 +235,7 @@ surfaces/text/borders, and green/amber/red/sky semantic pairs. Defaults use a
 touch targets, and 12/14/16/24 typography roles. Platform fonts remain host-owned.
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
 MaterialApp(

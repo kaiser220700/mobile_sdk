@@ -1,9 +1,11 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "package:mobile_ui_kit/src/loading/ui_kit_loading_controller.dart";
 
-typedef UiKitLoadingStepBuilder =
-    Widget Function(BuildContext context, UiKitLoadingStep step);
+typedef UiKitLoadingStepBuilder = Widget Function(
+  BuildContext context,
+  UiKitLoadingStep step,
+);
 
 /// Overlay headless điều khiển bởi [UiKitLoadingController] — hiển thị
 /// [child] bình thường, phủ [builder] lên trên khi `controller.visible`.

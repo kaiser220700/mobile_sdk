@@ -26,3 +26,9 @@ This package is not required for UI or other shared capabilities. For new apps,
 prefer host-owned MaterialApp, route/navigation policy, theme and environment
 configuration. AppConfig and AppShell remain available, including through the
 unchanged mobile_sdk umbrella. See [organization](../docs/package-organization.md).
+
+## Toolchain
+
+Requires Flutter 3.50 / Dart 3.14. AppShell accepts themes from
+`package:material_ui/material_ui.dart`. See the
+[Flutter 3.50 migration guide](../docs/flutter-3.50-migration.md).

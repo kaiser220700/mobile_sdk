@@ -97,6 +97,6 @@ tài liệu và đường rollback.
 ## 6. Quyết định còn mở
 
 - Đã chốt cho bản này: Git/tag; pub.dev là công việc publish riêng.
-- Flutter tối thiểu 3.44.6 / Dart 3.12.2; native Firebase opt-in tuân theo minimum của plugin tương ứng.
+- Flutter tối thiểu 3.50.0 / Dart 3.14.0; native Firebase opt-in tuân theo minimum của plugin tương ứng.
 - Những public API nào cần gắn experimental thay vì cam kết stable ngay?
 - Có app host nào phù hợp để thử `1.0.0-rc.1` trước release chính thức?

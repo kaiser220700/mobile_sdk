@@ -37,24 +37,21 @@ enum Preset {
 
   standard(
     label: "Chuẩn",
-    description:
-        "Tick mỗi 2s, chạy tối đa 5 phút — cân bằng tốc độ dò lỗi và độ ổn định.",
+    description: "Tick mỗi 2s, chạy tối đa 5 phút — cân bằng tốc độ dò lỗi và độ ổn định.",
     tickInterval: Duration(seconds: 2),
     sessionDuration: Duration(minutes: 5),
   ),
 
   aggressive(
     label: "Dồn dập",
-    description:
-        "Tick mỗi 500ms, chạy tối đa 3 phút — dò crash nhanh, dễ gây log dồn dập.",
+    description: "Tick mỗi 500ms, chạy tối đa 3 phút — dò crash nhanh, dễ gây log dồn dập.",
     tickInterval: Duration(milliseconds: 500),
     sessionDuration: Duration(minutes: 3),
   ),
 
   unlimited(
     label: "Không giới hạn",
-    description:
-        "Tick mỗi 2s, không tự dừng theo thời lượng — chỉ dừng khi bấm Dừng hoặc gặp lỗi/stuck.",
+    description: "Tick mỗi 2s, không tự dừng theo thời lượng — chỉ dừng khi bấm Dừng hoặc gặp lỗi/stuck.",
     tickInterval: Duration(seconds: 2),
     sessionDuration: null,
   );

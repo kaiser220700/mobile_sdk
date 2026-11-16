@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "package:mobile_ui_kit/src/button/ui_kit_button.dart";
 import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";

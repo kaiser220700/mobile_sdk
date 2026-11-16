@@ -1,6 +1,8 @@
 # mobile_sdk example
 
-App demo duy nhất cho toàn bộ SDK trong repository này.
+Reference composition và widget tests cho umbrella SDK trong repository này.
+Native runners đã được bỏ. Web tổng quan và UI showcase được chạy từ thư mục
+gốc bằng `npm run dev` (xem README ở root).
 
 ## App base
 
@@ -34,15 +36,12 @@ App dùng trực tiếp ba package local:
 Chạy từ thư mục này:
 
 ```bash
-flutter pub get
-flutter run
+fvm flutter pub get
+fvm flutter test
 ```
 
-Nếu cần tạo thư mục native cho một checkout mới, chạy thêm:
-
-```bash
-flutter create --platforms=android,ios .
-```
+Fixture này dùng `mobile_app_base` thông qua `mobile_sdk`. Package helper
+được giữ trong repository và dùng Material standalone trên Flutter 3.50.
 
 Màn hình được chia thành ba tab. Bubble ở góc màn hình mở `mobile_devtool`;
 `mobile_ui_kit` được dùng trực tiếp trong tab UI Kit; tab Update Policy mô

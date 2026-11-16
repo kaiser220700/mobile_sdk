@@ -4,6 +4,8 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Flutter 3.50 / Dart 3.14.
+
 - Coalesce concurrent initialization/fetches, reject use after disposal, ignore
   late async results, handle update stream errors and make disposal idempotent.
 

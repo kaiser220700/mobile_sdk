@@ -4,6 +4,10 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Flutter 3.50 / Dart 3.14 and use standalone `material_ui`
+  types. Hosts must migrate Material imports and theme values together.
+- Bridge legacy refresh indicators to the standalone host theme/localizations.
+
 - Add configurable DecimalInputFormatter with caret and IME preservation.
 - Add BottomActionArea for device bottom spacing inside Scaffold layouts.
 - Fix autocomplete debounce to skip superseded searches and pending work after

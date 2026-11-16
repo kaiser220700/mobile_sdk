@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Animation "vào danh sách" cho từng item — fade + slide-in, tự stagger
 /// theo [index] (item càng xa đầu danh sách càng trễ, tối đa

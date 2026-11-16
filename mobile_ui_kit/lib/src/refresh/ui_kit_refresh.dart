@@ -1,16 +1,20 @@
 import "dart:async";
 
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart" hide RefreshIndicator;
+import "package:material_ui/material_ui.dart" hide RefreshIndicator;
 import "package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart";
 
 /// Builds a refresh indicator's content for a given [RefreshStatus].
-typedef UiKitRefreshContentBuilder =
-    Widget Function(BuildContext context, RefreshStatus? status);
+typedef UiKitRefreshContentBuilder = Widget Function(
+  BuildContext context,
+  RefreshStatus? status,
+);
 
 /// Builds a load-more indicator's content for a given [LoadStatus].
-typedef UiKitLoadMoreContentBuilder =
-    Widget Function(BuildContext context, LoadStatus? status);
+typedef UiKitLoadMoreContentBuilder = Widget Function(
+  BuildContext context,
+  LoadStatus? status,
+);
 
 /// App-level defaults for every [UiKitRefreshLoadMore] below this
 /// widget.
@@ -314,23 +318,28 @@ class _UiKitRefreshLoadMoreState extends State<UiKitRefreshLoadMore> {
 
   @override
   Widget build(BuildContext context) {
-    return SmartRefresher(
-      controller: _controller,
-      enablePullDown: widget.enableRefresh,
-      enablePullUp: widget.enableLoadMore,
-      onRefresh: widget.enableRefresh ? _handleRefresh : null,
-      onLoading: widget.enableLoadMore ? _handleLoadMore : null,
-      header: _buildHeader(),
-      footer: _buildFooter(),
-      scrollDirection: widget.scrollDirection,
-      reverse: widget.reverse,
-      scrollController: widget.scrollController,
-      primary: widget.primary,
-      physics: widget.physics,
-      cacheExtent: widget.cacheExtent,
-      semanticChildCount: widget.semanticChildCount,
-      dragStartBehavior: widget.dragStartBehavior,
-      child: widget.child,
+    // pull_to_refresh_flutter3 still reads the SDK Material theme/localizations.
+    // Keep its indicators working under a standalone material_ui host.
+    // ignore: deprecated_member_use
+    return MaterialUiCompatibilityBridge(
+      child: SmartRefresher(
+        controller: _controller,
+        enablePullDown: widget.enableRefresh,
+        enablePullUp: widget.enableLoadMore,
+        onRefresh: widget.enableRefresh ? _handleRefresh : null,
+        onLoading: widget.enableLoadMore ? _handleLoadMore : null,
+        header: _buildHeader(),
+        footer: _buildFooter(),
+        scrollDirection: widget.scrollDirection,
+        reverse: widget.reverse,
+        scrollController: widget.scrollController,
+        primary: widget.primary,
+        physics: widget.physics,
+        cacheExtent: widget.cacheExtent,
+        semanticChildCount: widget.semanticChildCount,
+        dragStartBehavior: widget.dragStartBehavior,
+        child: widget.child,
+      ),
     );
   }
 }

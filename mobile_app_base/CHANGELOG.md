@@ -4,6 +4,10 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Restore the optional compatibility helper used by the umbrella and demos.
+- Breaking: require Flutter 3.50 / Dart 3.14; AppShell themes use standalone
+  `material_ui` types, matching the workspace UI migration.
+
 - Add concise public names with module import aliases; keep existing names for migration.
 
 ## 0.7.0 - 2026-10-15

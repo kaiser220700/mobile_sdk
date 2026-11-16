@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:mobile_ui_kit/mobile_ui_kit.dart" as ui;
 
 /// Five knobs used by the preview to demonstrate app-level theming.

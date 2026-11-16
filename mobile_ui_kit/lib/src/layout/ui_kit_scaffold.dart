@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Host-configurable screen shell; routing and app-bar composition stay host-owned.
 class UiKitScaffold extends StatelessWidget {

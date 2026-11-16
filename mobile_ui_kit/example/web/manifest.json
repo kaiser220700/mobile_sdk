@@ -1,11 +1,11 @@
 {
-    "name": "mobile_ui_kit_example",
-    "short_name": "mobile_ui_kit_example",
+    "name": "Mobile SDK UI Kit Showcase",
+    "short_name": "UI Kit",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Interactive Flutter component showcase for mobile_ui_kit.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

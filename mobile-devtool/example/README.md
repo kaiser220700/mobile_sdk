@@ -1,6 +1,9 @@
 # mobile_devtool example
 
-Standalone preview app for the `mobile_devtool` package.
+Reference preview source for the `mobile_devtool` package. Native runners have
+been removed; the root package portal is the entry point for package browsing
+and the UI Kit web showcase. This fixture uses the optional `mobile_app_base`
+helper included in the repository, updated for Flutter 3.50.
 
 This example uses the same shared app-host base as the SDK showcase:
 
@@ -21,6 +24,6 @@ wiring. Production can use `MobileDevToolController.disabled()` through
 Run from this directory:
 
 ```bash
-flutter pub get
-flutter run
+fvm flutter pub get
+fvm flutter analyze
 ```

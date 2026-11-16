@@ -4,6 +4,8 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Dart 3.14.
+
 - Add concise public names with module import aliases; keep existing names for migration.
 
 ## 0.7.0 - 2026-10-15

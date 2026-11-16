@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// [idle] = pan-through mode (like Figma's hand tool) — taps/drags pass
 /// through to the real app instead of drawing. [select] = pick an existing

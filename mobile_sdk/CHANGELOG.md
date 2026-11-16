@@ -4,6 +4,8 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Flutter 3.50 / Dart 3.14.
+
 - Apply module-based public API naming to core, app wiring, updates, Firebase and DevTool.
 
 

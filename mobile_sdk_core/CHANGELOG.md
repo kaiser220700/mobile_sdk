@@ -4,6 +4,8 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+- Breaking: require Dart 3.14.
+
 - Add optional money.dart entrypoint for exact Vietnamese dong amounts in words,
   including negative amounts and BigInt inputs.
 

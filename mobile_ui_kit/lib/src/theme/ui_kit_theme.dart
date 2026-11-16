@@ -1,6 +1,6 @@
 import "dart:ui" show lerpDouble;
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Neutral visual defaults for apps that have not registered a theme.
 ///

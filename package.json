@@ -1,0 +1,17 @@
+{
+  "name": "mobile-sdk-workspace",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node tool/package_portal.mjs serve",
+    "build": "node tool/package_portal.mjs build",
+    "showcase:build": "node tool/package_portal.mjs showcase",
+    "test:web": "node --test tool/package_portal.test.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  }
+}

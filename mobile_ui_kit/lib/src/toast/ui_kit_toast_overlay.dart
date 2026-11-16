@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "package:mobile_ui_kit/src/toast/ui_kit_toast_queue.dart";
 import "package:mobile_ui_kit/src/toast/ui_kit_toast_surface.dart";

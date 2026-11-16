@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter: ["3.44.6", "3.47.4"]
+        flutter: ["3.50.0"]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -25,6 +25,29 @@ jobs:
           cache: true
       - name: Format, analyze, and test every package
         run: ./tool/verify_workspace.sh
-      - name: Build production-only Android consumer
-        working-directory: production_example
-        run: flutter build apk --release
+  package-portal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.50.0"
+          cache: true
+      - run: npm ci
+      - run: npm run test:web
+      - name: Analyze and test the web showcase
+        working-directory: mobile_ui_kit/example
+        run: |
+          flutter pub get
+          flutter analyze --no-pub
+          flutter test --no-pub
+      - name: Build package portal and Flutter Web showcase
+        run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-portal
+          path: dist/

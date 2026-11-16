@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 
 import "fuzz_run_preset.dart";
@@ -323,8 +323,7 @@ class _PreviewStep extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: "Từ khóa loại trừ bổ sung",
             hintText: "vd: đăng xuất, xoá tài khoản",
-            helperText:
-                "Cách nhau bởi dấu phẩy — nút có nhãn chứa từ khóa này sẽ không bị fuzz.",
+            helperText: "Cách nhau bởi dấu phẩy — nút có nhãn chứa từ khóa này sẽ không bị fuzz.",
           ),
         ),
       ],

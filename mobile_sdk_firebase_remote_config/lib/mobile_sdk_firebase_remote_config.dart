@@ -10,6 +10,7 @@ export 'package:mobile_sdk_core/mobile_sdk_core.dart'
         ConfigValueSource,
         InMemoryConfigSource,
         MobileRemoteConfigSchema;
+
 export 'src/remote_config.dart';
 
 export "src/public_api.dart";

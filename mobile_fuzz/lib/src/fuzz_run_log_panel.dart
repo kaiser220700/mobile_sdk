@@ -1,6 +1,6 @@
 import "dart:async";
 
-import "package:flutter/material.dart" hide Step;
+import "package:material_ui/material_ui.dart" hide Step;
 
 import "clipboard.dart";
 import "fuzz_run_log.dart";

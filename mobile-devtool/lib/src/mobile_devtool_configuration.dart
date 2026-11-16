@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Builds the theme used by SDK-owned devtool chrome and sheets.
 ///

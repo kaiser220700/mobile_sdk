@@ -1,5 +1,7 @@
 import "dart:async";
-import "package:flutter/material.dart";
+
+import "package:material_ui/material_ui.dart";
+
 import "mobile_devtool_bubble.dart";
 import "mobile_devtool_configuration.dart";
 import "mobile_devtool_controller.dart";

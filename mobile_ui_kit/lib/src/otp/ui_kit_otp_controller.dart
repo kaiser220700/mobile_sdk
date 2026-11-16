@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Controller quản lý giá trị + focus của [UiKitOtpField] — thay
 /// `FOtpFieldControl.managed`. Headless, không phụ thuộc `forui`.

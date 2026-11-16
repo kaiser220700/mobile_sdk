@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "mobile_devtool_configuration.dart";
 import "mobile_devtool_controller.dart";
@@ -287,9 +287,9 @@ class _MobileDevToolRootMenuState extends State<MobileDevToolRootMenu> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.center,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
                                   ),
                                 ),

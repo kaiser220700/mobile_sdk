@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// A host-configurable countdown with a tabular-figure default formatter.
 class UiKitCountdown extends StatefulWidget {
@@ -100,9 +100,8 @@ class _UiKitCountdownState extends State<UiKitCountdown>
         widget.style?.copyWith(
           fontFeatures: const [FontFeature.tabularFigures()],
         ) ??
-        Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
+        Theme.of(context).textTheme.bodyLarge
+            ?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
   );
 
   @override
