@@ -30,8 +30,8 @@ class UiKitDialog {
     List<UiKitDialogAction> actions = const [],
     bool showClose = false,
     bool dismissible = true,
-    Color barrierColor = Colors.black54,
-    Duration transitionDuration = const Duration(milliseconds: 200),
+    Color? barrierColor,
+    Duration? transitionDuration,
     EdgeInsets insetPadding = const EdgeInsets.symmetric(horizontal: 24),
     double minWidth = 280,
     double maxWidth = 320,
@@ -46,12 +46,16 @@ class UiKitDialog {
   }) {
     assert(actions.length <= 2, "Dialogs support at most two actions.");
     assert(minWidth > 0 && maxWidth >= minWidth && iconSize > 0);
+    final theme = UiKitTheme.of(context);
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: dismissible,
       barrierLabel: title,
-      barrierColor: barrierColor,
-      transitionDuration: transitionDuration,
+      barrierColor: barrierColor ?? theme.scrim,
+      transitionDuration: theme.motion.resolve(
+        context,
+        transitionDuration ?? theme.motion.base,
+      ),
       pageBuilder: (context, _, __) => _DialogView(
         title: title,
         description: description,
@@ -72,9 +76,12 @@ class UiKitDialog {
         closeIcon: closeIcon,
       ),
       transitionBuilder: (context, animation, _, child) => FadeTransition(
-        opacity: animation,
+        opacity: animation.drive(CurveTween(curve: theme.motion.curve)),
         child: ScaleTransition(
-          scale: Tween(begin: .95, end: 1.0).animate(animation),
+          scale: Tween(
+            begin: .95,
+            end: 1.0,
+          ).chain(CurveTween(curve: theme.motion.curve)).animate(animation),
           child: child,
         ),
       ),

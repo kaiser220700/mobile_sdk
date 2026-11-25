@@ -12,6 +12,11 @@ class UiKitListItem extends StatelessWidget {
   const UiKitListItem({
     required this.title,
     this.description,
+    this.body,
+    this.meta,
+    this.bodyGap,
+    this.metaGap,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
     this.titleMaxLines = 1,
     this.descriptionMaxLines = 1,
     this.size,
@@ -38,6 +43,14 @@ class UiKitListItem extends StatelessWidget {
 
   final String title;
   final String? description;
+
+  /// Replaces the built-in title/description column. [title] remains the
+  /// fallback accessible name; [meta] stays below this slot.
+  final Widget? body;
+  final Widget? meta;
+  final double? bodyGap;
+  final double? metaGap;
+  final CrossAxisAlignment crossAxisAlignment;
   final int? titleMaxLines;
   final int? descriptionMaxLines;
   final UiKitListItemSize? size;
@@ -65,7 +78,9 @@ class UiKitListItem extends StatelessWidget {
     final theme = UiKitTheme.of(context);
     final itemSize =
         size ??
-        (description == null ? UiKitListItemSize.md : UiKitListItemSize.lg);
+        (description == null && body == null && meta == null
+            ? UiKitListItemSize.md
+            : UiKitListItemSize.lg);
     final isDisabled = disabled && onTap != null;
     final end =
         trailing ??
@@ -78,7 +93,10 @@ class UiKitListItem extends StatelessWidget {
         Container(
           constraints: BoxConstraints(
             minHeight:
-                minHeight ?? (itemSize == UiKitListItemSize.md ? 56 : 72),
+                minHeight ??
+                (itemSize == UiKitListItemSize.md
+                    ? theme.sizes.rowMd
+                    : theme.sizes.rowLg),
           ),
           color: selected
               ? selectedColor ?? theme.primaryBg
@@ -90,6 +108,7 @@ class UiKitListItem extends StatelessWidget {
                 vertical: theme.spacingMd,
               ),
           child: Row(
+            crossAxisAlignment: crossAxisAlignment,
             children: [
               if (leading != null) ...[
                 leading!,
@@ -100,28 +119,40 @@ class UiKitListItem extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      maxLines: titleMaxLines,
-                      overflow: titleMaxLines == null
-                          ? TextOverflow.clip
-                          : TextOverflow.ellipsis,
-                      style: (titleStyle ?? theme.bodyMedium).copyWith(
-                        color: isDisabled ? theme.textDisabled : theme.text,
-                      ),
-                    ),
-                    if (description != null) ...[
-                      SizedBox(height: theme.spacing2xs),
+                    if (body != null)
+                      body!
+                    else ...[
                       Text(
-                        description!,
-                        maxLines: descriptionMaxLines,
-                        overflow: descriptionMaxLines == null
+                        title,
+                        maxLines: titleMaxLines,
+                        overflow: titleMaxLines == null
                             ? TextOverflow.clip
                             : TextOverflow.ellipsis,
-                        style: (descriptionStyle ?? theme.caption).copyWith(
-                          color: isDisabled ? theme.textDisabled : theme.text,
+                        style: (titleStyle ?? theme.bodyMedium).copyWith(
+                          color: isDisabled
+                              ? theme.textDisabled
+                              : titleStyle?.color ?? theme.text,
                         ),
                       ),
+                      if (description != null) ...[
+                        SizedBox(height: bodyGap ?? theme.spacing2xs),
+                        Text(
+                          description!,
+                          maxLines: descriptionMaxLines,
+                          overflow: descriptionMaxLines == null
+                              ? TextOverflow.clip
+                              : TextOverflow.ellipsis,
+                          style: (descriptionStyle ?? theme.caption).copyWith(
+                            color: isDisabled
+                                ? theme.textDisabled
+                                : descriptionStyle?.color ?? theme.text,
+                          ),
+                        ),
+                      ],
+                    ],
+                    if (meta != null) ...[
+                      SizedBox(height: metaGap ?? theme.spacingXs),
+                      meta!,
                     ],
                   ],
                 ),
@@ -149,7 +180,8 @@ class UiKitListItem extends StatelessWidget {
     return UiKitPressable(
       onPress: isDisabled ? null : onTap,
       selected: selected,
-      semanticsLabel: semanticLabel ?? title,
+      semanticsLabel: semanticLabel,
+      excludeSemantics: semanticLabel != null,
       builder: (context, states, child) =>
           Opacity(opacity: isDisabled ? .4 : 1, child: row),
     );

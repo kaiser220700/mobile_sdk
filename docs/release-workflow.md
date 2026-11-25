@@ -35,6 +35,19 @@ This exception does not allow a new global `v0.7.0` tag, arbitrary workspace
 release branches, or skipping checks. Package release refs still require their
 own exact version and dated notes.
 
+## Independent hotfixes
+
+Create a hotfix from the intended main snapshot and backport only its required
+fixes and regression coverage. Merge that hotfix directly to main independently
+of integration branches, then forward-port it so a later integration merge does
+not undo the fixes. Do not merge a feature batch just to distribute a hotfix.
+
+The current UI fix uses `hotfix/mobile-ui-kit-rc3`, based on local main
+`18ec3ed`, and package version `1.0.0-rc.3`. This avoids reusing rc.2 from the
+integration branch. Candidate maturity and existing validation requirements
+still apply; calling it a hotfix does not establish a device-test pass or stable
+promotion. No test/build or remote publication is implied by source preparation.
+
 ## Optional GitHub tags after review/merge
 
 Consumers can pin an approved full Git revision without publishing a package.

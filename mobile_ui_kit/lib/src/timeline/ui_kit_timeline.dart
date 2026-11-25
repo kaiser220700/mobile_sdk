@@ -9,6 +9,10 @@ class UiKitTimelineItem {
   const UiKitTimelineItem({
     required this.title,
     this.description,
+    this.leading,
+    this.body,
+    this.meta,
+    this.trailing,
     this.time,
     this.status = UiKitTimelineStatus.upcoming,
     this.icon,
@@ -16,6 +20,10 @@ class UiKitTimelineItem {
 
   final String title;
   final String? description;
+  final Widget? leading;
+  final Widget? body;
+  final Widget? meta;
+  final Widget? trailing;
   final String? time;
   final UiKitTimelineStatus status;
   final IconData? icon;
@@ -25,9 +33,9 @@ class UiKitTimelineItem {
 class UiKitTimeline extends StatelessWidget {
   const UiKitTimeline({
     required this.items,
-    this.indicatorSize = 24,
-    this.indicatorColumnWidth = 28,
-    this.iconSize = 15,
+    this.indicatorSize,
+    this.indicatorColumnWidth,
+    this.iconSize,
     this.connectorWidth = 1,
     this.contentGap,
     this.itemSpacing,
@@ -41,13 +49,16 @@ class UiKitTimeline extends StatelessWidget {
     this.timeStyle,
     super.key,
   }) : assert(
-         indicatorSize > 0 && indicatorColumnWidth > 0 && connectorWidth > 0,
+         (indicatorSize == null || indicatorSize > 0) &&
+             (indicatorColumnWidth == null || indicatorColumnWidth > 0) &&
+             (iconSize == null || iconSize > 0) &&
+             connectorWidth > 0,
        );
 
   final List<UiKitTimelineItem> items;
-  final double indicatorSize;
-  final double indicatorColumnWidth;
-  final double iconSize;
+  final double? indicatorSize;
+  final double? indicatorColumnWidth;
+  final double? iconSize;
   final double connectorWidth;
   final double? contentGap;
   final double? itemSpacing;
@@ -78,9 +89,10 @@ class UiKitTimeline extends StatelessWidget {
             item: items[index],
             isLast: index == items.length - 1,
             color: _color(theme, items[index].status),
-            indicatorSize: indicatorSize,
-            indicatorColumnWidth: indicatorColumnWidth,
-            iconSize: iconSize,
+            indicatorSize: indicatorSize ?? theme.sizes.timelineIndicator,
+            indicatorColumnWidth:
+                indicatorColumnWidth ?? theme.sizes.timelineColumn,
+            iconSize: iconSize ?? theme.sizes.timelineIcon,
             connectorWidth: connectorWidth,
             contentGap: contentGap ?? theme.spacingMd,
             itemSpacing: itemSpacing ?? theme.spacingLg,
@@ -136,20 +148,21 @@ class _TimelineRow extends StatelessWidget {
             width: indicatorColumnWidth,
             child: Column(
               children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                  child: SizedBox.square(
-                    dimension: indicatorSize,
-                    child: Icon(
-                      item.icon ?? Icons.check,
-                      size: iconSize,
-                      color: theme.textInverse,
+                item.leading ??
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                      child: SizedBox.square(
+                        dimension: indicatorSize,
+                        child: Icon(
+                          item.icon ?? Icons.check,
+                          size: iconSize,
+                          color: theme.textInverse,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
                 if (!isLast)
                   Expanded(
                     child: Container(
@@ -167,15 +180,31 @@ class _TimelineRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(child: Text(item.title, style: titleStyle)),
-                      if (item.time != null) Text(item.time!, style: timeStyle),
+                  if (item.body != null)
+                    Row(
+                      children: [
+                        Expanded(child: item.body!),
+                        if (item.trailing != null) item.trailing!,
+                      ],
+                    )
+                  else ...[
+                    Row(
+                      children: [
+                        Expanded(child: Text(item.title, style: titleStyle)),
+                        if (item.trailing != null)
+                          item.trailing!
+                        else if (item.time != null && item.meta == null)
+                          Text(item.time!, style: timeStyle),
+                      ],
+                    ),
+                    if (item.description != null) ...[
+                      SizedBox(height: theme.spacing2xs),
+                      Text(item.description!, style: descriptionStyle),
                     ],
-                  ),
-                  if (item.description != null) ...[
-                    SizedBox(height: theme.spacing2xs),
-                    Text(item.description!, style: descriptionStyle),
+                  ],
+                  if (item.meta != null) ...[
+                    SizedBox(height: theme.spacingXs),
+                    item.meta!,
                   ],
                 ],
               ),

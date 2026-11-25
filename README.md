@@ -12,6 +12,10 @@ và các mốc mở rộng native. Chi tiết Android (Kotlin/Jetpack Compose) v
 pilot app bên ngoài được bỏ qua theo yêu cầu chủ sở hữu. Package vẫn giữ stage
 hiện có. Xem phạm vi và bằng chứng tại [báo cáo 0.7.x](docs/validation-0.7.x.md).
 
+UI Kit hotfix candidate `1.0.0-rc.3` được chuẩn bị độc lập từ main,
+không chờ đợt `0.8.0`. Xem [phạm vi và migration](docs/migration-1.0.0-rc.3.md);
+chưa phát hành/tag hoặc xác nhận runtime.
+
 ## Package portal & UI showcase
 
 Chạy web từ thư mục gốc để xem packages, version, dependency, README/changelog

@@ -42,7 +42,7 @@ class UiKitMediaPicker extends StatelessWidget {
     this.borderRadius,
     this.placeholderColor,
     this.labelStyle,
-    this.previewOverlayColor = Colors.black54,
+    this.previewOverlayColor,
     this.removeIcon = Icons.close,
     super.key,
   }) : assert(aspectRatio > 0),
@@ -89,7 +89,7 @@ class UiKitMediaPicker extends StatelessWidget {
   final double? borderRadius;
   final Color? placeholderColor;
   final TextStyle? labelStyle;
-  final Color previewOverlayColor;
+  final Color? previewOverlayColor;
   final IconData removeIcon;
 
   bool get _uploading =>
@@ -173,7 +173,7 @@ class UiKitMediaPicker extends StatelessWidget {
           preview!,
           if (_uploading || errorText != null)
             ColoredBox(
-              color: previewOverlayColor,
+              color: previewOverlayColor ?? theme.scrim,
               child: Center(
                 child: errorText != null
                     ? Padding(

@@ -40,9 +40,9 @@ class UiKitCardShell extends StatelessWidget {
             : null,
         boxShadow: shadow
             ? boxShadow ??
-                  const [
+                  [
                     BoxShadow(
-                      color: Color(0x14000000),
+                      color: theme.shadowColor,
                       blurRadius: 12,
                       offset: Offset(0, 4),
                     ),

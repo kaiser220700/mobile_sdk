@@ -12,7 +12,7 @@ change Git dependency paths without improving the consumer's API or graph.
 ## Application libraries
 
 - mobile_ui_kit owns reusable visual components, interactions and accessibility.
-  The current candidate is 1.0.0-rc.1, not a published stable 1.0.0.
+  The current hotfix source candidate is 1.0.0-rc.3, not a published stable 1.0.0.
 - mobile_sdk_core owns typed configuration and telemetry contracts/fakes.
   Add it when the app needs those contracts; UI does not depend on it.
 - mobile_update makes update decisions and coordinates host-supplied loaders.

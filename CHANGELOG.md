@@ -14,6 +14,11 @@ details are maintained beside each package:
 
 ## Unreleased
 
+- Prepare independent UI Kit hotfix candidate 1.0.0-rc.3 directly from main,
+  without the 0.8.0 feature batch. Include host composition/OTP/token fixes and
+  targeted Pressable/Button backports; see docs/migration-1.0.0-rc.3.md.
+  Flutter runtime/device/golden checks remain pending; no other package bumps.
+
 - Close the 0.7.x GitHub-only integration work on release/0.7.0 without
   changing package versions or moving the existing v0.7.0 tag.
 - Accept release/0.7.0 as an explicit integration branch while retaining all

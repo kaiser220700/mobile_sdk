@@ -17,7 +17,7 @@ class UiKitBadge extends StatelessWidget {
     this.maxCount = 99,
     this.icon,
     this.leadingDot = false,
-    this.dotSize = 8,
+    this.dotSize,
     this.height,
     this.horizontalPadding,
     this.labelStyle,
@@ -33,7 +33,7 @@ class UiKitBadge extends StatelessWidget {
          !leadingDot || variant != UiKitBadgeVariant.dot,
          "A dot badge cannot have a leading dot.",
        ),
-       assert(dotSize > 0, "dotSize must be positive."),
+       assert(dotSize == null || dotSize > 0, "dotSize must be positive."),
        assert(height == null || height > 0, "height must be positive.");
 
   /// Text-only badge/status pill.
@@ -100,7 +100,7 @@ class UiKitBadge extends StatelessWidget {
   final int maxCount;
   final IconData? icon;
   final bool leadingDot;
-  final double dotSize;
+  final double? dotSize;
   final double? height;
   final double? horizontalPadding;
   final TextStyle? labelStyle;
@@ -186,7 +186,7 @@ class UiKitBadge extends StatelessWidget {
       return Semantics(
         label: semanticsLabel,
         child: SizedBox.square(
-          dimension: 8,
+          dimension: dotSize ?? theme.sizes.dotSize,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: colors.background,
@@ -201,6 +201,7 @@ class UiKitBadge extends StatelessWidget {
     final padding = horizontalPadding ?? _defaultPadding;
     return Semantics(
       label: semanticsLabel,
+      excludeSemantics: semanticsLabel != null,
       child: UnconstrainedBox(
         child: Container(
           height: effectiveHeight,
@@ -222,7 +223,7 @@ class UiKitBadge extends StatelessWidget {
             children: [
               if (leadingDot)
                 SizedBox.square(
-                  dimension: dotSize,
+                  dimension: dotSize ?? theme.sizes.dotSize,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: colors.foreground,

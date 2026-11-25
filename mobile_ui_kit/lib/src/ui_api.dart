@@ -441,3 +441,9 @@ typedef Tooltip = impl.UiKitTooltip;
 
 /// Public UI name for [impl.UiKitTooltipCoordinator].
 typedef TooltipCoordinator = impl.UiKitTooltipCoordinator;
+
+/// Native OTP input behavior and app-owned cell rendering.
+typedef OtpInputMode = impl.UiKitOtpInputMode;
+typedef OtpCellBuilder = impl.UiKitOtpCellBuilder;
+typedef ComponentSizes = impl.UiKitComponentSizes;
+typedef MotionTokens = impl.UiKitMotionTokens;

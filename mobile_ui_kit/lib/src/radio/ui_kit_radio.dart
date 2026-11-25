@@ -21,7 +21,7 @@ class UiKitRadio extends StatelessWidget {
     this.borderWidth = 1.5,
     this.controlPadding = 4,
     this.labelGap,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     super.key,
   }) : assert(indicatorSize > 0 && borderWidth > 0 && controlPadding >= 0);
 
@@ -49,11 +49,15 @@ class UiKitRadio extends StatelessWidget {
   final double borderWidth;
   final double controlPadding;
   final double? labelGap;
-  final Duration animationDuration;
+  final Duration? animationDuration;
 
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      animationDuration ?? theme.motion.fast,
+    );
     final defaultBorderColor = borderColor ?? theme.borderControl;
     final defaultSelectedColor = selectedColor ?? theme.primary;
     final circleDiameter = indicatorSize + (controlPadding * 2);
@@ -79,7 +83,8 @@ class UiKitRadio extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: AnimatedContainer(
-            duration: animationDuration,
+            duration: duration,
+            curve: theme.motion.curve,
             width: value ? indicatorSize : 0,
             height: value ? indicatorSize : 0,
             decoration: BoxDecoration(

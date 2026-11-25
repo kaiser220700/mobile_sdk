@@ -3,6 +3,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_ui_kit/mobile_ui_kit.dart' as ui;
 
 void main() {
+  testWidgets('button name remains separate from surrounding captions', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Column(
+            children: [
+              const Text('Nearby caption'),
+              ui.Button(label: 'Continue', onPressed: () {}),
+            ],
+          ),
+        ),
+      );
+      expect(tester.getSemantics(find.byType(ui.Button)).label, 'Continue');
+      expect(find.bySemanticsLabel('Nearby caption'), findsOneWidget);
+      expect(find.bySemanticsLabel('Continue'), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
   test('new names preserve existing type and constructor identity', () {
     const button = ui.Button.text(onPressed: null, label: 'Save');
     expect(button, isA<ui.UiKitButton>());

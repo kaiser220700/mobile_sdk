@@ -1,4 +1,5 @@
 import "package:material_ui/material_ui.dart";
+import "package:mobile_ui_kit/src/theme/ui_kit_theme.dart";
 
 /// A host-configurable countdown with a tabular-figure default formatter.
 class UiKitCountdown extends StatefulWidget {
@@ -96,12 +97,7 @@ class _UiKitCountdownState extends State<UiKitCountdown>
   @override
   Widget build(BuildContext context) => Text(
     "${widget.prefix ?? ""}${_format()}${widget.suffix ?? ""}",
-    style:
-        widget.style?.copyWith(
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ) ??
-        Theme.of(context).textTheme.bodyLarge
-            ?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+    style: widget.style ?? UiKitTheme.of(context).numeric,
   );
 
   @override

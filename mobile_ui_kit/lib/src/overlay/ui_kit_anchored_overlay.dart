@@ -164,9 +164,7 @@ class _AnchoredOverlayContent extends StatelessWidget {
               child: AnimatedOpacity(
                 opacity: visible ? 1 : 0,
                 duration: animationDuration,
-                child: ColoredBox(
-                  color: barrierColor ?? const Color(0x00000000),
-                ),
+                child: ColoredBox(color: barrierColor ?? Colors.transparent),
               ),
             ),
           ),

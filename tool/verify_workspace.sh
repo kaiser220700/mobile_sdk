@@ -5,6 +5,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+python3 "$ROOT_DIR/tool/verify_ui_tokens.py"
+
 DEFAULT_FLUTTER_BIN="$ROOT_DIR/.fvm/flutter_sdk/bin/flutter"
 
 if [[ -n "${FLUTTER_BIN:-}" ]]; then

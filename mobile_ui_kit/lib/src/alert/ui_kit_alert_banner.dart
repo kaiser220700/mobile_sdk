@@ -14,6 +14,15 @@ class UiKitAlertBanner extends StatelessWidget {
   const UiKitAlertBanner({
     required this.title,
     this.description,
+    this.leading,
+    this.body,
+    this.meta,
+    this.trailing,
+    this.quote,
+    this.quoteSource,
+    this.quoteStyle,
+    this.quoteSourceStyle,
+    this.showBorder = true,
     this.semantic = UiKitAlertSemantic.info,
     this.icon,
     this.hideIcon = false,
@@ -35,6 +44,15 @@ class UiKitAlertBanner extends StatelessWidget {
 
   final String title;
   final String? description;
+  final Widget? leading;
+  final Widget? body;
+  final Widget? meta;
+  final Widget? trailing;
+  final String? quote;
+  final String? quoteSource;
+  final TextStyle? quoteStyle;
+  final TextStyle? quoteSourceStyle;
+  final bool showBorder;
   final UiKitAlertSemantic semantic;
   final IconData? icon;
   final bool hideIcon;
@@ -96,7 +114,6 @@ class UiKitAlertBanner extends StatelessWidget {
     final foreground = foregroundColor ?? colors.foreground;
     return Semantics(
       liveRegion: true,
-      label: "$title${description == null ? "" : ". $description"}",
       child: Container(
         width: double.infinity,
         padding:
@@ -107,34 +124,56 @@ class UiKitAlertBanner extends StatelessWidget {
             ),
         decoration: BoxDecoration(
           color: background,
-          border: Border.all(color: border, width: borderWidth),
+          border: showBorder
+              ? Border.all(color: border, width: borderWidth)
+              : null,
           borderRadius: BorderRadius.circular(borderRadius ?? theme.radiusMd),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!hideIcon) ...[
-              Icon(icon ?? colors.icon, color: foreground, size: iconSize),
+            if (leading != null || !hideIcon) ...[
+              leading ??
+                  Icon(icon ?? colors.icon, color: foreground, size: iconSize),
               SizedBox(width: iconGap ?? theme.spacingMd),
             ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: (titleStyle ?? theme.bodyMedium).copyWith(
-                      color: theme.text,
-                    ),
-                  ),
-                  if (description != null) ...[
-                    SizedBox(height: theme.spacing2xs),
+                  if (body != null)
+                    body!
+                  else ...[
                     Text(
-                      description!,
-                      style: (descriptionStyle ?? theme.caption).copyWith(
-                        color: theme.textMuted,
+                      title,
+                      style: (titleStyle ?? theme.bodyMedium).copyWith(
+                        color: titleStyle?.color ?? theme.text,
                       ),
                     ),
+                    if (description != null) ...[
+                      SizedBox(height: theme.spacing2xs),
+                      Text(
+                        description!,
+                        style: (descriptionStyle ?? theme.caption).copyWith(
+                          color: descriptionStyle?.color ?? theme.textMuted,
+                        ),
+                      ),
+                    ],
+                  ],
+                  if (quote != null) ...[
+                    SizedBox(height: theme.spacingXs),
+                    Text(quote!, style: quoteStyle ?? theme.body),
+                  ],
+                  if (quoteSource != null) ...[
+                    SizedBox(height: theme.spacing2xs),
+                    Text(
+                      quoteSource!,
+                      style: quoteSourceStyle ?? theme.caption,
+                    ),
+                  ],
+                  if (meta != null) ...[
+                    SizedBox(height: theme.spacingXs),
+                    meta!,
                   ],
                   if (action != null) ...[
                     SizedBox(height: theme.spacingSm),
@@ -154,6 +193,7 @@ class UiKitAlertBanner extends StatelessWidget {
                 ],
               ),
             ),
+            if (trailing != null) trailing!,
             if (onClose != null)
               IconButton(
                 onPressed: onClose,

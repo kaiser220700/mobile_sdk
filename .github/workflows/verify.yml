@@ -9,11 +9,20 @@ on:
       - main
       - develop
       - "release/**"
+      - "hotfix/**"
 
 permissions:
   contents: read
 
 jobs:
+  ui-source-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check visual tokens without compiling Flutter
+        run: |
+          python3 tool/verify_ui_tokens.py
+          python3 -m unittest discover -s tool -p 'test_ui_tokens.py'
   verify:
     runs-on: ubuntu-latest
     strategy:

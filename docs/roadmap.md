@@ -1,6 +1,6 @@
 # Roadmap Mobile SDK
 
-Cập nhật: 2026-11-16. Branch làm việc hiện tại: `release/0.7.0`.
+Cập nhật: 2026-11-25. Branch làm việc hiện tại: `release/0.7.0`.
 Đợt 0.7.x đã hoàn tất theo phạm vi kiểm tra trong repo và GitHub-only; pilot app thật
 được bỏ qua theo yêu cầu chủ sở hữu. Bằng chứng: [báo cáo 0.7.x](validation-0.7.x.md).
 
@@ -9,6 +9,15 @@ Roadmap này thay thế kế hoạch cũ đi theo một version chung từ `0.7.
 riêng trong [PLAN native SDK](PLAN-native-sdk.md). Chỉ đánh dấu hoàn thành khi
 có source, kiểm tra hoặc bằng chứng tích hợp tương ứng.
 
+## Hotfix UI Kit độc lập
+
+Theo yêu cầu chủ sở hữu ngày 2026-11-25, các sửa OTP, khả năng tùy biến widget,
+token và trợ năng được tách từ local main `18ec3ed` vào nhánh
+`hotfix/mobile-ui-kit-rc3`; không cần đợi release/0.8.0. Version UI Kit là
+1.0.0-rc.3, các package khác giữ nguyên. Chưa merge/push/tag hoặc chạy kiểm tra
+Flutter có biên dịch; xem [migration và giới hạn](migration-1.0.0-rc.3.md).
+AsyncView, RouteTransitionGuard và showcase mở rộng tiếp tục thuộc nhánh tích hợp.
+
 ## 1. Hiện trạng
 
 Version lấy từ `pubspec.yaml`; nhóm và mức trưởng thành lấy từ
@@ -16,7 +25,7 @@ Version lấy từ `pubspec.yaml`; nhóm và mức trưởng thành lấy từ
 
 | Package | Version | Trạng thái |
 | --- | --- | --- |
-| `mobile_ui_kit` | `1.0.0-rc.1` | Candidate; chưa xác nhận stable |
+| `mobile_ui_kit` | `1.0.0-rc.3` | Candidate; chưa xác nhận stable |
 | `mobile_sdk`, `mobile_app_base` | `0.8.0-dev.0` | Development; giữ compatibility và app wiring tùy chọn |
 | `mobile_sdk_core`, `mobile_update` | `0.8.0-dev.0` | Development; logic và contract độc lập provider |
 | `mobile_sdk_firebase_core`, `mobile_sdk_firebase_remote_config` | `0.8.0-dev.0` | Development; adapter opt-in |

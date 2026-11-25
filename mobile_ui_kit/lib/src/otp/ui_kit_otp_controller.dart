@@ -24,6 +24,24 @@ class UiKitOtpController extends ChangeNotifier {
 
   String valueAt(int index) => _values[index];
 
+  /// Replace the entire code without changing focus. Used by a single native
+  /// text input for paste, SMS autofill, selection edits and soft-keyboard delete.
+  void setText(String value) {
+    final digits = value.replaceAll(RegExp(r"\D"), "");
+    final next = digits.substring(0, digits.length.clamp(0, length).toInt());
+    if (next == text && _values.take(next.length).every((v) => v.isNotEmpty)) {
+      return;
+    }
+    for (var i = 0; i < length; i++) {
+      _values[i] = i < next.length ? next[i] : "";
+      textControllers[i].value = TextEditingValue(
+        text: _values[i],
+        selection: TextSelection.collapsed(offset: _values[i].length),
+      );
+    }
+    notifyListeners();
+  }
+
   /// Cập nhật ký tự tại [index]. Nếu [char] rỗng → xoá ô đó. Nếu [char] có
   /// nhiều ký tự (paste/autofill đổ nguyên mã vào 1 ô) → phân phối từ
   /// [index] qua [_fillFrom].

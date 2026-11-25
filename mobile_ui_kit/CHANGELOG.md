@@ -4,6 +4,43 @@ All notable changes to this package are documented in this file.
 
 ## Unreleased
 
+## 1.0.0-rc.3 - 2026-11-25
+
+### Widget capabilities
+
+- OtpField now defaults to one native input with app-owned visual cells for
+  paste, autofill and soft-keyboard editing. Add cellBuilder, semanticLabel,
+  OtpInputMode and OtpController.setText; keep explicit legacy segmented mode.
+  Accept full pastes in every legacy cell and guard completion against reentrant
+  host callbacks, duplicate delivery and controller replacement.
+- Add ListItem body/meta slots and top alignment; add StatTile and TimelineItem
+  leading/body/meta/trailing slots, AlertBanner slots and quote/source styles,
+  plus a borderless alert option. Keep existing simple constructors.
+- Add ButtonLoadingBehavior.external to retain content/colors while locking
+  activation and allowing host-owned overlays.
+- Add numeric/display typography, component-size/motion tokens and themed
+  shadows/scrims. Remove visual font/color literals outside token definitions;
+  consume theme numeric styles in StatTile, Countdown and OTP.
+- Honor reduced motion for themed control/loading/dialog transitions and keep
+  background focus/semantics blocked during a visible LoadingOverlay.
+- Avoid repeated ListItem/StatTile/Alert accessible labels; export Skeleton for
+  hosts using Skeleton.leaf through the UI Kit.
+- Add a dedicated hotfix preview; add OTP/composition/token regression test source
+  and a Python source-policy check in CI.
+
+### Migration and validation
+
+- OTP single-field focus and some resolved-default properties change behavior;
+  read ../docs/migration-1.0.0-rc.3.md before upgrading. Flutter 3.50/Dart 3.14
+  and material_ui remain required; no other package version changes.
+- Backport Pressable semantic/keyboard activation and Button narrow-layout fixes
+  from the integration branch without AsyncView, RouteTransitionGuard or the
+  expanded 0.8.x showcase. Based on local main at 18ec3ed.
+- Source-only work: Dart format/parse and Python checks run; Flutter tests,
+  analysis, goldens and Android IME/TalkBack validation have not run. This is
+  a source candidate, not a stable promotion, published release or new Git tag.
+
+
 - Breaking: require Flutter 3.50 / Dart 3.14 and use standalone `material_ui`
   types. Hosts must migrate Material imports and theme values together.
 - Bridge legacy refresh indicators to the standalone host theme/localizations.

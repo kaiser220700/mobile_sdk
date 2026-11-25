@@ -39,13 +39,12 @@ class UiKitTitle extends StatelessWidget {
   final Color? requiredColor;
 
   TextStyle _heading(UiKitThemeData theme) => switch (headingSize) {
-    UiKitTitleHeadingSize.sm ||
-    UiKitTitleHeadingSize.xl => theme.bodyMedium.copyWith(fontSize: 16),
+    UiKitTitleHeadingSize.sm || UiKitTitleHeadingSize.xl =>
+      theme.bodyLarge.copyWith(fontWeight: theme.bodyMedium.fontWeight),
     UiKitTitleHeadingSize.lg => theme.title.copyWith(
-      fontSize: 24,
       fontWeight: FontWeight.w600,
     ),
-    UiKitTitleHeadingSize.xxl => theme.title.copyWith(fontSize: 32),
+    UiKitTitleHeadingSize.xxl => theme.display,
   };
 
   TextStyle _description(UiKitThemeData theme) => switch (descriptionSize) {

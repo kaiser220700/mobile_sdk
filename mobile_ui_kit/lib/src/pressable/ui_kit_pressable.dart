@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:material_ui/material_ui.dart";
+import "package:flutter/services.dart";
 
 import "package:mobile_ui_kit/src/pressable/ui_kit_pressable_state.dart";
 
@@ -115,6 +116,7 @@ class _UiKitPressableState extends State<UiKitPressable> {
     final disabled = widget._disabled;
 
     return Semantics(
+      container: true,
       button: true,
       enabled: !disabled,
       selected: widget.selected,
@@ -122,22 +124,42 @@ class _UiKitPressableState extends State<UiKitPressable> {
       toggled: widget.toggled,
       label: widget.semanticsLabel,
       excludeSemantics: widget.excludeSemantics,
+      onTap: widget.onPress == null ? null : _handleTap,
+      onLongPress: widget.onLongPress,
       child: MouseRegion(
         cursor:
             widget.mouseCursor ??
             (disabled ? SystemMouseCursors.basic : SystemMouseCursors.click),
         onEnter: disabled ? null : (_) => _setHovered(true),
         onExit: disabled ? null : (_) => _setHovered(false),
-        child: GestureDetector(
-          behavior: widget.hitTestBehavior,
-          onTapDown: disabled ? null : (_) => _setPressed(true),
-          onTapCancel: disabled ? null : () => _setPressed(false),
-          onTapUp: disabled ? null : (_) => _setPressed(false),
-          onTap: disabled ? null : _handleTap,
-          onLongPress: disabled ? null : widget.onLongPress,
-          child: Padding(
-            padding: widget.hitSlop,
-            child: widget.builder(context, _states, widget.child),
+        child: FocusableActionDetector(
+          enabled: !disabled,
+          autofocus: widget.autofocus,
+          focusNode: widget.focusNode,
+          shortcuts: const {
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: {
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                _handleTap();
+                return null;
+              },
+            ),
+          },
+          child: GestureDetector(
+            excludeFromSemantics: true,
+            behavior: widget.hitTestBehavior,
+            onTapDown: disabled ? null : (_) => _setPressed(true),
+            onTapCancel: disabled ? null : () => _setPressed(false),
+            onTapUp: disabled ? null : (_) => _setPressed(false),
+            onTap: disabled ? null : _handleTap,
+            onLongPress: disabled ? null : widget.onLongPress,
+            child: Padding(
+              padding: widget.hitSlop,
+              child: widget.builder(context, _states, widget.child),
+            ),
           ),
         ),
       ),

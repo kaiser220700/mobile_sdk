@@ -1,6 +1,9 @@
 import "dart:ui" show lerpDouble;
 
 import "package:material_ui/material_ui.dart";
+import "package:mobile_ui_kit/src/theme/ui_kit_component_tokens.dart";
+
+export "package:mobile_ui_kit/src/theme/ui_kit_component_tokens.dart";
 
 /// Neutral visual defaults for apps that have not registered a theme.
 ///
@@ -27,6 +30,17 @@ abstract final class UiKitTheme {
   static const borderStrong = Color(0xFFCBD5E1);
   static const borderControl = Color(0xFF64748B);
   static const focusRing = Color(0xFF93C5FD);
+
+  static const shadowColor = Color(0x14000000);
+  static const searchShadowColor = Color(0x12000000);
+  static const thumbShadowColor = Color(0x22000000);
+  static const scrim = Color(0x8A000000);
+  static const display = TextStyle(
+    fontSize: 32,
+    height: 1.25,
+    fontWeight: FontWeight.w700,
+    color: text,
+  );
 
   static const spacing2xs = 2.0;
   static const spacingXs = 4.0;
@@ -210,8 +224,16 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
     required this.caption,
     required this.button,
     required this.buttonLarge,
+    this.shadowColor = UiKitTheme.shadowColor,
+    this.searchShadowColor = UiKitTheme.searchShadowColor,
+    this.thumbShadowColor = UiKitTheme.thumbShadowColor,
+    this.scrim = UiKitTheme.scrim,
+    this.display = UiKitTheme.display,
+    this.sizes = const UiKitComponentSizes(),
+    this.motion = const UiKitMotionTokens(),
+    TextStyle? numeric,
     required this.title,
-  });
+  }) : _numeric = numeric;
 
   /// Creates the package-neutral complete default theme.
   const UiKitThemeData._defaults()
@@ -302,6 +324,14 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
     TextStyle caption = UiKitTheme.caption,
     TextStyle button = UiKitTheme.button,
     TextStyle buttonLarge = UiKitTheme.buttonLarge,
+    Color shadowColor = UiKitTheme.shadowColor,
+    Color searchShadowColor = UiKitTheme.searchShadowColor,
+    Color thumbShadowColor = UiKitTheme.thumbShadowColor,
+    Color scrim = UiKitTheme.scrim,
+    TextStyle display = UiKitTheme.display,
+    UiKitComponentSizes sizes = const UiKitComponentSizes(),
+    UiKitMotionTokens motion = const UiKitMotionTokens(),
+    TextStyle? numeric,
     TextStyle title = UiKitTheme.title,
   }) : this(
          primary: primary,
@@ -343,6 +373,14 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
          caption: caption,
          button: button,
          buttonLarge: buttonLarge,
+         shadowColor: shadowColor,
+         searchShadowColor: searchShadowColor,
+         thumbShadowColor: thumbShadowColor,
+         scrim: scrim,
+         display: display,
+         sizes: sizes,
+         motion: motion,
+         numeric: numeric,
          title: title,
        );
 
@@ -389,6 +427,25 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
   final TextStyle caption;
   final TextStyle button;
   final TextStyle buttonLarge;
+  final Color shadowColor;
+  final Color searchShadowColor;
+  final Color thumbShadowColor;
+  final Color scrim;
+  final TextStyle display;
+  final UiKitComponentSizes sizes;
+  final UiKitMotionTokens motion;
+  final TextStyle? _numeric;
+
+  /// Numeric typography follows the host title and uses equal-width digits.
+  TextStyle get numeric =>
+      _numeric ??
+      title.copyWith(
+        fontFeatures: [
+          ...?title.fontFeatures,
+          const FontFeature.tabularFigures(),
+        ],
+      );
+
   final TextStyle title;
 
   @override
@@ -432,6 +489,14 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
     TextStyle? caption,
     TextStyle? button,
     TextStyle? buttonLarge,
+    Color? shadowColor,
+    Color? searchShadowColor,
+    Color? thumbShadowColor,
+    Color? scrim,
+    TextStyle? display,
+    UiKitComponentSizes? sizes,
+    UiKitMotionTokens? motion,
+    TextStyle? numeric,
     TextStyle? title,
   }) => UiKitThemeData(
     primary: primary ?? this.primary,
@@ -473,6 +538,14 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
     caption: caption ?? this.caption,
     button: button ?? this.button,
     buttonLarge: buttonLarge ?? this.buttonLarge,
+    shadowColor: shadowColor ?? this.shadowColor,
+    searchShadowColor: searchShadowColor ?? this.searchShadowColor,
+    thumbShadowColor: thumbShadowColor ?? this.thumbShadowColor,
+    scrim: scrim ?? this.scrim,
+    display: display ?? this.display,
+    sizes: sizes ?? this.sizes,
+    motion: motion ?? this.motion,
+    numeric: numeric ?? _numeric,
     title: title ?? this.title,
   );
 
@@ -519,6 +592,24 @@ class UiKitThemeData extends ThemeExtension<UiKitThemeData> {
       caption: TextStyle.lerp(caption, other.caption, t)!,
       button: TextStyle.lerp(button, other.button, t)!,
       buttonLarge: TextStyle.lerp(buttonLarge, other.buttonLarge, t)!,
+      shadowColor: Color.lerp(shadowColor, other.shadowColor, t)!,
+      searchShadowColor: Color.lerp(
+        searchShadowColor,
+        other.searchShadowColor,
+        t,
+      )!,
+      thumbShadowColor: Color.lerp(
+        thumbShadowColor,
+        other.thumbShadowColor,
+        t,
+      )!,
+      scrim: Color.lerp(scrim, other.scrim, t)!,
+      display: TextStyle.lerp(display, other.display, t)!,
+      sizes: sizes.lerp(other.sizes, t),
+      motion: motion.lerp(other.motion, t),
+      numeric: _numeric == null && other._numeric == null
+          ? null
+          : TextStyle.lerp(numeric, other.numeric, t),
       title: TextStyle.lerp(title, other.title, t)!,
     );
   }

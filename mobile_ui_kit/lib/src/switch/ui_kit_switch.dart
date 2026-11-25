@@ -26,7 +26,7 @@ class UiKitSwitch extends StatelessWidget {
     this.labelStyle,
     this.sublabelStyle,
     this.gap,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     super.key,
   });
 
@@ -49,7 +49,7 @@ class UiKitSwitch extends StatelessWidget {
   final TextStyle? labelStyle;
   final TextStyle? sublabelStyle;
   final double? gap;
-  final Duration animationDuration;
+  final Duration? animationDuration;
 
   bool get _enabled => !disabled && onChanged != null;
   double get _width => size == UiKitSwitchSize.sm ? 32 : 40;
@@ -63,12 +63,17 @@ class UiKitSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      animationDuration ?? theme.motion.fast,
+    );
     final track = SizedBox(
       width: touchTargetSize ?? theme.touchMinTarget,
       height: touchTargetSize ?? theme.touchMinTarget,
       child: Center(
         child: AnimatedContainer(
-          duration: animationDuration,
+          duration: duration,
+          curve: theme.motion.curve,
           width: width ?? _width,
           height: height ?? _height,
           padding: padding ?? EdgeInsets.all(theme.spacing2xs),
@@ -82,7 +87,8 @@ class UiKitSwitch extends StatelessWidget {
           ),
           child: AnimatedAlign(
             alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-            duration: animationDuration,
+            duration: duration,
+            curve: theme.motion.curve,
             child: Container(
               width: thumbSize ?? _thumb,
               height: thumbSize ?? _thumb,
@@ -91,8 +97,8 @@ class UiKitSwitch extends StatelessWidget {
                 color: disabled
                     ? disabledColor ?? theme.textDisabled
                     : thumbColor ?? theme.surface,
-                boxShadow: const [
-                  BoxShadow(color: Color(0x22000000), blurRadius: 2),
+                boxShadow: [
+                  BoxShadow(color: theme.thumbShadowColor, blurRadius: 2),
                 ],
               ),
             ),

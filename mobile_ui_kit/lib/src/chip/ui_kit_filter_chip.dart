@@ -34,7 +34,7 @@ class UiKitFilterChip extends StatelessWidget {
     this.disabledForegroundColor,
     this.labelStyle,
     this.trailingStyle,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     this.tapThrottleDuration = const Duration(milliseconds: 300),
     this.skeletonLeaf = false,
     super.key,
@@ -66,13 +66,17 @@ class UiKitFilterChip extends StatelessWidget {
   final Color? disabledForegroundColor;
   final TextStyle? labelStyle;
   final TextStyle? trailingStyle;
-  final Duration animationDuration;
+  final Duration? animationDuration;
   final Duration tapThrottleDuration;
   final bool skeletonLeaf;
 
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      animationDuration ?? theme.motion.fast,
+    );
     final canTap = enabled && onSelected != null;
     final foreground = !enabled
         ? disabledForegroundColor ?? theme.textDisabled
@@ -93,8 +97,12 @@ class UiKitFilterChip extends StatelessWidget {
         : selected
         ? selectedBorderColor ?? theme.primary
         : borderColor ?? theme.border;
-    final visualHeight = height ?? theme.touchMinTarget;
-    final targetHeight = touchHeight ?? visualHeight;
+    final visualHeight = height ?? theme.sizes.chipHeight;
+    final targetHeight =
+        touchHeight ??
+        (visualHeight < theme.touchMinTarget
+            ? theme.touchMinTarget
+            : visualHeight);
     final itemGap = gap ?? theme.spacingXs;
     final hasLeading =
         (selected && selectedIcon != null) || leadingIcon != null;
@@ -130,7 +138,7 @@ class UiKitFilterChip extends StatelessWidget {
     final padding = EdgeInsets.symmetric(
       horizontal: horizontalPadding ?? theme.spacingMd,
     );
-    final Widget visual = animationDuration == Duration.zero
+    final Widget visual = duration == Duration.zero
         ? Container(
             height: visualHeight,
             padding: padding,
@@ -138,7 +146,8 @@ class UiKitFilterChip extends StatelessWidget {
             child: content,
           )
         : AnimatedContainer(
-            duration: animationDuration,
+            duration: duration,
+            curve: theme.motion.curve,
             height: visualHeight,
             padding: padding,
             decoration: decoration,

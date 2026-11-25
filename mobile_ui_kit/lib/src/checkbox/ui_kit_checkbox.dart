@@ -29,7 +29,7 @@ class UiKitCheckbox extends StatelessWidget {
     this.labelStyle,
     this.descriptionStyle,
     this.gap,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     super.key,
   }) : assert(borderWidth > 0);
 
@@ -55,7 +55,7 @@ class UiKitCheckbox extends StatelessWidget {
   final TextStyle? labelStyle;
   final TextStyle? descriptionStyle;
   final double? gap;
-  final Duration animationDuration;
+  final Duration? animationDuration;
 
   bool get _disabled => disabled || onChanged == null;
   double get _size => switch (size) {
@@ -67,13 +67,18 @@ class UiKitCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      animationDuration ?? theme.motion.fast,
+    );
     final selected = value || indeterminate;
     final control = SizedBox(
       width: touchTargetSize ?? theme.touchMinTarget,
       height: touchTargetSize ?? theme.touchMinTarget,
       child: Center(
         child: AnimatedContainer(
-          duration: animationDuration,
+          duration: duration,
+          curve: theme.motion.curve,
           width: controlSize ?? _size,
           height: controlSize ?? _size,
           decoration: BoxDecoration(

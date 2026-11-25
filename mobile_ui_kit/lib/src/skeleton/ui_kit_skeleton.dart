@@ -2,7 +2,7 @@ import "package:flutter/widgets.dart";
 import "package:skeletonizer/skeletonizer.dart";
 
 export "package:skeletonizer/skeletonizer.dart"
-    show Bone, PaintingEffect, Skeletonizer;
+    show Bone, PaintingEffect, Skeleton, Skeletonizer;
 
 /// Wrapper mỏng quanh `skeletonizer` — chuẩn hoá tên gọi (`UiKit*`) và điểm
 /// phụ thuộc duy nhất cho toàn app, không tự vẽ shimmer riêng. [child] nên

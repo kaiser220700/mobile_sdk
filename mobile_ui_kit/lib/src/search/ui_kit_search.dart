@@ -28,7 +28,7 @@ class UiKitSearch extends StatefulWidget {
     this.searchIconColor,
     this.textStyle,
     this.hintStyle,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     this.cancelSpacing,
     super.key,
   }) : assert(height > 0 && borderWidth > 0),
@@ -61,7 +61,7 @@ class UiKitSearch extends StatefulWidget {
   final Color? searchIconColor;
   final TextStyle? textStyle;
   final TextStyle? hintStyle;
-  final Duration animationDuration;
+  final Duration? animationDuration;
   final double? cancelSpacing;
 
   @override
@@ -101,10 +101,15 @@ class _UiKitSearchState extends State<UiKitSearch> {
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      widget.animationDuration ?? theme.motion.fast,
+    );
     final field = AnimatedBuilder(
       animation: Listenable.merge([_focusNode, _controller]),
       builder: (context, _) => AnimatedContainer(
-        duration: widget.animationDuration,
+        duration: duration,
+        curve: theme.motion.curve,
         constraints: BoxConstraints(minHeight: widget.height),
         padding:
             widget.padding ?? EdgeInsets.symmetric(horizontal: theme.spacingMd),
@@ -124,9 +129,9 @@ class _UiKitSearchState extends State<UiKitSearch> {
           boxShadow: widget.disabled
               ? null
               : widget.shadow ??
-                    const [
+                    [
                       BoxShadow(
-                        color: Color(0x12000000),
+                        color: theme.searchShadowColor,
                         blurRadius: 10,
                         offset: Offset(0, 2),
                       ),

@@ -13,6 +13,11 @@ class UiKitStatTile extends StatelessWidget {
     required this.label,
     required this.value,
     this.description,
+    this.semanticLabel,
+    this.leading,
+    this.body,
+    this.meta,
+    this.trailing,
     this.icon,
     this.trend,
     this.trendLabel,
@@ -37,6 +42,11 @@ class UiKitStatTile extends StatelessWidget {
   final String label;
   final String value;
   final String? description;
+  final String? semanticLabel;
+  final Widget? leading;
+  final Widget? body;
+  final Widget? meta;
+  final Widget? trailing;
   final IconData? icon;
   final UiKitStatTrend? trend;
   final String? trendLabel;
@@ -74,14 +84,15 @@ class UiKitStatTile extends StatelessWidget {
       value,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: (valueStyle ?? theme.title.copyWith(fontSize: 24)).copyWith(
-        color: valueColor,
-      ),
+      style: (valueStyle ?? theme.numeric).copyWith(color: valueColor),
     );
     final header = Row(
       children: [
         Expanded(child: labelView),
-        if (icon != null) Icon(icon, color: iconColor ?? theme.primary),
+        if (trailing != null)
+          trailing!
+        else if (icon != null)
+          Icon(icon, color: iconColor ?? theme.primary),
       ],
     );
     final content = Padding(
@@ -89,10 +100,22 @@ class UiKitStatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (layout == UiKitStatTileLayout.labelFirst) header else valueView,
-          SizedBox(height: theme.spacingSm),
-          if (layout == UiKitStatTileLayout.labelFirst) valueView else header,
-          if (trendLabel != null || description != null) ...[
+          if (leading != null) ...[leading!, SizedBox(height: theme.spacingSm)],
+          if (body != null)
+            Row(
+              children: [
+                Expanded(child: body!),
+                if (trailing != null) trailing!,
+              ],
+            )
+          else ...[
+            if (layout == UiKitStatTileLayout.labelFirst) header else valueView,
+            SizedBox(height: theme.spacingSm),
+            if (layout == UiKitStatTileLayout.labelFirst) valueView else header,
+          ],
+          if (meta != null)
+            meta!
+          else if (trendLabel != null || description != null) ...[
             SizedBox(height: theme.spacingXs),
             Row(
               children: [
@@ -132,9 +155,9 @@ class UiKitStatTile extends StatelessWidget {
       ),
     );
     final tile = ConstrainedBox(
-      constraints: minHeight == null
-          ? const BoxConstraints()
-          : BoxConstraints(minHeight: minHeight!),
+      constraints: BoxConstraints(
+        minHeight: minHeight ?? theme.sizes.statMinHeight,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: backgroundColor ?? theme.surface,
@@ -150,11 +173,18 @@ class UiKitStatTile extends StatelessWidget {
       ),
     );
     if (onTap == null) {
-      return Semantics(label: "$label: $value", child: tile);
+      return semanticLabel == null
+          ? tile
+          : Semantics(
+              label: semanticLabel,
+              excludeSemantics: true,
+              child: tile,
+            );
     }
     return UiKitPressable(
       onPress: onTap,
-      semanticsLabel: "$label: $value",
+      semanticsLabel: semanticLabel,
+      excludeSemantics: semanticLabel != null,
       builder: (context, states, child) => tile,
     );
   }

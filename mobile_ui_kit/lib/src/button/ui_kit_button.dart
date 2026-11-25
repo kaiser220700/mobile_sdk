@@ -20,7 +20,14 @@ enum UiKitButtonSize { sm, md, lg }
 /// [replaceContent] preserves the historical kit appearance. Hosts whose
 /// design system requires the action label to remain readable while submitting
 /// can opt into [showBeforeContent].
-enum UiKitButtonLoadingBehavior { replaceContent, showBeforeContent }
+enum UiKitButtonLoadingBehavior {
+  replaceContent,
+  showBeforeContent,
+
+  /// Keep the content and colors, disable activation, and let the host own
+  /// the loading presentation (for example, a full-screen overlay).
+  external,
+}
 
 /// Basic visual button with app-overridable theme tokens.
 class UiKitButton extends StatelessWidget {
@@ -67,6 +74,9 @@ class UiKitButton extends StatelessWidget {
     UiKitButtonSize size = UiKitButtonSize.md,
     bool fullWidth = false,
     bool loading = false,
+    UiKitButtonLoadingBehavior loadingBehavior =
+        UiKitButtonLoadingBehavior.replaceContent,
+    Widget? loadingIndicator,
     bool disabled = false,
     Color? outlineBorderColor,
     double outlineBorderWidth = 1,
@@ -78,6 +88,8 @@ class UiKitButton extends StatelessWidget {
          size: size,
          fullWidth: fullWidth,
          loading: loading,
+         loadingBehavior: loadingBehavior,
+         loadingIndicator: loadingIndicator,
          disabled: disabled,
          outlineBorderColor: outlineBorderColor,
          outlineBorderWidth: outlineBorderWidth,
@@ -91,6 +103,9 @@ class UiKitButton extends StatelessWidget {
     UiKitButtonVariant variant = UiKitButtonVariant.primary,
     UiKitButtonSize size = UiKitButtonSize.md,
     bool loading = false,
+    UiKitButtonLoadingBehavior loadingBehavior =
+        UiKitButtonLoadingBehavior.replaceContent,
+    Widget? loadingIndicator,
     bool disabled = false,
     Color? outlineBorderColor,
     double outlineBorderWidth = 1,
@@ -101,6 +116,8 @@ class UiKitButton extends StatelessWidget {
          variant: variant,
          size: size,
          loading: loading,
+         loadingBehavior: loadingBehavior,
+         loadingIndicator: loadingIndicator,
          disabled: disabled,
          outlineBorderColor: outlineBorderColor,
          outlineBorderWidth: outlineBorderWidth,
@@ -148,12 +165,12 @@ class UiKitButton extends StatelessWidget {
       onPressed == null ||
       (loading && loadingBehavior == UiKitButtonLoadingBehavior.replaceContent);
 
-  double get _height =>
+  double _height(UiKitThemeData theme) =>
       height ??
       switch (size) {
-        UiKitButtonSize.sm => 32,
-        UiKitButtonSize.md => 44,
-        UiKitButtonSize.lg => 52,
+        UiKitButtonSize.sm => theme.sizes.controlSm,
+        UiKitButtonSize.md => theme.sizes.controlMd,
+        UiKitButtonSize.lg => theme.sizes.controlLg,
       };
 
   double _horizontalPadding(UiKitThemeData theme) =>
@@ -164,12 +181,12 @@ class UiKitButton extends StatelessWidget {
         UiKitButtonSize.lg => theme.spacingXl,
       };
 
-  double get _iconSize =>
+  double _iconSize(UiKitThemeData theme) =>
       iconSize ??
       switch (size) {
-        UiKitButtonSize.sm => 16,
-        UiKitButtonSize.md => 20,
-        UiKitButtonSize.lg => 24,
+        UiKitButtonSize.sm => theme.sizes.iconSm,
+        UiKitButtonSize.md => theme.sizes.iconMd,
+        UiKitButtonSize.lg => theme.sizes.iconLg,
       };
 
   TextStyle _textStyle(UiKitThemeData theme) =>
@@ -253,7 +270,7 @@ class UiKitButton extends StatelessWidget {
     final indicator =
         loadingIndicator ??
         SizedBox.square(
-          dimension: _iconSize,
+          dimension: _iconSize(theme),
           child: CircularProgressIndicator(
             strokeWidth: 2,
             color: colors.foreground,
@@ -264,39 +281,49 @@ class UiKitButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (iconLeft != null)
-          Icon(iconLeft, size: _iconSize, color: colors.foreground),
+          Icon(iconLeft, size: _iconSize(theme), color: colors.foreground),
         if (iconLeft != null && (label != null || child != null))
           SizedBox(width: theme.spacingSm),
         if (child != null)
-          IconTheme.merge(
-            data: IconThemeData(size: _iconSize, color: colors.foreground),
-            child: DefaultTextStyle(
-              style: _textStyle(theme).copyWith(color: colors.foreground),
-              child: child!,
+          Flexible(
+            child: IconTheme.merge(
+              data: IconThemeData(
+                size: _iconSize(theme),
+                color: colors.foreground,
+              ),
+              child: DefaultTextStyle(
+                style: _textStyle(theme).copyWith(color: colors.foreground),
+                child: child!,
+              ),
             ),
           ),
         if (label != null)
-          Text(
-            label!,
-            style: _textStyle(theme).copyWith(color: colors.foreground),
+          Flexible(
+            child: Text(
+              label!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: _textStyle(theme).copyWith(color: colors.foreground),
+            ),
           ),
         if (iconRight != null && (label != null || child != null))
           SizedBox(width: theme.spacingSm),
         if (iconRight != null)
-          Icon(iconRight, size: _iconSize, color: colors.foreground),
+          Icon(iconRight, size: _iconSize(theme), color: colors.foreground),
       ],
     );
     final content =
         loading && loadingBehavior == UiKitButtonLoadingBehavior.replaceContent
         ? indicator
-        : loading
+        : loading &&
+              loadingBehavior == UiKitButtonLoadingBehavior.showBeforeContent
         ? Row(
             mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               indicator,
               SizedBox(width: theme.spacingSm),
-              regularContent,
+              Flexible(child: regularContent),
             ],
           )
         : regularContent;
@@ -312,7 +339,7 @@ class UiKitButton extends StatelessWidget {
       builder: (context, states, child) => ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: minWidth ?? (size == UiKitButtonSize.sm ? 40 : 44),
-          minHeight: _height,
+          minHeight: _height(theme),
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(

@@ -4,6 +4,16 @@ Reusable Flutter interaction and overlay primitives. Components own behavior
 and accessibility semantics; the host app owns composition, content and visual
 tokens through `ui.ThemeData`.
 
+## Hotfix candidate 1.0.0-rc.3
+
+This hotfix is based directly on main, independently of the 0.8.0 integration
+branch. It includes OTP input fixes, host composition slots, external button
+loading, theme tokens and backported Pressable accessibility corrections.
+See [migration and validation status](../docs/migration-1.0.0-rc.3.md).
+The dedicated preview entrypoint is `example/lib/hotfix_main.dart`; the main
+showcase retains its existing scope. Flutter 3.50.0 remains the configured
+toolchain; 3.50.1 has not been validated. No tag or app revision is updated.
+
 ## Public API (candidate/development)
 
 ```dart

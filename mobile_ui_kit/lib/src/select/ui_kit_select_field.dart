@@ -32,7 +32,7 @@ class UiKitSelectField extends StatelessWidget {
     this.valueStyle,
     this.helperStyle,
     this.trailing,
-    this.animationDuration = const Duration(milliseconds: 150),
+    this.animationDuration,
     super.key,
   }) : assert(borderWidth > 0 && focusedBorderWidth > 0);
 
@@ -61,11 +61,15 @@ class UiKitSelectField extends StatelessWidget {
   final TextStyle? valueStyle;
   final TextStyle? helperStyle;
   final Widget? trailing;
-  final Duration animationDuration;
+  final Duration? animationDuration;
 
   @override
   Widget build(BuildContext context) {
     final theme = UiKitTheme.of(context);
+    final duration = theme.motion.resolve(
+      context,
+      animationDuration ?? theme.motion.fast,
+    );
     final foreground = enabled ? theme.text : theme.textDisabled;
     final effectiveBorderColor = errorText == null
         ? borderColor ?? theme.border
@@ -73,7 +77,8 @@ class UiKitSelectField extends StatelessWidget {
     final displayValue = value ?? placeholder;
     final hasValue = value != null && value!.isNotEmpty;
     final field = AnimatedContainer(
-      duration: animationDuration,
+      duration: duration,
+      curve: theme.motion.curve,
       constraints: BoxConstraints(minHeight: height ?? theme.touchMinTarget),
       padding:
           padding ??
@@ -144,6 +149,7 @@ class UiKitSelectField extends StatelessWidget {
         UiKitPressable(
           onPress: enabled ? onTap : null,
           semanticsLabel: semanticsLabel ?? "$label: $displayValue",
+          excludeSemantics: true,
           builder: (context, states, child) => field,
         ),
         if (errorText != null || helperText != null) ...[
