@@ -184,6 +184,10 @@ Preview riêng ở `mobile_ui_kit/example/lib/hotfix_main.dart`; showcase chính
 giữ snapshot của main. Merge riêng hotfix vào main rồi forward-port vào nhánh
 tích hợp; không dùng merge toàn nhánh 0.8.0 để phân phối sửa lỗi này.
 
-Đường local đã được chuẩn bị; kiểm tra remote hiện chưa thành công vì SSH
-trả `Permission denied (publickey)`. Chưa xác nhận được main trên server có
-đổi sau ref local; chưa push, tạo PR, merge hoặc tag.
+Theo yêu cầu chủ sở hữu, ngày 2026-11-25 đã fast-forward `main` local từ
+`18ec3ed` lên commit hotfix `41cd41b`. Không merge nhánh release/0.8.0;
+checkout đó và các thay đổi đang dở vẫn được giữ nguyên.
+
+Kiểm tra remote chưa thành công vì SSH trả `Permission denied (publickey)`;
+GitHub CLI cũng chưa đăng nhập. Chưa xác nhận main trên server có đổi sau ref
+local; chưa push, tạo PR hoặc tag. Kiểm tra Flutter có biên dịch vẫn chưa chạy.

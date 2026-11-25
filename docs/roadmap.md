@@ -14,8 +14,9 @@ có source, kiểm tra hoặc bằng chứng tích hợp tương ứng.
 Theo yêu cầu chủ sở hữu ngày 2026-11-25, các sửa OTP, khả năng tùy biến widget,
 token và trợ năng được tách từ local main `18ec3ed` vào nhánh
 `hotfix/mobile-ui-kit-rc3`; không cần đợi release/0.8.0. Version UI Kit là
-1.0.0-rc.3, các package khác giữ nguyên. Chưa merge/push/tag hoặc chạy kiểm tra
-Flutter có biên dịch; xem [migration và giới hạn](migration-1.0.0-rc.3.md).
+1.0.0-rc.3, các package khác giữ nguyên. Đã fast-forward main local tới hotfix
+`41cd41b` theo yêu cầu chủ sở hữu; chưa push/tag hoặc chạy kiểm tra Flutter có
+biên dịch. Xem [migration và giới hạn](migration-1.0.0-rc.3.md).
 AsyncView, RouteTransitionGuard và showcase mở rộng tiếp tục thuộc nhánh tích hợp.
 
 ## 1. Hiện trạng
